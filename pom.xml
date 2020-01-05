@@ -1283,7 +1283,7 @@
                 </plugin>
                 <plugin>
                     <artifactId>maven-clean-plugin</artifactId>
-                    <version>2.5</version>
+                    <version>3.6.1</version>
                     <executions>
                         <execution>
                             <id>cleanup</id>
