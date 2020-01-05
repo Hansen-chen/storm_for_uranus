@@ -212,6 +212,7 @@ public class BoltExecutor extends Executor {
 
     // Add annotation
     @Override
+    @IntelSGX
     public void tupleActionFn(int taskId, TupleImpl tuple) throws Exception {
         String streamId = tuple.getSourceStreamId();
         if (Constants.SYSTEM_FLUSH_STREAM_ID.equals(streamId)) {
