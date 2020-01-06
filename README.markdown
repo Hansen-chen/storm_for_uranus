@@ -11,7 +11,8 @@
 <br>
 (mvn location and version got from 'mvn -version')
 
-1. *** Optional *** mvn dependency::tree
+
+1. *** Optional *** mvn dependency::tree && mvn help:effective-pom
 2. mvn clean package install -DskipTests=true -Dcheckstyle.skip
 && cd storm-dist/binary 
 && mvn package -Dgpg.skip=true
