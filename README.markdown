@@ -7,9 +7,9 @@
 
 ## Build Storm
 
-0. export JAVA_HOME=~/openjdk-sgx/build/linux-x86_64-normal-server-release/images/j2sdk-image && export PATH=$JAVA_HOME/bin:$PATH && export MAVEN_HOME=/home/ni/apache-maven-3.6.1 && export PATH=${PATH}:${MAVEN_HOME}/bin && export M2_HOME=/home/ni/apache-maven-3.6.1 && export PATH=${PATH}:${M2_HOME}/bin
-<br>
-(mvn location and version got from 'mvn -version')
+0. (mvn location and version got from 'mvn -version')
+1. export JAVA_HOME=~/openjdk-sgx/build/linux-x86_64-normal-server-release/images/j2sdk-image && export PATH=$JAVA_HOME/bin:$PATH && export MAVEN_HOME=/home/ni/apache-maven-3.6.1 && export PATH=${PATH}:${MAVEN_HOME}/bin && export M2_HOME=/home/ni/apache-maven-3.6.1 && export PATH=${PATH}:${M2_HOME}/bin
+2. add ali maven mirror to maven folder conf/mirror/setting.xml (https://blog.csdn.net/wudinaniya/article/details/98116734)
 
 
 1. *** Optional *** mvn dependency::tree && mvn help:effective-pom
