@@ -20,7 +20,10 @@
 && tar zxvf apache-storm-2.2.0-SNAPSHOT.tar.gz
 && cd apache-storm-2.2.0-SNAPSHOT/
 
-4. export JAVA_HOME=~/openjdk-sgx/build/linux-x86_64-normal-server-release/images/j2sdk-image && export PATH=$JAVA_HOME/bin:$PATH &&
+<br>
+Next steps to be confirmed
+<br>
+4. export JAVA_HOME=~/openjdk-sgx/build/linux-x86_64-normal-server-release/images/j2sdk-image && export PATH=$JAVA_HOME/bin:$PATH
 5. run jar
 
 ## Useful Link
