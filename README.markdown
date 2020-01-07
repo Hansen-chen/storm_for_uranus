@@ -7,12 +7,13 @@
 
 ## Build Storm
 
-0. export MAVEN_HOME=/home/hansen/apache-maven-3.6.1 && export PATH=${PATH}:${MAVEN_HOME}/bin && export M2_HOME=/home/hansen/apache-maven-3.6.1 && export PATH=${PATH}:${M2_HOME}/bin
+0. wget binary targz file from (https://maven.apache.org/download.cgi?Preferred=http%3A%2F%2Fapache.01link.hk%2F)
+1. export MAVEN_HOME=/home/hansen/apache-maven-3.6.3 && export PATH=${PATH}:${MAVEN_HOME}/bin && export M2_HOME=/home/hansen/apache-maven-3.6.3 && export PATH=${PATH}:${M2_HOME}/bin
 (mvn location and version got from 'mvn -version')   
-1. (optional)add ali maven mirror to maven folder conf/mirror/setting.xml (https://blog.csdn.net/wudinaniya/article/details/98116734)
-2. (optional) mvn dependency::tree && mvn help:effective-pom
-3. mvn install:install-file -Dfile=../openjdk-sgx/build/linux-x86_64-normal-server-release/images/j2sdk-image/jre/lib/rt.jar -DgroupId=edu.anonimity.sgx -DartifactId=rt -Dversion=1.0 -Dpackaging=jar
-4. mvn clean package install -DskipTests=true -Dcheckstyle.skip
+2. (optional)add ali maven mirror to maven folder conf/mirror/setting.xml (https://blog.csdn.net/wudinaniya/article/details/98116734)
+3. (optional) mvn dependency::tree && mvn help:effective-pom
+4. mvn install:install-file -Dfile=../openjdk-sgx/build/linux-x86_64-normal-server-release/images/j2sdk-image/jre/lib/rt.jar -DgroupId=edu.anonimity.sgx -DartifactId=rt -Dversion=1.0 -Dpackaging=jar
+5. mvn clean package install -DskipTests=true -Dcheckstyle.skip
 && cd storm-dist/binary 
 && mvn package -Dgpg.skip=true
 && cp ./final-package/target/apache-storm-2.2.0-SNAPSHOT.tar.gz ~/source_code/storm/compiled 
@@ -20,16 +21,17 @@
 && tar zxvf apache-storm-2.2.0-SNAPSHOT.tar.gz
 && cd apache-storm-2.2.0-SNAPSHOT/
 
-<br>
-Next steps to be confirmed
-<br>
-4. export JAVA_HOME=~/openjdk-sgx/build/linux-x86_64-normal-server-release/images/j2sdk-image && export PATH=$JAVA_HOME/bin:$PATH
-5. run jar
+## Run Examples (~/openjdk-sgx/ev_test/TestSuit.java, 202.45.128.173)
+
+6. "mvn package -Dcheckstyle.skip" the java file 
+7. export JAVA_HOME=~/openjdk-sgx/build/linux-x86_64-normal-server-release/images/j2sdk-image && export PATH=$JAVA_HOME/bin:$PATH
+8. ./../../bin/storm jar ./target/storm-starter-2.2.0-SNAPSHOT.jar org.apache.storm.starter.WordCountTopology
 
 ## Useful Link
 1. https://blog.csdn.net/lizheng520lp/article/details/84862380
 2. https://www.cnblogs.com/davenkin/archive/2012/02/15/install-jar-into-maven-local-repository.html
 3. http://pclevin.blogspot.com/2015/02/maven-dependency-scope.html
+
 
 Master Branch:  
 [![Travis CI](https://travis-ci.org/apache/storm.svg?branch=master)](https://travis-ci.org/apache/storm)
