@@ -11,7 +11,8 @@
 (mvn location and version got from 'mvn -version')   
 1. (optional)add ali maven mirror to maven folder conf/mirror/setting.xml (https://blog.csdn.net/wudinaniya/article/details/98116734)
 2. (optional) mvn dependency::tree && mvn help:effective-pom
-3. mvn clean package install -DskipTests=true -Dcheckstyle.skip
+3. mvn install:install-file -Dfile=../openjdk-sgx/build/linux-x86_64-normal-server-release/images/j2sdk-image/jre/lib/rt.jar -DgroupId=edu.anonimity.sgx -DartifactId=rt -Dversion=1.0 -Dpackaging=jar
+4. mvn clean package install -DskipTests=true -Dcheckstyle.skip
 && cd storm-dist/binary 
 && mvn package -Dgpg.skip=true
 && cp ./final-package/target/apache-storm-2.2.0-SNAPSHOT.tar.gz ~/source_code/storm/compiled 
@@ -24,6 +25,8 @@
 
 ## Useful Link
 1. https://blog.csdn.net/lizheng520lp/article/details/84862380
+2. https://www.cnblogs.com/davenkin/archive/2012/02/15/install-jar-into-maven-local-repository.html
+3. http://pclevin.blogspot.com/2015/02/maven-dependency-scope.html
 
 Master Branch:  
 [![Travis CI](https://travis-ci.org/apache/storm.svg?branch=master)](https://travis-ci.org/apache/storm)
