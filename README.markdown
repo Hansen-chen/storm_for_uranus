@@ -7,11 +7,9 @@
 
 ## Build Storm
 
-0. export MAVEN_HOME=/home/ni/apache-maven-3.6.1 && export PATH=${PATH}:${MAVEN_HOME}/bin && export M2_HOME=/home/ni/apache-maven-3.6.1 && export PATH=${PATH}:${M2_HOME}/bin
+0. export MAVEN_HOME=/home/hansen/apache-maven-3.6.1 && export PATH=${PATH}:${MAVEN_HOME}/bin && export M2_HOME=/home/hansen/apache-maven-3.6.1 && export PATH=${PATH}:${M2_HOME}/bin
 (mvn location and version got from 'mvn -version')   
 1. (optional)add ali maven mirror to maven folder conf/mirror/setting.xml (https://blog.csdn.net/wudinaniya/article/details/98116734)
-
-
 2. (optional) mvn dependency::tree && mvn help:effective-pom
 3. mvn clean package install -DskipTests=true -Dcheckstyle.skip
 && cd storm-dist/binary 
