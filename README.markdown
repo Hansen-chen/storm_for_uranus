@@ -7,19 +7,25 @@
 
 ## Build Storm
 
-0. (mvn location and version got from 'mvn -version')
-1. export JAVA_HOME=~/openjdk-sgx/build/linux-x86_64-normal-server-release/images/j2sdk-image && export PATH=$JAVA_HOME/bin:$PATH && export MAVEN_HOME=/home/ni/apache-maven-3.6.1 && export PATH=${PATH}:${MAVEN_HOME}/bin && export M2_HOME=/home/ni/apache-maven-3.6.1 && export PATH=${PATH}:${M2_HOME}/bin
-2. add ali maven mirror to maven folder conf/mirror/setting.xml (https://blog.csdn.net/wudinaniya/article/details/98116734)
+0. export MAVEN_HOME=/home/ni/apache-maven-3.6.1 && export PATH=${PATH}:${MAVEN_HOME}/bin && export M2_HOME=/home/ni/apache-maven-3.6.1 && export PATH=${PATH}:${M2_HOME}/bin
+(mvn location and version got from 'mvn -version')   
+1. (optional)add ali maven mirror to maven folder conf/mirror/setting.xml (https://blog.csdn.net/wudinaniya/article/details/98116734)
 
 
-1. *** Optional *** mvn dependency::tree && mvn help:effective-pom
-2. mvn clean package install -DskipTests=true -Dcheckstyle.skip
+2. (optional) mvn dependency::tree && mvn help:effective-pom
+3. mvn clean package install -DskipTests=true -Dcheckstyle.skip
 && cd storm-dist/binary 
 && mvn package -Dgpg.skip=true
 && cp ./final-package/target/apache-storm-2.2.0-SNAPSHOT.tar.gz ~/source_code/storm/compiled 
 && cd  ~/source_code/storm/compiled 
 && tar zxvf apache-storm-2.2.0-SNAPSHOT.tar.gz
 && cd apache-storm-2.2.0-SNAPSHOT/
+
+4. export JAVA_HOME=~/openjdk-sgx/build/linux-x86_64-normal-server-release/images/j2sdk-image && export PATH=$JAVA_HOME/bin:$PATH &&
+5. run jar
+
+## Useful Link
+1. https://blog.csdn.net/lizheng520lp/article/details/84862380
 
 Master Branch:  
 [![Travis CI](https://travis-ci.org/apache/storm.svg?branch=master)](https://travis-ci.org/apache/storm)
