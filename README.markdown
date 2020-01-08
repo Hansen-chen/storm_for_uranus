@@ -47,6 +47,7 @@
 1. https://blog.csdn.net/lizheng520lp/article/details/84862380
 2. https://www.cnblogs.com/davenkin/archive/2012/02/15/install-jar-into-maven-local-repository.html
 3. http://pclevin.blogspot.com/2015/02/maven-dependency-scope.html
+4。 http://www.corejavaguru.com/bigdata/storm/word-count-topology
 
 
 
