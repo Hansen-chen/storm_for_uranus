@@ -21,16 +21,26 @@
 && tar zxvf apache-storm-2.2.0-SNAPSHOT.tar.gz
 && cd apache-storm-2.2.0-SNAPSHOT/
 
-## Run Examples (~/openjdk-sgx/ev_test/TestSuit.java, 202.45.128.173)
+## Run Examples (~/openjdk-sgx/ev_test/TestSuit.java, 202.45.128.173, javac -d . -cp path_to_rt.jar TestSuit.java, java -ea TestSuit)
 
-6. "mvn package -Dcheckstyle.skip" the java file 
-7. export JAVA_HOME=~/openjdk-sgx/build/linux-x86_64-normal-server-release/images/j2sdk-image && export PATH=$JAVA_HOME/bin:$PATH
-8. ./../../bin/storm jar ./target/storm-starter-2.2.0-SNAPSHOT.jar org.apache.storm.starter.WordCountTopology
+0. cd ~/source_code/storm/compiled/apache-storm-2.2.0-SNAPSHOT/examples/storm-starter
+1. mvn package -Dcheckstyle.skip 
+2. export JAVA_HOME=~/openjdk-sgx/build/linux-x86_64-normal-server-release/images/j2sdk-image && export PATH=$JAVA_HOME/bin:$PATH
+3. ./../../bin/storm jar ./target/storm-starter-2.2.0-SNAPSHOT.jar org.apache.storm.starter.AnchoredWordCount testing
+4. ./../../bin/storm jar ./target/storm-starter-2.2.0-SNAPSHOT.jar org.apache.storm.starter.FastWordCountTopology testingtwo
+
+## Get Log Output
+0. under '~/source_code/storm/compiled/apache-storm-2.2.0-SNAPSHOT/logs/workers-artifacts/'
+1. cd topology name
+2. cd worker id
+3. grep keyword worker.log (or vim worker.log)
 
 ## Useful Link
 1. https://blog.csdn.net/lizheng520lp/article/details/84862380
 2. https://www.cnblogs.com/davenkin/archive/2012/02/15/install-jar-into-maven-local-repository.html
 3. http://pclevin.blogspot.com/2015/02/maven-dependency-scope.html
+
+
 
 
 Master Branch:  
