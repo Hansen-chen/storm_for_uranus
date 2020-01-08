@@ -30,12 +30,14 @@
 4. ./../../bin/storm jar ./target/storm-starter-2.2.0-SNAPSHOT.jar org.apache.storm.starter.FastWordCountTopology testingtwo
 
 ## Get Log Output
+
 0. under '~/source_code/storm/compiled/apache-storm-2.2.0-SNAPSHOT/logs/workers-artifacts/'
 1. cd topology name
 2. cd worker id
 3. grep keyword worker.log (or vim worker.log)
 
 ## Useful Link
+
 1. https://blog.csdn.net/lizheng520lp/article/details/84862380
 2. https://www.cnblogs.com/davenkin/archive/2012/02/15/install-jar-into-maven-local-repository.html
 3. http://pclevin.blogspot.com/2015/02/maven-dependency-scope.html
