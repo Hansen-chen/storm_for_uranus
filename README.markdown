@@ -1,8 +1,8 @@
 # Storm copy used by Hansen
 
 ## Machine
-### Address : 202.45.128.174
-### No. : 15
+### Address : 202.45.128.173
+### No. : 14
 ### Gate : gatekeeper.cs.hku.hk
 
 ## Build Storm
