@@ -12,10 +12,8 @@
 
 package org.apache.storm.starter;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Random;
-import java.util.UUID;
+import java.util.*;
+
 import org.apache.storm.Config;
 import org.apache.storm.spout.SpoutOutputCollector;
 import org.apache.storm.task.TopologyContext;
@@ -29,8 +27,11 @@ import org.apache.storm.tuple.Fields;
 import org.apache.storm.tuple.Tuple;
 import org.apache.storm.tuple.Values;
 import org.apache.storm.utils.Utils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class AnchoredWordCount extends ConfigurableTopology {
+    private static final Logger LOG = LoggerFactory.getLogger(StatefulWindowingTopology.class);
 
     protected int run(String[] args) throws Exception {
         TopologyBuilder builder = new TopologyBuilder();
@@ -122,12 +123,25 @@ public class AnchoredWordCount extends ConfigurableTopology {
             }
             count++;
             counts.put(word, count);
+            LOG.info("Calculating "+word + ": " + count);
             collector.emit(new Values(word, count));
         }
 
         @Override
         public void declareOutputFields(OutputFieldsDeclarer declarer) {
             declarer.declare(new Fields("word", "count"));
+        }
+
+        @Override
+        public void cleanup() {
+            LOG.info("--- FINAL COUNTS ---");
+            List<String> keys = new ArrayList<String>();
+            keys.addAll(this.counts.keySet());
+            Collections.sort(keys);
+            for (String key : keys) {
+                LOG.info(key + " : " + this.counts.get(key));
+            }
+            LOG.info("--------------");
         }
     }
 }
