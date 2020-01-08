@@ -40,13 +40,15 @@ import org.apache.storm.tuple.Tuple;
 import org.apache.storm.tuple.Values;
 import org.apache.storm.utils.NimbusClient;
 import org.apache.storm.utils.Utils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * WordCount but the spout does not stop, and the bolts are implemented in
  * java.  This can show how fast the word count can run.
  */
 public class FastWordCountTopology {
-
+    private static final Logger LOG = LoggerFactory.getLogger(StatefulWindowingTopology.class);
     public static void kill(Nimbus.Iface client, String name) throws Exception {
         KillOptions opts = new KillOptions();
         opts.set_wait_secs(0);
@@ -70,7 +72,7 @@ public class FastWordCountTopology {
             name = args[0];
         }
 
-        conf.setNumWorkers(3);
+        conf.setNumWorkers(1);
         StormSubmitter.submitTopologyWithProgressBar(name, conf, builder.createTopology());
 
         Map<String, Object> clusterConf = Utils.readStormConfig();
@@ -158,14 +160,14 @@ public class FastWordCountTopology {
 
         @Override
         public void cleanup() {
-            System.out.println("--- FINAL COUNTS ---");
+            LOG.info("--- FINAL COUNTS ---");
             List<String> keys = new ArrayList<String>();
             keys.addAll(this.counts.keySet());
             Collections.sort(keys);
             for (String key : keys) {
-                System.out.println(key + " : " + this.counts.get(key));
+                LOG.info(key + " : " + this.counts.get(key));
             }
-            System.out.println("--------------");
+            LOG.info("--------------");
         }
     }
 }

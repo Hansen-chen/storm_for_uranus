@@ -31,8 +31,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class AnchoredWordCount extends ConfigurableTopology {
+    public static void main(String[] args) throws Exception {
+        ConfigurableTopology.start(new AnchoredWordCount(), args);
+    }
     private static final Logger LOG = LoggerFactory.getLogger(StatefulWindowingTopology.class);
 
+    @Override
     protected int run(String[] args) throws Exception {
         TopologyBuilder builder = new TopologyBuilder();
 
