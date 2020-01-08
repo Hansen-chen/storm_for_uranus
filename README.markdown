@@ -23,11 +23,17 @@
 
 ## Run Examples (~/openjdk-sgx/ev_test/TestSuit.java, 202.45.128.173, javac -d . -cp path_to_rt.jar TestSuit.java, java -ea TestSuit)
 
+###One terminal:
 0. cd ~/source_code/storm/compiled/apache-storm-2.2.0-SNAPSHOT/examples/storm-starter
 1. mvn package -Dcheckstyle.skip 
 2. export JAVA_HOME=~/openjdk-sgx/build/linux-x86_64-normal-server-release/images/j2sdk-image && export PATH=$JAVA_HOME/bin:$PATH
 3. ./../../bin/storm jar ./target/storm-starter-2.2.0-SNAPSHOT.jar org.apache.storm.starter.AnchoredWordCount testing
 4. ./../../bin/storm jar ./target/storm-starter-2.2.0-SNAPSHOT.jar org.apache.storm.starter.FastWordCountTopology testingtwo
+
+###Other terminals:
+1. export JAVA_HOME=~/openjdk-sgx/build/linux-x86_64-normal-server-release/images/j2sdk-image && export PATH=$JAVA_HOME/bin:$PATH
+2. zookeeper, nimbus, supervisor
+
 
 ## Get Log Output
 
