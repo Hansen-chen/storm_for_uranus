@@ -32,7 +32,7 @@
 1. mvn package -Dcheckstyle.skip 
 2. export JAVA_HOME=~/openjdk-sgx/build/linux-x86_64-normal-server-release/images/j2sdk-image && export PATH=$JAVA_HOME/bin:$PATH
 3. ./../../bin/storm jar ./target/storm-starter-2.2.0-SNAPSHOT.jar org.apache.storm.starter.AnchoredWordCount testing
-4. ./../../bin/storm jar ./target/storm-starter-2.2.0-SNAPSHOT.jar org.apache.storm.starter.FastWordCountTopology testingtwo
+4. ./../../bin/storm kill testing
 
 
 ## Get Log Output
