@@ -210,9 +210,14 @@ public class BoltExecutor extends Executor {
         };
     }
 
-    // Add annotation
-    @Override
+    // Add JECall , may need deep copy for decryption
     @IntelSGX
+    public static void annotated_exec(IBolt boltObject, TupleImpl tuple){
+        boltObject.execute(tuple)
+    }
+
+
+    @Override
     public void tupleActionFn(int taskId, TupleImpl tuple) throws Exception {
         String streamId = tuple.getSourceStreamId();
         if (Constants.SYSTEM_FLUSH_STREAM_ID.equals(streamId)) {
@@ -235,7 +240,8 @@ public class BoltExecutor extends Executor {
             if (isExecuteSampler) {
                 tuple.setExecuteSampleStartTime(now);
             }
-            boltObject.execute(tuple);
+            //boltObject.execute(tuple);
+            BoltExecutor.annotated_exec(boltObject, tuple)
 
             Long ms = tuple.getExecuteSampleStartTime();
             long delta = (ms != null) ? Time.deltaMs(ms) : -1;

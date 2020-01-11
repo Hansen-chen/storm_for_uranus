@@ -88,7 +88,9 @@ public class OutputCollector implements IOutputCollector {
         return emit(Utils.DEFAULT_STREAM_ID, tuple);
     }
 
+    // add JOCall annotation, may need deep copy for encryption
     @Override
+    @IntelSGXOcall
     public List<Integer> emit(String streamId, Collection<Tuple> anchors, List<Object> tuple) {
         return delegate.emit(streamId, anchors, tuple);
     }
@@ -171,7 +173,9 @@ public class OutputCollector implements IOutputCollector {
         emitDirect(taskId, Utils.DEFAULT_STREAM_ID, tuple);
     }
 
+    // add JOCall annotation, may need deep copy for encryption
     @Override
+    @IntelSGXOcall
     public void emitDirect(int taskId, String streamId, Collection<Tuple> anchors, List<Object> tuple) {
         delegate.emitDirect(taskId, streamId, anchors, tuple);
     }
