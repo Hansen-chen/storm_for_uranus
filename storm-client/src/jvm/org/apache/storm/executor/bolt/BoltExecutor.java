@@ -214,7 +214,7 @@ public class BoltExecutor extends Executor {
     @IntelSGX
     public static TupleImpl annotated_exec(IBolt boltObject, TupleImpl tuple){
         boltObject.execute(tuple);
-        return (TupleImpl) Tools.deep_copy(tuple);
+        return (TupleImpl)Tools.deep_copy(tuple);
     }
 
 
