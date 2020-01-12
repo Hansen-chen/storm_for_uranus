@@ -33,7 +33,7 @@ public class BasicOutputCollector implements IBasicOutputCollector {
     @Override
     @IntelSGXOcall
     public List<Integer> emit(String streamId, List<Object> tuple) {
-        return out.emit(streamId, inputTuple, tuple);
+        return (List<Integer>) Tools.deep_copy(out.emit(streamId, inputTuple, tuple));
     }
 
     public List<Integer> emit(List<Object> tuple) {
