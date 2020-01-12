@@ -16,10 +16,8 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import org.apache.storm.tuple.Tuple;
+import org.apache.storm.tuple.TupleImpl;
 import org.apache.storm.utils.Utils;
-import edu.anonymity.sgx.IntelSGX;
-import edu.anonymity.sgx.IntelSGXOcall;
-import edu.anonymity.sgx.Tools;
 
 /**
  * This output collector exposes the API for emitting tuples from an IRichBolt. This is the core API for emitting tuples. For a simpler API,
@@ -91,9 +89,7 @@ public class OutputCollector implements IOutputCollector {
         return emit(Utils.DEFAULT_STREAM_ID, tuple);
     }
 
-    // add JOCall annotation, may need deep copy for encryption
     @Override
-    @IntelSGXOcall
     public List<Integer> emit(String streamId, Collection<Tuple> anchors, List<Object> tuple) {
         return delegate.emit(streamId, anchors, tuple);
     }
@@ -176,7 +172,6 @@ public class OutputCollector implements IOutputCollector {
         emitDirect(taskId, Utils.DEFAULT_STREAM_ID, tuple);
     }
 
-    // add JOCall annotation, may need deep copy for encryption
     @Override
     public void emitDirect(int taskId, String streamId, Collection<Tuple> anchors, List<Object> tuple) {
         delegate.emitDirect(taskId, streamId, anchors, tuple);
