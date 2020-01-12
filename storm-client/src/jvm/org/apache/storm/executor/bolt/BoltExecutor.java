@@ -213,9 +213,7 @@ public class BoltExecutor extends Executor {
     // Add JECall , may need deep copy for decryption
     @IntelSGX
     public static void annotated_exec(IBolt boltObject, TupleImpl tuple){
-        if(boltObject!=null && tuple!=null){
-            boltObject.execute(tuple);
-        }
+        boltObject.execute(tuple);
     }
 
 
@@ -243,7 +241,13 @@ public class BoltExecutor extends Executor {
                 tuple.setExecuteSampleStartTime(now);
             }
             //boltObject.execute(tuple);
-            BoltExecutor.annotated_exec(boltObject, tuple);
+            try {
+                BoltExecutor.annotated_exec(boltObject, tuple);
+            }
+            catch (Exception ex){
+                LOG.info("may not be an input tuple");
+            }
+
 
             Long ms = tuple.getExecuteSampleStartTime();
             long delta = (ms != null) ? Time.deltaMs(ms) : -1;
