@@ -116,17 +116,19 @@ public class AnchoredWordCount extends ConfigurableTopology {
     }
 
     public static class WordCount extends BaseBasicBolt {
-        Map<String, Integer> counts = new HashMap<>();
+        //Map<String, Integer> counts = new HashMap<>();
 
         @Override
         public void execute(Tuple tuple, BasicOutputCollector collector) {
             String word = tuple.getString(0);
-            Integer count = counts.get(word);
+            /*Integer count = counts.get(word);
             if (count == null) {
                 count = 0;
             }
             count++;
-            counts.put(word, count);
+            counts.put(word, count);*/
+            Integer count=1;
+            count++;
             LOG.info("Calculating "+word + ": " + count);
             collector.emit(new Values(word, count));
         }
@@ -138,6 +140,7 @@ public class AnchoredWordCount extends ConfigurableTopology {
 
         @Override
         public void cleanup() {
+            /*
             LOG.info("--- FINAL COUNTS ---");
             List<String> keys = new ArrayList<String>();
             keys.addAll(this.counts.keySet());
@@ -146,6 +149,7 @@ public class AnchoredWordCount extends ConfigurableTopology {
                 LOG.info(key + " : " + this.counts.get(key));
             }
             LOG.info("--------------");
+             */
         }
     }
 }
