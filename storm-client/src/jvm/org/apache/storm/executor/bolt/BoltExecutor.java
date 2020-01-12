@@ -242,7 +242,14 @@ public class BoltExecutor extends Executor {
             }
             //boltObject.execute(tuple);
             try {
-                BoltExecutor.annotated_exec(boltObject, tuple);
+                if(boltObject == null || tuple == null)
+                {
+                    LOG.info("boltObject or tuple is null");
+                }
+                else {
+                    BoltExecutor.annotated_exec(boltObject, tuple);
+                }
+
             }
             catch (Exception ex){
                 LOG.info("may not be an input tuple");
