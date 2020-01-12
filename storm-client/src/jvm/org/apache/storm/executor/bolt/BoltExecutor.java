@@ -213,7 +213,12 @@ public class BoltExecutor extends Executor {
     // Add JECall , may need deep copy for decryption
     @IntelSGX
     public static void annotated_exec(IBolt boltObject, TupleImpl tuple){
-        boltObject.execute(tuple);
+        try {
+            boltObject.execute(tuple);
+        }catch (Exception ex)
+        {
+            LOG.info("not input tuple");
+        }
     }
 
 
