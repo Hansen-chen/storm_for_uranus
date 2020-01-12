@@ -178,7 +178,6 @@ public class OutputCollector implements IOutputCollector {
 
     // add JOCall annotation, may need deep copy for encryption
     @Override
-    @IntelSGXOcall
     public void emitDirect(int taskId, String streamId, Collection<Tuple> anchors, List<Object> tuple) {
         delegate.emitDirect(taskId, streamId, anchors, tuple);
     }
