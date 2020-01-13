@@ -211,10 +211,10 @@ public class BoltExecutor extends Executor {
     }
 
     // Add JECall , may need deep copy for decryption
+    // create bolt object and append in arraylist
     @IntelSGX
-    public static TupleImpl annotated_exec(IBolt boltObject, TupleImpl tuple){
+    public static void annotated_exec(IBolt boltObject, TupleImpl tuple){
         boltObject.execute(tuple);
-        return (TupleImpl)Tools.deep_copy(tuple);
     }
 
 
@@ -241,6 +241,7 @@ public class BoltExecutor extends Executor {
             if (isExecuteSampler) {
                 tuple.setExecuteSampleStartTime(now);
             }
+            //Cryptography, encrypt byte, decrypt byte
             //boltObject.execute(tuple);
             try {
                 if(boltObject == null || tuple == null)
@@ -248,7 +249,7 @@ public class BoltExecutor extends Executor {
                     LOG.info("boltObject or tuple is null");
                 }
                 else {
-                    tuple = BoltExecutor.annotated_exec(boltObject, tuple);
+                    BoltExecutor.annotated_exec(boltObject, tuple);
                 }
 
             }
