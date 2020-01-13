@@ -37,7 +37,7 @@
 
 ## Get Log Output
 
-0. grep ~/source_code/storm/compiled/apache-storm-2.2.0-SNAPSHOT/logs/workers-artifacts/
+0. cd ~/source_code/storm/compiled/apache-storm-2.2.0-SNAPSHOT/logs/workers-artifacts/
 1. cd topology name
 2. cd worker id
 3. grep keyword worker.log (or vim worker.log)
