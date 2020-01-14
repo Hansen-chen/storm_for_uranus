@@ -243,19 +243,7 @@ public class BoltExecutor extends Executor {
             }
             //Cryptography, encrypt byte, decrypt byte
             //boltObject.execute(tuple);
-            try {
-                if(boltObject == null || tuple == null)
-                {
-                    LOG.info("boltObject or tuple is null");
-                }
-                else {
-                    BoltExecutor.annotated_exec(boltObject, tuple);
-                }
-
-            }
-            catch (Exception ex){
-                LOG.info("may not be an input tuple");
-            }
+            BoltExecutor.annotated_exec(boltObject, tuple);
 
 
             Long ms = tuple.getExecuteSampleStartTime();
