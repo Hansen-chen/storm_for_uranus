@@ -30,10 +30,16 @@ public class BasicOutputCollector implements IBasicOutputCollector {
         this.out = out;
     }
 
-    @Override
     @IntelSGXOcall
-    public List<Integer> emit(String streamId, List<Object> tuple) {
+    public List<Integer> ocall(String streamId, List<Object> tuple) {
         return out.emit(streamId, inputTuple, (List<Object>)Tools.deep_copy(tuple));
+    }
+
+    @Override
+    //@IntelSGXOcall
+    public List<Integer> emit(String streamId, List<Object> tuple) {
+        return ocall(streamId, tuple);
+        //return out.emit(streamId, inputTuple, (List<Object>)Tools.deep_copy(tuple));
     }
 
     public List<Integer> emit(List<Object> tuple) {
