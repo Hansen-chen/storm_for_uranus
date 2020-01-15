@@ -21,6 +21,7 @@ import java.util.function.BooleanSupplier;
 import org.apache.storm.Config;
 import org.apache.storm.Constants;
 import org.apache.storm.ICredentialsListener;
+import org.apache.storm.daemon.Acker;
 import org.apache.storm.daemon.StormCommon;
 import org.apache.storm.daemon.Task;
 import org.apache.storm.daemon.metrics.BuiltinBoltMetrics;
@@ -243,7 +244,13 @@ public class BoltExecutor extends Executor {
             }
             //Cryptography, encrypt byte, decrypt byte
             //boltObject.execute(tuple);
-            BoltExecutor.annotated_exec(boltObject, tuple);
+            if(boltObject instanceof Acker){
+                boltObject.execute(tuple);
+            }
+            else {
+                BoltExecutor.annotated_exec(boltObject, tuple);
+            }
+
 
 
             Long ms = tuple.getExecuteSampleStartTime();
