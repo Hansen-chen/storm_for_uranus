@@ -84,7 +84,7 @@ public class BoltExecutor extends Executor {
         this.backPressureWaitStrategy = ReflectionUtils.newInstance((String) topoConf.get(Config.TOPOLOGY_BACKPRESSURE_WAIT_STRATEGY));
         this.backPressureWaitStrategy.prepare(topoConf, WaitSituation.BACK_PRESSURE_WAIT);
         this.stats = new BoltExecutorStats(ConfigUtils.samplingRate(this.getTopoConf()),
-                                           ObjectReader.getInt(this.getTopoConf().get(Config.NUM_STAT_BUCKETS)));
+                ObjectReader.getInt(this.getTopoConf().get(Config.NUM_STAT_BUCKETS)));
         this.builtInMetrics = new BuiltinBoltMetrics(stats);
     }
 
@@ -212,8 +212,7 @@ public class BoltExecutor extends Executor {
         };
     }
 
-    // Add JECall, may need deep copy for decryption
-    // create bolt object and append in arraylist
+    // Add JECall , may need deep copy for decryption
     @IntelSGX
     public static TupleImpl annotated_exec(IBolt boltObject, TupleImpl tuple){
         boltObject.execute(tuple);
@@ -244,23 +243,21 @@ public class BoltExecutor extends Executor {
             if (isExecuteSampler) {
                 tuple.setExecuteSampleStartTime(now);
             }
-            //Cryptography, encrypt byte, decrypt byte
             //boltObject.execute(tuple);
-            if(boltObject == null || tuple == null ){
-                LOG.info("null boltObject or tuple");
-                boltObject.execute(tuple);
-            }
-            else
-            {
-                if(boltObject instanceof Acker || boltObject instanceof CoordinatedBolt){
+            try {
+                if(boltObject instanceof Acker || boltObject instanceof CoordinatedBolt)
+                {
+                    LOG.info("Not bolt for computation");
                     boltObject.execute(tuple);
                 }
                 else {
                     tuple = BoltExecutor.annotated_exec(boltObject, tuple);
                 }
+
             }
-
-
+            catch (Exception ex){
+                LOG.info("Error during boltObject execution");
+            }
 
 
             Long ms = tuple.getExecuteSampleStartTime();
