@@ -214,9 +214,8 @@ public class BoltExecutor extends Executor {
 
     // Add JECall , may need deep copy for decryption
     @IntelSGX
-    public static TupleImpl annotated_exec(IBolt boltObject, TupleImpl tuple){
+    public static void annotated_exec(IBolt boltObject, TupleImpl tuple){
         boltObject.execute(tuple);
-        return (TupleImpl)Tools.deep_copy(tuple);
     }
 
 
@@ -244,20 +243,17 @@ public class BoltExecutor extends Executor {
                 tuple.setExecuteSampleStartTime(now);
             }
             //boltObject.execute(tuple);
-            try {
-                if(boltObject instanceof Acker || boltObject instanceof CoordinatedBolt)
-                {
-                    LOG.info("Not bolt for computation");
-                    boltObject.execute(tuple);
-                }
-                else {
-                    tuple = BoltExecutor.annotated_exec(boltObject, tuple);
-                }
+            if(boltObject instanceof Acker)
+            {
+                LOG.info("Acker bolt object");
+                boltObject.execute(tuple);
+            }
+            else {
+                BoltExecutor.annotated_exec(boltObject, tuple);
+            }
 
-            }
-            catch (Exception ex){
-                LOG.info("Error during boltObject execution");
-            }
+
+
 
 
             Long ms = tuple.getExecuteSampleStartTime();
