@@ -215,8 +215,9 @@ public class BoltExecutor extends Executor {
     // Add JECall, may need deep copy for decryption
     // create bolt object and append in arraylist
     @IntelSGX
-    public static void annotated_exec(IBolt boltObject, TupleImpl tuple){
+    public static TupleImpl annotated_exec(IBolt boltObject, TupleImpl tuple){
         boltObject.execute(tuple);
+        return (TupleImpl)Tools.deep_copy(tuple);
     }
 
 
@@ -249,7 +250,7 @@ public class BoltExecutor extends Executor {
                 boltObject.execute(tuple);
             }
             else {
-                BoltExecutor.annotated_exec(boltObject, tuple);
+                tuple = BoltExecutor.annotated_exec(boltObject, tuple);
             }
 
 
