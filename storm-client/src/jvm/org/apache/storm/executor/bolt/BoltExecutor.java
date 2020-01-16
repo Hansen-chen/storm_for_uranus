@@ -21,6 +21,7 @@ import java.util.function.BooleanSupplier;
 import org.apache.storm.Config;
 import org.apache.storm.Constants;
 import org.apache.storm.ICredentialsListener;
+import org.apache.storm.coordination.CoordinatedBolt;
 import org.apache.storm.daemon.Acker;
 import org.apache.storm.daemon.StormCommon;
 import org.apache.storm.daemon.Task;
@@ -211,7 +212,7 @@ public class BoltExecutor extends Executor {
         };
     }
 
-    // Add JECall , may need deep copy for decryption
+    // Add JECall, may need deep copy for decryption
     // create bolt object and append in arraylist
     @IntelSGX
     public static void annotated_exec(IBolt boltObject, TupleImpl tuple){
@@ -244,7 +245,7 @@ public class BoltExecutor extends Executor {
             }
             //Cryptography, encrypt byte, decrypt byte
             //boltObject.execute(tuple);
-            if(boltObject instanceof Acker){
+            if(boltObject instanceof Acker || boltObject instanceof CoordinatedBolt){
                 boltObject.execute(tuple);
             }
             else {
