@@ -246,12 +246,20 @@ public class BoltExecutor extends Executor {
             }
             //Cryptography, encrypt byte, decrypt byte
             //boltObject.execute(tuple);
-            if(boltObject instanceof Acker || boltObject instanceof CoordinatedBolt){
+            if(boltObject == null || tuple == null ){
+                LOG.info("null boltObject or tuple");
                 boltObject.execute(tuple);
             }
-            else {
-                tuple = BoltExecutor.annotated_exec(boltObject, tuple);
+            else
+            {
+                if(boltObject instanceof Acker || boltObject instanceof CoordinatedBolt){
+                    boltObject.execute(tuple);
+                }
+                else {
+                    tuple = BoltExecutor.annotated_exec(boltObject, tuple);
+                }
             }
+
 
 
 
