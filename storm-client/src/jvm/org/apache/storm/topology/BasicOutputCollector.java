@@ -41,7 +41,8 @@ public class BasicOutputCollector implements IBasicOutputCollector {
     }
 
     public List<Integer> emit(List<Object> tuple) {
-        return emit(Utils.DEFAULT_STREAM_ID, tuple);
+        //return emit(Utils.DEFAULT_STREAM_ID, tuple);
+        return annotated_emit(Utils.DEFAULT_STREAM_ID, tuple);
     }
 
     public void setContext(Tuple inputTuple) {
