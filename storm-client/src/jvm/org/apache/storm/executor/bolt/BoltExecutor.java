@@ -246,7 +246,6 @@ public class BoltExecutor extends Executor {
             //boltObject.execute(tuple);
             if(boltObject instanceof Acker)
             {
-                LOG.info("Acker bolt object");
                 boltObject.execute(tuple);
             }
             else {
