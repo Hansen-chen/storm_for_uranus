@@ -37,12 +37,12 @@ public class BasicOutputCollector implements IBasicOutputCollector {
 
     @Override
     public List<Integer> emit(String streamId, List<Object> tuple) {
-        return BasicOutputCollector.annotated_emit(streamId, tuple, inputTuple);
+        return annotated_emit(streamId, tuple, inputTuple);
     }
 
     public List<Integer> emit(List<Object> tuple) {
         //return emit(Utils.DEFAULT_STREAM_ID, tuple);
-        return BasicOutputCollector.annotated_emit(Utils.DEFAULT_STREAM_ID, tuple, inputTuple);
+        return annotated_emit(Utils.DEFAULT_STREAM_ID, tuple, inputTuple);
     }
 
     public void setContext(Tuple inputTuple) {
