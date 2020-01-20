@@ -31,18 +31,18 @@ public class BasicOutputCollector implements IBasicOutputCollector {
     }
 
     @IntelSGXOcall
-    public List<Integer> annotated_emit(String streamId, List<Object> tuple){
+    public static List<Integer> annotated_emit(String streamId, List<Object> tuple, Tuple inputTuple){
         return out.emit(streamId, inputTuple, (List<Object>)Tools.deep_copy(tuple));
     }
 
     @Override
     public List<Integer> emit(String streamId, List<Object> tuple) {
-        return annotated_emit(streamId, tuple);
+        return BasicOutputCollector.annotated_emit(streamId, tuple, inputTuple);
     }
 
     public List<Integer> emit(List<Object> tuple) {
         //return emit(Utils.DEFAULT_STREAM_ID, tuple);
-        return annotated_emit(Utils.DEFAULT_STREAM_ID, tuple);
+        return BasicOutputCollector.annotated_emit(Utils.DEFAULT_STREAM_ID, tuple, inputTuple);
     }
 
     public void setContext(Tuple inputTuple) {
