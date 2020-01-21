@@ -37,7 +37,7 @@ public class BasicOutputCollector implements IBasicOutputCollector {
 
     @Override
     public List<Integer> emit(String streamId, List<Object> tuple) {
-        return annotated_emit(streamId, (List<Object>)Tools.deep_copy(tuple);
+        return annotated_emit(streamId, (List<Object>)Tools.deep_copy(tuple));
     }
 
     public List<Integer> emit(List<Object> tuple) {
