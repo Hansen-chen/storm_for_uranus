@@ -12,12 +12,8 @@
 
 package org.apache.storm.executor.bolt;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
-import java.util.Set;
+import java.util.*;
+
 import org.apache.storm.daemon.Acker;
 import org.apache.storm.daemon.Task;
 import org.apache.storm.executor.ExecutorTransfer;
@@ -67,7 +63,7 @@ public class BoltOutputCollectorImpl implements IOutputCollector {
     @Override
     public List<Integer> emit(String streamId, Collection<Tuple> anchors, List<Object> tuple) {
         try {
-            return annotated_emit(streamId, anchors, (List<Object>)Tools.deep_copy(tuple), null);
+            return boltEmit(streamId, anchors, tuple, null);
         } catch (InterruptedException e) {
             LOG.warn("Thread interrupted when emiting tuple.");
             throw new RuntimeException(e);
@@ -85,8 +81,8 @@ public class BoltOutputCollectorImpl implements IOutputCollector {
     }
 
     @IntelSGXOcall
-    public List<Integer> annotated_emit(String streamId, Collection<Tuple> anchors, List<Object> tuple, Integer targetTaskId) throws InterruptedException {
-        return boltEmit(streamId, anchors, tuple, null);
+    public static void annotated_emit(AddressedTuple addressedTuple, Queue<AddressedTuple> pendingEmits) {
+        return xsfer.tryTransfer(addressedTuple, pendingEmits);
     }
 
     private List<Integer> boltEmit(String streamId, Collection<Tuple> anchors, List<Object> values,
@@ -119,7 +115,9 @@ public class BoltOutputCollectorImpl implements IOutputCollector {
             }
             TupleImpl tupleExt = new TupleImpl(
                 executor.getWorkerTopologyContext(), values, executor.getComponentId(), taskId, streamId, msgId);
-            xsfer.tryTransfer(new AddressedTuple(t, tupleExt), executor.getPendingEmits());
+            //xsfer.tryTransfer(new AddressedTuple(t, tupleExt), executor.getPendingEmits());
+            BoltOutputCollectorImpl.annotated_emit(new AddressedTuple(t, (Tuple)Tools.deep_copy(tupleExt)), executor.getPendingEmits());
+
         }
         if (isEventLoggers) {
             task.sendToEventLogger(executor, values, executor.getComponentId(), null, random, executor.getPendingEmits());
