@@ -12,9 +12,6 @@
 
 package org.apache.storm.starter;
 
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
 import java.util.*;
 import org.apache.storm.Config;
 import org.apache.storm.spout.SpoutOutputCollector;
@@ -129,15 +126,6 @@ public class AnchoredWordCount extends ConfigurableTopology {
             }
             count++;
             counts.put(word, count);
-            OutputStream o;
-            try {
-                o = new FileOutputStream("~/abc.txt", true);
-                o.write(word.getBytes());
-                o.close();
-            } catch (IOException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
             LOG.info("Calculating "+word + ": " + count);
             collector.emit(new Values(word, count));
         }
