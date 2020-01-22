@@ -33,6 +33,9 @@ import org.apache.storm.utils.Time;
 import org.apache.storm.utils.Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import edu.anonymity.sgx.IntelSGX;
+import edu.anonymity.sgx.IntelSGXOcall;
+import edu.anonymity.sgx.Tools;
 
 public class BoltOutputCollectorImpl implements IOutputCollector {
 
@@ -59,10 +62,12 @@ public class BoltOutputCollectorImpl implements IOutputCollector {
         this.xsfer = executor.getExecutorTransfer();
     }
 
+
+
     @Override
     public List<Integer> emit(String streamId, Collection<Tuple> anchors, List<Object> tuple) {
         try {
-            return boltEmit(streamId, anchors, tuple, null);
+            return annotated_emit(streamId, anchors, (List<Object>)Tools.deep_copy(tuple), null);
         } catch (InterruptedException e) {
             LOG.warn("Thread interrupted when emiting tuple.");
             throw new RuntimeException(e);
@@ -77,6 +82,11 @@ public class BoltOutputCollectorImpl implements IOutputCollector {
             LOG.warn("Thread interrupted when emiting tuple.");
             throw new RuntimeException(e);
         }
+    }
+
+    @IntelSGXOcall
+    public List<Integer> annotated_emit(String streamId, Collection<Tuple> anchors, List<Object> tuple, Integer targetTaskId) throws InterruptedException {
+        return boltEmit(streamId, anchors, tuple, null);
     }
 
     private List<Integer> boltEmit(String streamId, Collection<Tuple> anchors, List<Object> values,
