@@ -12,6 +12,9 @@
 
 package org.apache.storm.executor.bolt;
 
+import edu.anonymity.sgx.IntelSGX;
+import edu.anonymity.sgx.IntelSGXOcall;
+import edu.anonymity.sgx.Tools;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -61,6 +64,11 @@ public class BoltOutputCollectorImpl implements IOutputCollector {
 
     @Override
     public List<Integer> emit(String streamId, Collection<Tuple> anchors, List<Object> tuple) {
+        return annotation(streamId, anchors, (List<Object>)Tools.deep_copy(tuple));
+    }
+
+    @IntelSGXOcall
+    public List<Integer> annotation(String streamId, Collection<Tuple> anchors, List<Object> tuple) {
         try {
             return boltEmit(streamId, anchors, tuple, null);
         } catch (InterruptedException e) {
