@@ -81,8 +81,8 @@ public class BoltOutputCollectorImpl implements IOutputCollector {
     }
 
     @IntelSGXOcall
-    public static void annotated_emit(AddressedTuple addressedTuple, Queue<AddressedTuple> pendingEmits) {
-        return xsfer.tryTransfer(addressedTuple, pendingEmits);
+    public void annotated_emit(AddressedTuple addressedTuple, Queue<AddressedTuple> pendingEmits) {
+        xsfer.tryTransfer(addressedTuple, pendingEmits);
     }
 
     private List<Integer> boltEmit(String streamId, Collection<Tuple> anchors, List<Object> values,
@@ -116,7 +116,7 @@ public class BoltOutputCollectorImpl implements IOutputCollector {
             TupleImpl tupleExt = new TupleImpl(
                 executor.getWorkerTopologyContext(), values, executor.getComponentId(), taskId, streamId, msgId);
             //xsfer.tryTransfer(new AddressedTuple(t, tupleExt), executor.getPendingEmits());
-            BoltOutputCollectorImpl.annotated_emit(new AddressedTuple(t, (Tuple)Tools.deep_copy(tupleExt)), executor.getPendingEmits());
+            annotated_emit(new AddressedTuple(t, (Tuple)Tools.deep_copy(tupleExt)), executor.getPendingEmits());
 
         }
         if (isEventLoggers) {
