@@ -205,7 +205,7 @@ public class JCQueue implements IStatefulObject, Closeable {
     public boolean tryPublish(Object obj) {
         Inserter inserter = getInserter();
         //return inserter.tryPublish(obj);
-        return annotated_emit(inserter, (Object)Tools.deep_copy(obj));
+        return annotated_emit(inserter, Tools.deep_copy(obj));
     }
 
     @IntelSGXOcall
