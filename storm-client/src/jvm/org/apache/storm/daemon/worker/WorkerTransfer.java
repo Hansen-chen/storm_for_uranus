@@ -114,7 +114,7 @@ class WorkerTransfer implements JCQueue.Consumer {
 
         if (!remoteBackPressureStatus[addressedTuple.dest].get()) {
             TaskMessage tm = new TaskMessage(addressedTuple.getDest(), serializer.serialize(addressedTuple.getTuple()));
-            if (transferQueue.tryPublish(tm)) {
+            if (transferQueue.tryPublishOcall(tm)) {
                 return true;
             }
         } else {
