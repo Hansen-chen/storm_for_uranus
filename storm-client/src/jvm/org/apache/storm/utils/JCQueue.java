@@ -22,6 +22,7 @@ import java.io.Closeable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Queue;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
@@ -34,8 +35,12 @@ import org.apache.storm.shade.com.google.common.util.concurrent.ThreadFactoryBui
 import org.apache.storm.shade.org.jctools.queues.MessagePassingQueue;
 import org.apache.storm.shade.org.jctools.queues.MpscArrayQueue;
 import org.apache.storm.shade.org.jctools.queues.MpscUnboundedArrayQueue;
+import org.apache.storm.tuple.AddressedTuple;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import edu.anonymity.sgx.IntelSGX;
+import edu.anonymity.sgx.IntelSGXOcall;
+import edu.anonymity.sgx.Tools;
 
 @SuppressWarnings("checkstyle:AbbreviationAsWordInName")
 public class JCQueue implements IStatefulObject, Closeable {
@@ -199,6 +204,12 @@ public class JCQueue implements IStatefulObject, Closeable {
      **/
     public boolean tryPublish(Object obj) {
         Inserter inserter = getInserter();
+        //return inserter.tryPublish(obj);
+        return annotated_emit(inserter, (Object)Tools.deep_copy(obj));
+    }
+
+    @IntelSGXOcall
+    public boolean annotated_emit(Inserter inserter, Object obj) {
         return inserter.tryPublish(obj);
     }
 
