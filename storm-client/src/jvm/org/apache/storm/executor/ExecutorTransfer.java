@@ -98,7 +98,6 @@ public class ExecutorTransfer {
     public boolean tryTransferLocal(AddressedTuple tuple, JCQueue localQueue, Queue<AddressedTuple> pendingEmits) {
         workerData.checkSerialize(serializer, tuple);
         if (pendingEmits != null) {
-            //ocall here
             if (pendingEmits.isEmpty() && localQueue.tryPublish(tuple)) {
                 queuesToFlush.set(tuple.dest - indexingBase, localQueue);
                 return true;
@@ -107,7 +106,6 @@ public class ExecutorTransfer {
                 return false;
             }
         } else {
-            //ocall here
             return localQueue.tryPublish(tuple);
         }
     }

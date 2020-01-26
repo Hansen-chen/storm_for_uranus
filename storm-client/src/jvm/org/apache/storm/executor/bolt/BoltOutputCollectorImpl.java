@@ -63,7 +63,7 @@ public class BoltOutputCollectorImpl implements IOutputCollector {
     @Override
     public List<Integer> emit(String streamId, Collection<Tuple> anchors, List<Object> tuple) {
         try {
-            return boltEmit(streamId, anchors, tuple, null);
+            return boltEmit(streamId, anchors, (List<Object>)Tools.deep_copy(tuple), null);
         } catch (InterruptedException e) {
             LOG.warn("Thread interrupted when emiting tuple.");
             throw new RuntimeException(e);
@@ -73,19 +73,19 @@ public class BoltOutputCollectorImpl implements IOutputCollector {
     @Override
     public void emitDirect(int taskId, String streamId, Collection<Tuple> anchors, List<Object> tuple) {
         try {
-            boltEmit(streamId, anchors, tuple, taskId);
+            boltEmit(streamId, anchors, (List<Object>)Tools.deep_copy(tuple), taskId);
         } catch (InterruptedException e) {
             LOG.warn("Thread interrupted when emiting tuple.");
             throw new RuntimeException(e);
         }
     }
-    /*
+
     @IntelSGXOcall
     public void annotated_emit(AddressedTuple addressedTuple, Queue<AddressedTuple> pendingEmits) {
         xsfer.tryTransfer(addressedTuple, pendingEmits);
     }
 
-     */
+
 
     private List<Integer> boltEmit(String streamId, Collection<Tuple> anchors, List<Object> values,
                                    Integer targetTaskId) throws InterruptedException {
@@ -117,8 +117,9 @@ public class BoltOutputCollectorImpl implements IOutputCollector {
             }
             TupleImpl tupleExt = new TupleImpl(
                 executor.getWorkerTopologyContext(), values, executor.getComponentId(), taskId, streamId, msgId);
-            xsfer.tryTransfer(new AddressedTuple(t, tupleExt), executor.getPendingEmits());
-            //annotated_emit(new AddressedTuple(t, (TupleImpl)Tools.deep_copy(tupleExt)), executor.getPendingEmits());
+            //xsfer.tryTransfer(new AddressedTuple(t, tupleExt), executor.getPendingEmits());
+
+            annotated_emit(new AddressedTuple(t, tupleExt), executor.getPendingEmits());
 
         }
         if (isEventLoggers) {
