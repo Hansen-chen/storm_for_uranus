@@ -243,6 +243,7 @@ public class BoltExecutor extends Executor {
                 tuple.setExecuteSampleStartTime(now);
             }
             //boltObject.execute(tuple);
+            /*
             if(boltObject instanceof Acker)
             {
                 boltObject.execute(tuple);
@@ -251,6 +252,9 @@ public class BoltExecutor extends Executor {
 
                 annotated_exec(boltObject ,tuple);
             }
+
+             */
+            annotated_exec(boltObject ,tuple);
 
 
 
