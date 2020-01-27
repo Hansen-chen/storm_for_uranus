@@ -30,6 +30,7 @@ import org.apache.storm.daemon.metrics.BuiltinMetrics;
 import org.apache.storm.daemon.metrics.BuiltinMetricsUtil;
 import org.apache.storm.daemon.worker.WorkerState;
 import org.apache.storm.executor.Executor;
+import org.apache.storm.generated.Bolt;
 import org.apache.storm.generated.NodeInfo;
 import org.apache.storm.hooks.info.BoltExecuteInfo;
 import org.apache.storm.messaging.IConnection;
@@ -214,7 +215,7 @@ public class BoltExecutor extends Executor {
 
     // Add JECall , may need deep copy for decryption
     @IntelSGX
-    public void annotated_exec(IBolt boltObject, TupleImpl tuple){
+    public static void annotated_exec(IBolt boltObject, TupleImpl tuple){
         boltObject.execute(tuple);
     }
 
@@ -242,19 +243,20 @@ public class BoltExecutor extends Executor {
             if (isExecuteSampler) {
                 tuple.setExecuteSampleStartTime(now);
             }
+
             //boltObject.execute(tuple);
-            /*
+
             if(boltObject instanceof Acker)
             {
                 boltObject.execute(tuple);
             }
             else {
 
-                annotated_exec(boltObject ,tuple);
+                BoltExecutor.annotated_exec(boltObject ,tuple);
             }
 
-             */
-            annotated_exec(boltObject ,tuple);
+
+            //annotated_exec(boltObject ,tuple);
 
 
 
