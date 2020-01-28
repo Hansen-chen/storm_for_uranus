@@ -215,8 +215,8 @@ public class BoltExecutor extends Executor {
 
     // Add JECall , may need deep copy for decryption
     @IntelSGX
-    public static void annotated_exec(ArrayList<Task> idToTask, int taskId, int idToTaskBase, TupleImpl tuple){
-        IBolt boltObject = (IBolt) idToTask.get(taskId - idToTaskBase).getTaskObject();
+    public static void annotated_exec(Object unserializedBolt, TupleImpl tuple){
+        IBolt boltObject = (IBolt) unserializedBolt;
         boltObject.execute(tuple);
     }
 
@@ -252,8 +252,8 @@ public class BoltExecutor extends Executor {
                 boltObject.execute(tuple);
             }
             else {
-
-                BoltExecutor.annotated_exec(idToTask,taskId,idToTaskBase ,tuple);
+                Object unserializedBolt = idToTask.get(taskId - idToTaskBase).getTaskObject();
+                BoltExecutor.annotated_exec(unserializedBolt ,tuple);
             }
 
 
