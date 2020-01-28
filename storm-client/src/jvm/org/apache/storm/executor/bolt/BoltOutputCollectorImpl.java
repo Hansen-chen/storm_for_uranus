@@ -63,7 +63,7 @@ public class BoltOutputCollectorImpl implements IOutputCollector {
     @Override
     public List<Integer> emit(String streamId, Collection<Tuple> anchors, List<Object> tuple) {
         try {
-            return boltEmitOcall((String)Tools.deep_copy(streamId), (Collection<Tuple>)Tools.deep_copy(anchors), (List<Object>)Tools.deep_copy(tuple), null);
+            return boltEmitOcall(streamId, anchors, (List<Object>)Tools.deep_copy(tuple), null);
         } catch (InterruptedException e) {
             LOG.warn("Thread interrupted when emiting tuple.");
             throw new RuntimeException(e);
