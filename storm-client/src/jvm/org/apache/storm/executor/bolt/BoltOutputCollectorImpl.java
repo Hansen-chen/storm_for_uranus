@@ -63,7 +63,7 @@ public class BoltOutputCollectorImpl implements IOutputCollector {
     @Override
     public List<Integer> emit(String streamId, Collection<Tuple> anchors, List<Object> tuple) {
         try {
-            return boltEmit((String)Tools.deep_copy(streamId), (Collection<Tuple>)Tools.deep_copy(anchors), (List<Object>)Tools.deep_copy(tuple), null);
+            return boltEmitOcall((String)Tools.deep_copy(streamId), (Collection<Tuple>)Tools.deep_copy(anchors), (List<Object>)Tools.deep_copy(tuple), null);
         } catch (InterruptedException e) {
             LOG.warn("Thread interrupted when emiting tuple.");
             throw new RuntimeException(e);
@@ -73,7 +73,7 @@ public class BoltOutputCollectorImpl implements IOutputCollector {
     @Override
     public void emitDirect(int taskId, String streamId, Collection<Tuple> anchors, List<Object> tuple) {
         try {
-            boltEmit((String)Tools.deep_copy(streamId), (Collection<Tuple>)Tools.deep_copy(anchors), (List<Object>)Tools.deep_copy(tuple), (int)Tools.deep_copy(taskId));
+            boltEmit(streamId, anchors, tuple, taskId);
         } catch (InterruptedException e) {
             LOG.warn("Thread interrupted when emiting tuple.");
             throw new RuntimeException(e);
@@ -87,7 +87,7 @@ public class BoltOutputCollectorImpl implements IOutputCollector {
 
 
 
-    private List<Integer> boltEmit(String streamId, Collection<Tuple> anchors, List<Object> values,
+    private List<Integer> boltEmitOcall(String streamId, Collection<Tuple> anchors, List<Object> values,
                                    Integer targetTaskId) throws InterruptedException {
         List<Integer> outTasks;
         if (targetTaskId != null) {
@@ -120,6 +120,45 @@ public class BoltOutputCollectorImpl implements IOutputCollector {
             //xsfer.tryTransfer(new AddressedTuple(t, tupleExt), executor.getPendingEmits());
 
             annotated_emit(new AddressedTuple(t, tupleExt), executor.getPendingEmits());
+
+        }
+        if (isEventLoggers) {
+            task.sendToEventLogger(executor, values, executor.getComponentId(), null, random, executor.getPendingEmits());
+        }
+        return outTasks;
+    }
+
+    private List<Integer> boltEmit(String streamId, Collection<Tuple> anchors, List<Object> values,
+                                   Integer targetTaskId) throws InterruptedException {
+        List<Integer> outTasks;
+        if (targetTaskId != null) {
+            outTasks = task.getOutgoingTasks(targetTaskId, streamId, values);
+        } else {
+            outTasks = task.getOutgoingTasks(streamId, values);
+        }
+
+        for (int i = 0; i < outTasks.size(); ++i) {
+            Integer t = outTasks.get(i);
+            MessageId msgId;
+            if (ackingEnabled && anchors != null) {
+                final Map<Long, Long> anchorsToIds = new HashMap<>();
+                for (Tuple a : anchors) {  // perf critical path. would be nice to avoid iterator allocation here and below
+                    Set<Long> rootIds = a.getMessageId().getAnchorsToIds().keySet();
+                    if (rootIds.size() > 0) {
+                        long edgeId = MessageId.generateId(random);
+                        ((TupleImpl) a).updateAckVal(edgeId);
+                        for (Long rootId : rootIds) {
+                            putXor(anchorsToIds, rootId, edgeId);
+                        }
+                    }
+                }
+                msgId = MessageId.makeId(anchorsToIds);
+            } else {
+                msgId = MessageId.makeUnanchored();
+            }
+            TupleImpl tupleExt = new TupleImpl(
+                    executor.getWorkerTopologyContext(), values, executor.getComponentId(), taskId, streamId, msgId);
+            xsfer.tryTransfer(new AddressedTuple(t, tupleExt), executor.getPendingEmits());
 
         }
         if (isEventLoggers) {
