@@ -119,7 +119,7 @@ public class BoltOutputCollectorImpl implements IOutputCollector {
             TupleImpl tupleExt = new TupleImpl(
                 executor.getWorkerTopologyContext(), values, executor.getComponentId(), taskId, streamId, msgId);
             //xsfer.tryTransfer(new AddressedTuple(t, tupleExt), executor.getPendingEmits());
-
+            //may need (List<Object>)Tools.deep_copy() for addresstuple or values
             annotated_emit(new AddressedTuple(t, tupleExt), executor.getPendingEmits());
 
         }
