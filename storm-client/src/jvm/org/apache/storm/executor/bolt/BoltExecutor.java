@@ -255,13 +255,6 @@ public class BoltExecutor extends Executor {
                 BoltExecutor.annotated_exec(boltObject ,tuple);
             }
 
-
-            //annotated_exec(boltObject ,tuple);
-
-
-
-
-
             Long ms = tuple.getExecuteSampleStartTime();
             long delta = (ms != null) ? Time.deltaMs(ms) : -1;
             if (isDebug) {
