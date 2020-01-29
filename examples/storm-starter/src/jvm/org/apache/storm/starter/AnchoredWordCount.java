@@ -105,7 +105,7 @@ public class AnchoredWordCount extends ConfigurableTopology {
         public void execute(Tuple tuple, BasicOutputCollector collector) {
             String sentence = tuple.getString(0);
             for (String word : sentence.split("\\s+")) {
-                LOG.info("Split sentence: " +sentence+", emit : "+word);
+                LOG.info("Split sentence, emit : "+word);
                 collector.emit(new Values(word, 1));
             }
         }
