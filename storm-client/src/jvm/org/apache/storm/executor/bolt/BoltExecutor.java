@@ -243,7 +243,8 @@ public class BoltExecutor extends Executor {
             }
             //boltObject.execute(tuple);
             if(boltObject instanceof Acker){
-                boltObject.execute(tuple);
+                //boltObject.execute(tuple);
+                annotated_exec(boltObject, tuple);
             }
             else {
                 annotated_exec(boltObject, tuple);
