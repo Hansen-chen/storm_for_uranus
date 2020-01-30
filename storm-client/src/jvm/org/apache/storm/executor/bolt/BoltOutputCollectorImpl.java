@@ -82,7 +82,7 @@ public class BoltOutputCollectorImpl implements IOutputCollector {
         }
     }
 
-    @IntelSGXOcall
+    //@IntelSGXOcall
     private List<Integer> boltEmit(String streamId, Collection<Tuple> anchors, List<Object> values,
                                    Integer targetTaskId) throws InterruptedException {
         List<Integer> outTasks;
