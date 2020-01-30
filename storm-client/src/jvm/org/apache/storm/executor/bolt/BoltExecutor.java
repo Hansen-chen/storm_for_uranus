@@ -21,6 +21,7 @@ import java.util.function.BooleanSupplier;
 import org.apache.storm.Config;
 import org.apache.storm.Constants;
 import org.apache.storm.ICredentialsListener;
+import org.apache.storm.daemon.Acker;
 import org.apache.storm.daemon.StormCommon;
 import org.apache.storm.daemon.Task;
 import org.apache.storm.daemon.metrics.BuiltinBoltMetrics;
@@ -212,9 +213,8 @@ public class BoltExecutor extends Executor {
 
     // Add JECall , may need deep copy for decryption
     @IntelSGX
-    public static TupleImpl annotated_exec(IBolt boltObject, TupleImpl tuple){
+    public static void annotated_exec(IBolt boltObject, TupleImpl tuple){
         boltObject.execute(tuple);
-        return (TupleImpl)Tools.deep_copy(tuple);
     }
 
 
@@ -242,19 +242,13 @@ public class BoltExecutor extends Executor {
                 tuple.setExecuteSampleStartTime(now);
             }
             //boltObject.execute(tuple);
-            try {
-                if(boltObject == null || tuple == null)
-                {
-                    LOG.info("boltObject or tuple is null");
-                }
-                else {
-                    tuple = BoltExecutor.annotated_exec(boltObject, tuple);
-                }
+            if(boltObject instanceof Acker){
+                boltObject.execute(tuple);
+            }
+            else {
+                annotated_exec(boltObject, tuple);
+            }
 
-            }
-            catch (Exception ex){
-                LOG.info("may not be an input tuple");
-            }
 
 
             Long ms = tuple.getExecuteSampleStartTime();
