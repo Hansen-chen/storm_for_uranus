@@ -33,9 +33,6 @@ import org.apache.storm.utils.Time;
 import org.apache.storm.utils.Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import edu.anonymity.sgx.IntelSGX;
-import edu.anonymity.sgx.IntelSGXOcall;
-import edu.anonymity.sgx.Tools;
 
 public class BoltOutputCollectorImpl implements IOutputCollector {
 
@@ -82,7 +79,6 @@ public class BoltOutputCollectorImpl implements IOutputCollector {
         }
     }
 
-    //@IntelSGXOcall
     private List<Integer> boltEmit(String streamId, Collection<Tuple> anchors, List<Object> values,
                                    Integer targetTaskId) throws InterruptedException {
         List<Integer> outTasks;
