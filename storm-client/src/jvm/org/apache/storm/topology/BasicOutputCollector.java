@@ -17,9 +17,6 @@ import org.apache.storm.task.IOutputCollector;
 import org.apache.storm.task.OutputCollector;
 import org.apache.storm.tuple.Tuple;
 import org.apache.storm.utils.Utils;
-import edu.anonymity.sgx.IntelSGX;
-import edu.anonymity.sgx.IntelSGXOcall;
-import edu.anonymity.sgx.Tools;
 
 
 public class BasicOutputCollector implements IBasicOutputCollector {
@@ -31,9 +28,8 @@ public class BasicOutputCollector implements IBasicOutputCollector {
     }
 
     @Override
-    @IntelSGXOcall
     public List<Integer> emit(String streamId, List<Object> tuple) {
-        return (List<Integer>)Tools.deep_copy(out.emit(streamId, inputTuple, tuple));
+        return out.emit(streamId, inputTuple, tuple);
     }
 
     public List<Integer> emit(List<Object> tuple) {

@@ -45,11 +45,11 @@ public class AnchoredWordCount extends ConfigurableTopology {
         builder.setBolt("count", new WordCount(), 4).fieldsGrouping("split", new Fields("word"));
 
         Config conf = new Config();
-        conf.setMaxTaskParallelism(1);
+        conf.setMaxTaskParallelism(3);
 
         String topologyName = "word-count";
 
-        conf.setNumWorkers(1);
+        conf.setNumWorkers(3);
         conf.setDebug(true);
 
         if (args != null && args.length > 0) {
