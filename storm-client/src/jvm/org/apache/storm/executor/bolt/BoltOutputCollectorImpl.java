@@ -123,6 +123,7 @@ public class BoltOutputCollectorImpl implements IOutputCollector {
         return outTasks;
     }
 
+    //may need ocall ack
     @Override
     public void ack(Tuple input) {
         if (!ackingEnabled) {
@@ -150,6 +151,7 @@ public class BoltOutputCollectorImpl implements IOutputCollector {
         }
     }
 
+    //may need ocall fail
     @Override
     public void fail(Tuple input) {
         if (!ackingEnabled) {
