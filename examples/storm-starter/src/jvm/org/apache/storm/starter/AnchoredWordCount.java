@@ -50,7 +50,7 @@ public class AnchoredWordCount extends ConfigurableTopology {
         String topologyName = "word-count";
 
         conf.setNumWorkers(3);
-        conf.setDebug(true);
+        conf.setDebug(false);
 
         if (args != null && args.length > 0) {
             topologyName = args[0];
@@ -150,6 +150,7 @@ public class AnchoredWordCount extends ConfigurableTopology {
                 LOG.info(key + " : " + this.counts.get(key));
             }
             LOG.info("--------------");
+
 
 
         }
