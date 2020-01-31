@@ -169,7 +169,7 @@ public class BoltOutputCollectorImpl implements IOutputCollector {
 
 
     @Override
-    @IntelSGXOcall
+    //@IntelSGXOcall
     public void ack(Tuple input) {
         if (!ackingEnabled) {
             return;
@@ -198,7 +198,7 @@ public class BoltOutputCollectorImpl implements IOutputCollector {
 
 
     @Override
-    @IntelSGXOcall
+    //@IntelSGXOcall
     public void fail(Tuple input) {
         if (!ackingEnabled) {
             return;
