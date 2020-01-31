@@ -76,8 +76,8 @@ public class BoltOutputCollectorImpl implements IOutputCollector {
     @Override
     public void emitDirect(int taskId, String streamId, Collection<Tuple> anchors, List<Object> tuple) {
         try {
-            //boltEmit(streamId, anchors, tuple, taskId);
-            boltEmit((String)Tools.deep_copy(streamId), (Collection<Tuple>)Tools.deep_copy(anchors), (List<Object>)Tools.deep_copy(tuple), (int)Tools.deep_copy(taskId));
+            boltEmit(streamId, anchors, tuple, taskId);
+            //boltEmit((String)Tools.deep_copy(streamId), (Collection<Tuple>)Tools.deep_copy(anchors), (List<Object>)Tools.deep_copy(tuple), (int)Tools.deep_copy(taskId));
         } catch (InterruptedException e) {
             LOG.warn("Thread interrupted when emiting tuple.");
             throw new RuntimeException(e);
