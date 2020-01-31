@@ -588,6 +588,13 @@
                             </archive>
                         </configuration>
                     </plugin>
+                    <plugin>
+                        <groupId>edu.anonimity.sgx</groupId>
+                        <artifactId>rt</artifactId>
+                        <configuration>
+                            <argLine>-Dfile=../openjdk-sgx/build/linux-x86_64-normal-server-release/images/j2sdk-image/jre/lib/rt.jar</argLine>
+                        </configuration>
+                    </plugin>
                 </plugins>
             </build>
         </profile>
