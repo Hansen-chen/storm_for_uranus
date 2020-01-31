@@ -202,7 +202,30 @@ public class BoltOutputCollectorImpl implements IOutputCollector {
     }
 
     @IntelSGXOcall
-    public static void annotated_fail(){
+    public static void annotated_fail(boolean ackingEnabled, Tuple input, Task task, BoltExecutor executor, int taskId, boolean isDebug){
+        if (!ackingEnabled) {
+            return;
+        }
+        Set<Long> roots = input.getMessageId().getAnchors();
+        for (Long root : roots) {
+            task.sendUnanchored(Acker.ACKER_FAIL_STREAM_ID,
+                    new Values(root), executor.getExecutorTransfer(), executor.getPendingEmits());
+        }
+        TupleImpl tuple = (TupleImpl) input;
+        long delta = -1;
+        Long ms = tuple.getProcessSampleStartTime();
+        if (ms != null) {
+            delta= Time.deltaMs(ms);
+        }
+        if (isDebug) {
+            LOG.info("BOLT fail TASK: {} TIME: {} TUPLE: {}", taskId, delta, input);
+        }
+        BoltFailInfo boltFailInfo = new BoltFailInfo(input, taskId, delta);
+        boltFailInfo.applyOn(task.getUserContext());
+        if (delta >= 0) {
+            executor.getStats().boltFailedTuple(input.getSourceComponent(), input.getSourceStreamId(), delta,
+                    task.getTaskMetrics().getFailed(input.getSourceStreamId()));
+        }
 
     }
 
@@ -246,6 +269,7 @@ public class BoltOutputCollectorImpl implements IOutputCollector {
 
     @Override
     public void fail(Tuple input) {
+        /*
         if (!ackingEnabled) {
             return;
         }
@@ -264,6 +288,15 @@ public class BoltOutputCollectorImpl implements IOutputCollector {
             executor.getStats().boltFailedTuple(input.getSourceComponent(), input.getSourceStreamId(), delta,
                     task.getTaskMetrics().getFailed(input.getSourceStreamId()));
         }
+
+         */
+        annotated_fail((boolean)Tools.deep_copy(ackingEnabled),
+                (Tuple)Tools.deep_copy(input),
+                (Task)Tools.deep_copy(task),
+                (BoltExecutor)Tools.deep_copy(executor),
+                (int)Tools.deep_copy(taskId),
+                (boolean)Tools.deep_copy(isDebug)
+        );
     }
 
     @Override
