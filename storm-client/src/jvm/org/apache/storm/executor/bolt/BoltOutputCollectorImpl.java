@@ -231,7 +231,7 @@ public class BoltOutputCollectorImpl implements IOutputCollector {
 
     @Override
     public void ack(Tuple input) {
-        /*
+
         if (!ackingEnabled) {
             return;
         }
@@ -256,8 +256,8 @@ public class BoltOutputCollectorImpl implements IOutputCollector {
                     task.getTaskMetrics().getAcked(input.getSourceStreamId()));
         }
 
-         */
 
+        /*
         annotated_ack((boolean)Tools.deep_copy(ackingEnabled),
                 (Tuple)Tools.deep_copy(input),
                 (Task)Tools.deep_copy(task),
@@ -266,12 +266,14 @@ public class BoltOutputCollectorImpl implements IOutputCollector {
                 (boolean)Tools.deep_copy(isDebug)
         );
 
+         */
+
     }
 
 
     @Override
     public void fail(Tuple input) {
-        /*
+
         if (!ackingEnabled) {
             return;
         }
@@ -291,9 +293,9 @@ public class BoltOutputCollectorImpl implements IOutputCollector {
                     task.getTaskMetrics().getFailed(input.getSourceStreamId()));
         }
 
-         */
 
 
+        /*
         annotated_fail((boolean)Tools.deep_copy(ackingEnabled),
                 (Tuple)Tools.deep_copy(input),
                 (Task)Tools.deep_copy(task),
@@ -301,6 +303,8 @@ public class BoltOutputCollectorImpl implements IOutputCollector {
                 (int)Tools.deep_copy(taskId),
                 (boolean)Tools.deep_copy(isDebug)
         );
+
+         */
 
 
     }
