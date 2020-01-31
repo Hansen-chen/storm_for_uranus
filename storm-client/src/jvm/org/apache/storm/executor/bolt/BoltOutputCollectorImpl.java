@@ -257,7 +257,7 @@ public class BoltOutputCollectorImpl implements IOutputCollector {
         }
 
          */
-        /*
+
         annotated_ack((boolean)Tools.deep_copy(ackingEnabled),
                 (Tuple)Tools.deep_copy(input),
                 (Task)Tools.deep_copy(task),
@@ -265,14 +265,7 @@ public class BoltOutputCollectorImpl implements IOutputCollector {
                 (int)Tools.deep_copy(taskId),
                 (boolean)Tools.deep_copy(isDebug)
         );
-         */
-        annotated_ack(ackingEnabled,
-                input,
-                task,
-                executor,
-                taskId,
-                isDebug
-        );
+
     }
 
 
@@ -300,7 +293,7 @@ public class BoltOutputCollectorImpl implements IOutputCollector {
 
          */
 
-        /*
+
         annotated_fail((boolean)Tools.deep_copy(ackingEnabled),
                 (Tuple)Tools.deep_copy(input),
                 (Task)Tools.deep_copy(task),
@@ -309,14 +302,7 @@ public class BoltOutputCollectorImpl implements IOutputCollector {
                 (boolean)Tools.deep_copy(isDebug)
         );
 
-         */
-        annotated_fail(ackingEnabled,
-                input,
-                task,
-                executor,
-                taskId,
-                isDebug
-        );
+
     }
 
     @Override
