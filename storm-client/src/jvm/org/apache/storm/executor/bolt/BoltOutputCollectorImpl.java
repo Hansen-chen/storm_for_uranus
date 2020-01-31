@@ -167,9 +167,17 @@ public class BoltOutputCollectorImpl implements IOutputCollector {
         return outTasks;
     }
 
+    @IntelSGXOcall
+    public static void annotated_ack(){
+
+    }
+
+    @IntelSGXOcall
+    public static void annotated_fail(){
+
+    }
 
     @Override
-    //@IntelSGXOcall
     public void ack(Tuple input) {
         if (!ackingEnabled) {
             return;
@@ -198,7 +206,6 @@ public class BoltOutputCollectorImpl implements IOutputCollector {
 
 
     @Override
-    //@IntelSGXOcall
     public void fail(Tuple input) {
         if (!ackingEnabled) {
             return;
