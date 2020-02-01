@@ -211,7 +211,7 @@ public class BoltExecutor extends Executor {
         };
     }
 
-    // Add JECall , may need deep copy for decryption
+    // Add JECall ,need to add crypto.sgx_decrypt
     @IntelSGX
     public static void annotated_exec(IBolt boltObject, TupleImpl tuple){
         boltObject.execute(tuple);

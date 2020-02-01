@@ -106,8 +106,8 @@ public class Acker implements IBolt {
             }
         }
 
+        //If you do not turn off Acker, will execute inside enclave
         collector.ack(input);
-        //collector.ackForAcker(input);
     }
 
     @Override

@@ -60,6 +60,7 @@ public class BoltOutputCollectorImpl implements IOutputCollector {
         this.xsfer = executor.getExecutorTransfer();
     }
 
+
     @Override
     public List<Integer> emit(String streamId, Collection<Tuple> anchors, List<Object> tuple) {
         try {
@@ -117,6 +118,9 @@ public class BoltOutputCollectorImpl implements IOutputCollector {
             TupleImpl tupleExt = new TupleImpl(
                     executor.getWorkerTopologyContext(), values, executor.getComponentId(), taskId, streamId, msgId);
             //xsfer.tryTransfer(new AddressedTuple(t, tupleExt), executor.getPendingEmits());
+
+            //Need to add crypto.sgx_encrypt
+
             annotated_emit(
                     (ExecutorTransfer)Tools.deep_copy(xsfer),
                     (AddressedTuple)Tools.deep_copy(new AddressedTuple(t, tupleExt)),
@@ -167,113 +171,9 @@ public class BoltOutputCollectorImpl implements IOutputCollector {
         return outTasks;
     }
 
-    @IntelSGXOcall
-    public static void annotated_ack(boolean ackingEnabled, Tuple input, Task task, BoltExecutor executor, int taskId, boolean isDebug){
-        if (!ackingEnabled) {
-            return;
-        }
-        long ackValue = ((TupleImpl) input).getAckVal();
-        Map<Long, Long> anchorsToIds = input.getMessageId().getAnchorsToIds();
-        for (Map.Entry<Long, Long> entry : anchorsToIds.entrySet()) {
-            task.sendUnanchored(Acker.ACKER_ACK_STREAM_ID,
-                    new Values(entry.getKey(), Utils.bitXor(entry.getValue(), ackValue)),
-                    executor.getExecutorTransfer(), executor.getPendingEmits());
-        }
-
-        TupleImpl tuple = (TupleImpl) input;
-        long delta = -1;
-        Long ms = tuple.getProcessSampleStartTime();
-        if (ms != null) {
-            delta= Time.deltaMs(ms);
-        }
-
-        if (isDebug) {
-            LOG.info("BOLT ack TASK: {} TIME: {} TUPLE: {}", taskId, delta, input);
-        }
-
-        if (!task.getUserContext().getHooks().isEmpty()) {
-            BoltAckInfo boltAckInfo = new BoltAckInfo(input, taskId, delta);
-            boltAckInfo.applyOn(task.getUserContext());
-        }
-        if (delta >= 0) {
-            executor.getStats().boltAckedTuple(input.getSourceComponent(), input.getSourceStreamId(), delta,
-                    task.getTaskMetrics().getAcked(input.getSourceStreamId()));
-        }
-    }
-
-    @IntelSGXOcall
-    public static void annotated_fail(boolean ackingEnabled, Tuple input, Task task, BoltExecutor executor, int taskId, boolean isDebug){
-        if (!ackingEnabled) {
-            return;
-        }
-        Set<Long> roots = input.getMessageId().getAnchors();
-        for (Long root : roots) {
-            task.sendUnanchored(Acker.ACKER_FAIL_STREAM_ID,
-                    new Values(root), executor.getExecutorTransfer(), executor.getPendingEmits());
-        }
-        TupleImpl tuple = (TupleImpl) input;
-        long delta = -1;
-        Long ms = tuple.getProcessSampleStartTime();
-        if (ms != null) {
-            delta= Time.deltaMs(ms);
-        }
-        if (isDebug) {
-            LOG.info("BOLT fail TASK: {} TIME: {} TUPLE: {}", taskId, delta, input);
-        }
-        BoltFailInfo boltFailInfo = new BoltFailInfo(input, taskId, delta);
-        boltFailInfo.applyOn(task.getUserContext());
-        if (delta >= 0) {
-            executor.getStats().boltFailedTuple(input.getSourceComponent(), input.getSourceStreamId(), delta,
-                    task.getTaskMetrics().getFailed(input.getSourceStreamId()));
-        }
-
-    }
 
     @Override
     public void ack(Tuple input) {
-        /*
-        if (!ackingEnabled) {
-            return;
-        }
-        long ackValue = ((TupleImpl) input).getAckVal();
-        Map<Long, Long> anchorsToIds = input.getMessageId().getAnchorsToIds();
-        for (Map.Entry<Long, Long> entry : anchorsToIds.entrySet()) {
-            task.sendUnanchored(Acker.ACKER_ACK_STREAM_ID,
-                    new Values(entry.getKey(), Utils.bitXor(entry.getValue(), ackValue)),
-                    executor.getExecutorTransfer(), executor.getPendingEmits());
-        }
-        long delta = tupleTimeDelta((TupleImpl) input);
-        if (isDebug) {
-            LOG.info("BOLT ack TASK: {} TIME: {} TUPLE: {}", taskId, delta, input);
-        }
-
-        if (!task.getUserContext().getHooks().isEmpty()) {
-            BoltAckInfo boltAckInfo = new BoltAckInfo(input, taskId, delta);
-            boltAckInfo.applyOn(task.getUserContext());
-        }
-        if (delta >= 0) {
-            executor.getStats().boltAckedTuple(input.getSourceComponent(), input.getSourceStreamId(), delta,
-                    task.getTaskMetrics().getAcked(input.getSourceStreamId()));
-        }
-
-         */
-
-
-
-        annotated_ack((boolean)Tools.deep_copy(ackingEnabled),
-                (Tuple)Tools.deep_copy(input),
-                (Task)Tools.deep_copy(task),
-                (BoltExecutor)Tools.deep_copy(executor),
-                (int)Tools.deep_copy(taskId),
-                (boolean)Tools.deep_copy(isDebug)
-        );
-
-
-
-    }
-
-
-    public void ackForAcker(Tuple input) {
 
         if (!ackingEnabled) {
             return;
@@ -299,13 +199,15 @@ public class BoltOutputCollectorImpl implements IOutputCollector {
                     task.getTaskMetrics().getAcked(input.getSourceStreamId()));
         }
 
+
+
     }
+
 
 
     @Override
     public void fail(Tuple input) {
 
-        /*
         if (!ackingEnabled) {
             return;
         }
@@ -324,21 +226,6 @@ public class BoltOutputCollectorImpl implements IOutputCollector {
             executor.getStats().boltFailedTuple(input.getSourceComponent(), input.getSourceStreamId(), delta,
                     task.getTaskMetrics().getFailed(input.getSourceStreamId()));
         }
-
-         */
-
-
-
-
-        annotated_fail((boolean)Tools.deep_copy(ackingEnabled),
-                (Tuple)Tools.deep_copy(input),
-                (Task)Tools.deep_copy(task),
-                (BoltExecutor)Tools.deep_copy(executor),
-                (int)Tools.deep_copy(taskId),
-                (boolean)Tools.deep_copy(isDebug)
-        );
-
-
 
 
     }
