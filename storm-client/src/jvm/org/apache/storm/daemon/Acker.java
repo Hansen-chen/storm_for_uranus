@@ -107,6 +107,7 @@ public class Acker implements IBolt {
         }
 
         collector.ack(input);
+        //collector.ackForAcker(input);
     }
 
     @Override
