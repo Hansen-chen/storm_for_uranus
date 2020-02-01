@@ -32,6 +32,7 @@ import org.apache.storm.executor.Executor;
 import org.apache.storm.generated.NodeInfo;
 import org.apache.storm.hooks.info.BoltExecuteInfo;
 import org.apache.storm.messaging.IConnection;
+import org.apache.storm.metric.SystemBolt;
 import org.apache.storm.metric.api.IMetricsRegistrant;
 import org.apache.storm.policy.IWaitStrategy;
 import org.apache.storm.policy.IWaitStrategy.WaitSituation;
@@ -242,13 +243,11 @@ public class BoltExecutor extends Executor {
                 tuple.setExecuteSampleStartTime(now);
             }
             //boltObject.execute(tuple);
-            if(boltObject instanceof Acker){
+            if(boltObject instanceof Acker || boltObject instanceof SystemBolt){
                 boltObject.execute(tuple);
             }
             else {
-                if(boltObject!=null && tuple!=null){
-                    annotated_exec(boltObject, tuple);
-                }
+                annotated_exec(boltObject, tuple);
             }
 
 
