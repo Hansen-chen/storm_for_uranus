@@ -246,7 +246,9 @@ public class BoltExecutor extends Executor {
                 boltObject.execute(tuple);
             }
             else {
-                annotated_exec(boltObject, tuple);
+                if(boltObject!=null && tuple!=null){
+                    annotated_exec(boltObject, tuple);
+                }
             }
 
 
