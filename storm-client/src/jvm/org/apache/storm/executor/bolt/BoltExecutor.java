@@ -250,7 +250,7 @@ public class BoltExecutor extends Executor {
                 boltObject.execute(tuple);
             }
             else {
-                LOG.info(boltObject.toString() + " entering enclave");
+                LOG.info(boltObject.toString() + " entering enclave with tuple " + tuple.toString());
                 ArrayList<Task> enclaveIdToTask = idToTask;
                 int enclaveIdToTaskBase = idToTaskBase;
                 annotated_exec(enclaveIdToTask, taskId, enclaveIdToTaskBase, tuple);
