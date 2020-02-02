@@ -245,7 +245,7 @@ public class BoltExecutor extends Executor {
                 tuple.setExecuteSampleStartTime(now);
             }
             //boltObject.execute(tuple);
-            if(boltObject instanceof Acker || boltObject instanceof SystemBolt|| boltObject instanceof MetricsConsumerBolt || boltObject instanceof EventLoggerBolt){
+            if(boltObject instanceof Acker || boltObject instanceof MetricsConsumerBolt || boltObject instanceof EventLoggerBolt){
                 boltObject.execute(tuple);
             }
             else {
