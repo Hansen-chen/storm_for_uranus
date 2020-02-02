@@ -216,8 +216,8 @@ public class BoltExecutor extends Executor {
 
     // Add JECall ,need to add crypto.sgx_decrypt
     @IntelSGX
-    public static void annotated_exec(Object rawBoltObject,TupleImpl tuple){
-        IBolt boltObject = (IBolt) rawBoltObject;
+    public static void annotated_exec(ArrayList<Task> idToTask, int taskId, int idToTaskBase,TupleImpl tuple){
+        IBolt boltObject = (IBolt) idToTask.get(taskId - idToTaskBase).getTaskObject();
         boltObject.execute(tuple);
     }
 
@@ -250,7 +250,8 @@ public class BoltExecutor extends Executor {
                 boltObject.execute(tuple);
             }
             else {
-                annotated_exec(idToTask.get(taskId - idToTaskBase).getTaskObject(), tuple);
+                LOG.info(boltObject.toString() + " entering enclave");
+                annotated_exec(idToTask, taskId, idToTaskBase, tuple);
             }
 
 
