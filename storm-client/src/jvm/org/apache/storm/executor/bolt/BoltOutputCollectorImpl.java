@@ -83,9 +83,12 @@ public class BoltOutputCollectorImpl implements IOutputCollector {
     }
 
     @IntelSGXOcall
-    public static void annotated_emit(ExecutorTransfer xsfer, AddressedTuple addressedTuple, Queue<AddressedTuple> getPendingEmits){
-        LOG.info("Emitting tuple inside enclave : "+addressedTuple.toString());
-        xsfer.tryTransfer(addressedTuple, getPendingEmits);
+    public static void annotated_emit(ExecutorTransfer xsfer, List<Object> values, BoltExecutor executor, Integer t, int taskId, String streamId, MessageId msgId){
+        TupleImpl tupleExt = new TupleImpl(
+                executor.getWorkerTopologyContext(), values, executor.getComponentId(), taskId, streamId, msgId);
+        AddressedTuple EnclaveAddressedTuple = new AddressedTuple(t, tupleExt);
+        LOG.info("Emitting tuple inside enclave : "+EnclaveAddressedTuple.toString());
+        xsfer.tryTransfer(EnclaveAddressedTuple, executor.getPendingEmits());
     }
 
     private List<Integer> boltEmitOcallEntry(String streamId, Collection<Tuple> anchors, List<Object> values,
@@ -116,16 +119,26 @@ public class BoltOutputCollectorImpl implements IOutputCollector {
             } else {
                 msgId = MessageId.makeUnanchored();
             }
-            TupleImpl tupleExt = new TupleImpl(
-                    executor.getWorkerTopologyContext(), values, executor.getComponentId(), taskId, streamId, msgId);
+
+
+            //TupleImpl tupleExt = new TupleImpl(
+            //       executor.getWorkerTopologyContext(), values, executor.getComponentId(), taskId, streamId, msgId);
             //xsfer.tryTransfer(new AddressedTuple(t, tupleExt), executor.getPendingEmits());
 
             //Need to add crypto.sgx_encrypt
 
+            ExecutorTransfer enclavexsfer = xsfer;
+            BoltExecutor enclaveexecutor = executor;
+            int enclavetaskId = taskId;
+
             annotated_emit(
-                    (ExecutorTransfer)Tools.deep_copy(xsfer),
-                    (AddressedTuple)Tools.deep_copy(new AddressedTuple(t, tupleExt)),
-                    (Queue<AddressedTuple>)Tools.deep_copy(executor.getPendingEmits())
+                    (ExecutorTransfer)Tools.deep_copy(enclavexsfer),
+                    (List<Object>)Tools.deep_copy(values),
+                    (BoltExecutor)Tools.deep_copy(enclaveexecutor),
+                    (Integer)Tools.deep_copy(t),
+                    (int)Tools.deep_copy(enclavetaskId),
+                    (String) Tools.deep_copy(streamId),
+                    (MessageId)Tools.deep_copy(msgId)
             );
         }
         if (isEventLoggers) {
