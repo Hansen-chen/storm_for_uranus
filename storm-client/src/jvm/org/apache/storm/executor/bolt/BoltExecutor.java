@@ -215,6 +215,12 @@ public class BoltExecutor extends Executor {
     }
 
     // Add JECall ,need to add crypto.sgx_decrypt
+    /*
+        outputstream/bytearraystream/other stream class => function
+        change to byte[]
+        sgx_encrypt()
+        return byte[]
+     */
     @IntelSGX
     public static void annotated_exec(ArrayList<Task> idToTask, int taskId, int idToTaskBase,TupleImpl tuple){
         IBolt boltObject = (IBolt) idToTask.get(taskId - idToTaskBase).getTaskObject();
