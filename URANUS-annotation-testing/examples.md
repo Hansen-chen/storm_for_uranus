@@ -17,7 +17,7 @@
 > logs. The fake information will be created using Random class. The complete program code
 > is given below.
 
-```java
+```
 import java.util.*;
 //import storm tuple packages
 import backtype.storm.tuple.Fields;
@@ -114,7 +114,7 @@ public class FakeCallLogReaderSpout implements IRichSpout {
 > – Receiver number" and it is named as new field, "call". The complete code is given 
 > below.
 
-```java
+```
 //import util packages
 import java.util.HashMap;
 import java.util.Map;
@@ -172,7 +172,7 @@ public class CallLogCreatorBolt implements IRichBolt {
 > its count in the dictionary object. Instead of saving the call and its count in the
 > dictionary, we can also save it to a datasource. The complete program code is as follows
 
-```java
+```
 import java.util.HashMap;
 import java.util.Map;
 
@@ -233,7 +233,7 @@ public class CallLogCounterBolt implements IRichBolt {
 
 > This class creates the topology. The topology is running in LocalCluster
 
-```java
+```
 import backtype.storm.tuple.Fields;
 import backtype.storm.tuple.Values;
 
