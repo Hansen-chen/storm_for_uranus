@@ -64,6 +64,7 @@ import edu.anonymity.sgx.Tools;
 public class BoltExecutor extends Executor {
 
     private static final Logger LOG = LoggerFactory.getLogger(BoltExecutor.class);
+    private static int enterEnclaveCount = 0;
 
     private final BooleanSupplier executeSampler;
     private final boolean isSystemBoltExecutor;
@@ -227,6 +228,11 @@ public class BoltExecutor extends Executor {
         boltObject.execute(tuple);
     }
 
+    @Override
+    public void finalize() {
+        LOG.info("Enter enclave "+enterEnclaveCount+ " times");
+    }
+
 
     @Override
     public void tupleActionFn(int taskId, TupleImpl tuple) throws Exception {
@@ -256,7 +262,8 @@ public class BoltExecutor extends Executor {
                 boltObject.execute(tuple);
             }
             else {
-                LOG.info(boltObject.toString() + " entering enclave with tuple " + tuple.toString());
+                //LOG.info(boltObject.toString() + " entering enclave with tuple " + tuple.toString());
+                enterEnclaveCount++;
                 ArrayList<Task> enclaveIdToTask = idToTask;
                 int enclaveIdToTaskBase = idToTaskBase;
                 annotated_exec(enclaveIdToTask, taskId, enclaveIdToTaskBase, tuple);
