@@ -92,7 +92,7 @@ public class BoltOutputCollectorImpl implements IOutputCollector {
 
     @Override
     public void finalize() {
-        LOG.info("Emit from enclave "+exitEnclaveCount+ " times");
+        System.out.println(this.toString()+" Emit from enclave "+exitEnclaveCount+ " times");
     }
 
     private List<Integer> boltEmitOcallEntry(String streamId, Collection<Tuple> anchors, List<Object> values,

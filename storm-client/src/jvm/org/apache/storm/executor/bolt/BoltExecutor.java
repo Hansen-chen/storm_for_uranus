@@ -230,7 +230,7 @@ public class BoltExecutor extends Executor {
 
     @Override
     public void finalize() {
-        LOG.info("Enter enclave "+enterEnclaveCount+ " times");
+        System.out.println(this.toString()+" Enter enclave "+enterEnclaveCount+ " times");
     }
 
 
