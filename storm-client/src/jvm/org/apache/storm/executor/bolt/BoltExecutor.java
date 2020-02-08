@@ -264,6 +264,7 @@ public class BoltExecutor extends Executor {
             else {
                 //LOG.info(boltObject.toString() + " entering enclave with tuple " + tuple.toString());
                 enterEnclaveCount++;
+                LOG.info(""+enterEnclaveCount);
                 ArrayList<Task> enclaveIdToTask = idToTask;
                 int enclaveIdToTaskBase = idToTaskBase;
                 annotated_exec(enclaveIdToTask, taskId, enclaveIdToTaskBase, tuple);
