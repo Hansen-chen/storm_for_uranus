@@ -12,6 +12,8 @@
 
 package org.apache.storm.executor.bolt;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -264,7 +266,10 @@ public class BoltExecutor extends Executor {
             else {
                 //LOG.info(boltObject.toString() + " entering enclave with tuple " + tuple.toString());
                 enterEnclaveCount++;
-                LOG.info(boltObject.toString()+" enter:"+enterEnclaveCount);
+                SimpleDateFormat sdf = new SimpleDateFormat();
+                sdf.applyPattern("ss");
+                Date date = new Date();
+                if(sdf.format(date).equals("00")){ LOG.info(boltObject.toString()+" enter count: "+enterEnclaveCount); }
                 ArrayList<Task> enclaveIdToTask = idToTask;
                 int enclaveIdToTaskBase = idToTaskBase;
                 annotated_exec(enclaveIdToTask, taskId, enclaveIdToTaskBase, tuple);

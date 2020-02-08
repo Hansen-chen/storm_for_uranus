@@ -73,7 +73,7 @@ public class AnchoredWordCount extends ConfigurableTopology {
 
         @Override
         public void nextTuple() {
-
+            Utils.sleep(10);
             String[] sentences = new String[]{
                 sentence("the cow jumped over the moon"), sentence("an apple a day keeps the doctor away"),
                 sentence("four score and seven years ago"),
@@ -82,7 +82,7 @@ public class AnchoredWordCount extends ConfigurableTopology {
             final String sentence = sentences[random.nextInt(sentences.length)];
 
             this.collector.emit(new Values(sentence), UUID.randomUUID());
-            Utils.sleep(1000*60*60);
+
         }
 
         protected String sentence(String input) {

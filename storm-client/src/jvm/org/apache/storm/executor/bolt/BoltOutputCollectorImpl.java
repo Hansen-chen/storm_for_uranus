@@ -12,8 +12,8 @@
 
 package org.apache.storm.executor.bolt;
 
+import java.text.SimpleDateFormat;
 import java.util.*;
-
 import org.apache.storm.daemon.Acker;
 import org.apache.storm.daemon.Task;
 import org.apache.storm.executor.Executor;
@@ -87,7 +87,10 @@ public class BoltOutputCollectorImpl implements IOutputCollector {
     public static void annotated_emit(ExecutorTransfer xsfer, AddressedTuple EnclaveAddressedTuple, Queue<AddressedTuple> EnclaveAddressedTupleQueue){
         exitEnclaveCount++;
         //LOG.info("Emitting tuple inside enclave : "+EnclaveAddressedTuple.toString());
-        LOG.info("emit:"+exitEnclaveCount);
+        SimpleDateFormat sdf = new SimpleDateFormat();
+        sdf.applyPattern("ss");
+        Date date = new Date();
+        if(sdf.format(date).equals("00")){ LOG.info("emit count: "+exitEnclaveCount);}
         xsfer.tryTransfer(EnclaveAddressedTuple, EnclaveAddressedTupleQueue);
     }
 
