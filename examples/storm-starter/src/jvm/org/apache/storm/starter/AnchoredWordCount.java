@@ -73,7 +73,7 @@ public class AnchoredWordCount extends ConfigurableTopology {
 
         @Override
         public void nextTuple() {
-            Utils.sleep(15);
+            Utils.sleep(20);
             String[] sentences = new String[]{
                 sentence("the cow jumped over the moon"), sentence("an apple a day keeps the doctor away"),
                 sentence("four score and seven years ago"),

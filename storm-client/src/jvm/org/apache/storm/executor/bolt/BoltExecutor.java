@@ -256,9 +256,10 @@ public class BoltExecutor extends Executor {
             }
             //boltObject.execute(tuple);
             SimpleDateFormat sdf = new SimpleDateFormat();
-            sdf.applyPattern("ss.SSS");
+            sdf.applyPattern("SSS");
             Date date = new Date();
-            if(sdf.format(date).equals("00.000")){ LOG.info(boltObject.toString()+" enter count: "+enterEnclaveCount); }
+            int result = Integer.parseInt(sdf.format(date));
+            if(result<500){ LOG.info(boltObject.toString()+" enter count: "+enterEnclaveCount); }
             if(boltObject instanceof Acker || boltObject instanceof MetricsConsumerBolt || boltObject instanceof EventLoggerBolt){
                 boltObject.execute(tuple);
             }

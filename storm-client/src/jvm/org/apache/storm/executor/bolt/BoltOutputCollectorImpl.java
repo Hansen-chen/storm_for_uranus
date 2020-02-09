@@ -88,9 +88,10 @@ public class BoltOutputCollectorImpl implements IOutputCollector {
         exitEnclaveCount++;
         //LOG.info("Emitting tuple inside enclave : "+EnclaveAddressedTuple.toString());
         SimpleDateFormat sdf = new SimpleDateFormat();
-        sdf.applyPattern("ss");
+        sdf.applyPattern("SSS");
         Date date = new Date();
-        if(sdf.format(date).equals("00") || sdf.format(date).equals("30")){ LOG.info("emit count: "+exitEnclaveCount);}
+        int result = Integer.parseInt(sdf.format(date));
+        if(result<500){ LOG.info("emit count: "+exitEnclaveCount);}
         xsfer.tryTransfer(EnclaveAddressedTuple, EnclaveAddressedTupleQueue);
     }
 
