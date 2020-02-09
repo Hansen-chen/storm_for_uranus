@@ -255,16 +255,17 @@ public class BoltExecutor extends Executor {
                 tuple.setExecuteSampleStartTime(now);
             }
             //boltObject.execute(tuple);
+            SimpleDateFormat sdf = new SimpleDateFormat();
+            sdf.applyPattern("ss.SSS");
+            Date date = new Date();
+            if(sdf.format(date).equals("00.000")){ LOG.info(boltObject.toString()+" enter count: "+enterEnclaveCount); }
             if(boltObject instanceof Acker || boltObject instanceof MetricsConsumerBolt || boltObject instanceof EventLoggerBolt){
                 boltObject.execute(tuple);
             }
             else {
                 //LOG.info(boltObject.toString() + " entering enclave with tuple " + tuple.toString());
                 enterEnclaveCount++;
-                SimpleDateFormat sdf = new SimpleDateFormat();
-                sdf.applyPattern("ss.SSS");
-                Date date = new Date();
-                if(sdf.format(date).equals("00.000")){ LOG.info(boltObject.toString()+" enter count: "+enterEnclaveCount); }
+
                 ArrayList<Task> enclaveIdToTask = idToTask;
                 int enclaveIdToTaskBase = idToTaskBase;
                 annotated_exec(enclaveIdToTask, taskId, enclaveIdToTaskBase, tuple);

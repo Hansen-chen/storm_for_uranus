@@ -64,6 +64,10 @@ public class BoltOutputCollectorImpl implements IOutputCollector {
 
     @Override
     public List<Integer> emit(String streamId, Collection<Tuple> anchors, List<Object> tuple) {
+        SimpleDateFormat sdf = new SimpleDateFormat();
+        sdf.applyPattern("ss.SSS");
+        Date date = new Date();
+        if(sdf.format(date).equals("00.000")){ LOG.info("emit count: "+exitEnclaveCount);}
         try {
             //return boltEmitOcallEntry((String)Tools.deep_copy(streamId), (Collection<Tuple>)Tools.deep_copy(anchors), (List<Object>)Tools.deep_copy(tuple), null);
             return boltEmitOcallEntry(streamId, anchors, tuple, null);
@@ -87,10 +91,6 @@ public class BoltOutputCollectorImpl implements IOutputCollector {
     public static void annotated_emit(ExecutorTransfer xsfer, AddressedTuple EnclaveAddressedTuple, Queue<AddressedTuple> EnclaveAddressedTupleQueue){
         exitEnclaveCount++;
         //LOG.info("Emitting tuple inside enclave : "+EnclaveAddressedTuple.toString());
-        SimpleDateFormat sdf = new SimpleDateFormat();
-        sdf.applyPattern("ss.SSS");
-        Date date = new Date();
-        if(sdf.format(date).equals("00.000")){ LOG.info("emit count: "+exitEnclaveCount);}
         xsfer.tryTransfer(EnclaveAddressedTuple, EnclaveAddressedTupleQueue);
     }
 
