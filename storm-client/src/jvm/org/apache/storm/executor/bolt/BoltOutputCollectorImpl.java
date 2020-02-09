@@ -91,7 +91,7 @@ public class BoltOutputCollectorImpl implements IOutputCollector {
         sdf.applyPattern("SSS");
         Date date = new Date();
         int result = Integer.parseInt(sdf.format(date));
-        if(result<500){ LOG.info("emit count: "+exitEnclaveCount);}
+        if(result<200&&result>100){ LOG.info("emit count: "+exitEnclaveCount);}
         xsfer.tryTransfer(EnclaveAddressedTuple, EnclaveAddressedTupleQueue);
     }
 
