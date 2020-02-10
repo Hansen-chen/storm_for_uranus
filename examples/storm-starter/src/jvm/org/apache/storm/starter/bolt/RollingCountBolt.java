@@ -89,7 +89,7 @@ public class RollingCountBolt extends BaseRichBolt {
     @Override
     public void execute(Tuple tuple) {
         if (TupleUtils.isTick(tuple)) {
-            LOG.debug("Received tick tuple, triggering emit of current window counts");
+            //LOG.debug("Received tick tuple, triggering emit of current window counts");
             emitCurrentWindowCounts();
         } else {
             countObjAndAck(tuple);
@@ -101,7 +101,7 @@ public class RollingCountBolt extends BaseRichBolt {
         int actualWindowLengthInSeconds = lastModifiedTracker.secondsSinceOldestModification();
         lastModifiedTracker.markAsModified();
         if (actualWindowLengthInSeconds != windowLengthInSeconds) {
-            LOG.warn(String.format(WINDOW_LENGTH_WARNING_TEMPLATE, actualWindowLengthInSeconds, windowLengthInSeconds));
+            //LOG.warn(String.format(WINDOW_LENGTH_WARNING_TEMPLATE, actualWindowLengthInSeconds, windowLengthInSeconds));
         }
         emit(counts, actualWindowLengthInSeconds);
     }
