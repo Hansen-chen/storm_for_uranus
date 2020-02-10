@@ -12,6 +12,7 @@
 
 package org.apache.storm.starter;
 
+import org.apache.storm.Config;
 import org.apache.storm.starter.bolt.IntermediateRankingsBolt;
 import org.apache.storm.starter.bolt.RollingCountBolt;
 import org.apache.storm.starter.bolt.TotalRankingsBolt;
@@ -75,6 +76,8 @@ public class RollingTopWords extends ConfigurableTopology {
         String totalRankerId = "finalRanker";
         builder.setBolt(totalRankerId, new TotalRankingsBolt(TOP_N)).globalGrouping(intermediateRankerId);
         LOG.info("Topology name: " + topologyName);
+        conf.put(Config.TOPOLOGY_ACKER_EXECUTORS, 0);
+        conf.setDebug(false);
 
         return submit(topologyName, conf, builder);
     }
