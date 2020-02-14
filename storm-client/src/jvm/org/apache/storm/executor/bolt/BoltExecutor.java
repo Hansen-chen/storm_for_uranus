@@ -226,8 +226,14 @@ public class BoltExecutor extends Executor {
      */
     @IntelSGX
     public static void annotated_exec(ArrayList<Task> idToTask, int taskId, int idToTaskBase,TupleImpl tuple){
-        IBolt boltObject = (IBolt) idToTask.get(taskId - idToTaskBase).getTaskObject();
-        boltObject.execute(tuple);
+        try{
+            IBolt boltObject = (IBolt) idToTask.get(taskId - idToTaskBase).getTaskObject();
+            boltObject.execute(tuple);
+        }
+        catch (Exception e){
+
+        }
+
     }
 
 
