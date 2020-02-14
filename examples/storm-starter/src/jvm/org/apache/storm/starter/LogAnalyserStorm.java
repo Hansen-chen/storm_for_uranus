@@ -14,7 +14,7 @@ import org.apache.storm.tuple.Fields;
 //Create main class LogAnalyserStorm submit topology.
 public class LogAnalyserStorm extends ConfigurableTopology {
     public static void main(String[] args) throws Exception {
-        ConfigurableTopology.start(new AnchoredWordCount(), args);
+        ConfigurableTopology.start(new LogAnalyserStorm(), args);
     }
 
     @Override
