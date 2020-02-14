@@ -225,15 +225,13 @@ public class BoltExecutor extends Executor {
         return byte[]
      */
     @IntelSGX
-    public static int annotated_exec(ArrayList<Task> idToTask, int taskId, int idToTaskBase,TupleImpl tuple){
+    public static void annotated_exec(ArrayList<Task> idToTask, int taskId, int idToTaskBase,TupleImpl tuple){
         try{
             IBolt boltObject = (IBolt) idToTask.get(taskId - idToTaskBase).getTaskObject();
             boltObject.execute(tuple);
         } catch (Exception e){
-            return 0;
-        }
-        return 1;
 
+        }
     }
 
 
@@ -273,10 +271,10 @@ public class BoltExecutor extends Executor {
                 //LOG.info(boltObject.toString() + " entering enclave with tuple " + tuple.toString());
                 if(tuple!=null && idToTask!=null)
                 {
+                    enterEnclaveCount++;
                     ArrayList<Task> enclaveIdToTask = idToTask;
                     int enclaveIdToTaskBase = idToTaskBase;
-                    int flag = annotated_exec(enclaveIdToTask, taskId, enclaveIdToTaskBase, tuple);
-                    enterEnclaveCount=enterEnclaveCount+flag;
+                    annotated_exec(enclaveIdToTask, taskId, enclaveIdToTaskBase, tuple);
                 }
             }
 
