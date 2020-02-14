@@ -30,7 +30,7 @@ public class CallLogCounterBolt implements IRichBolt {
             Integer c = counterMap.get(call) + 1;
             counterMap.put(call, c);
         }
-        collector.emit((new Values(call, duration));
+        collector.emit((new Values(call, duration)));
     }
 
     public void cleanup() {
