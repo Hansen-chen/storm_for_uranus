@@ -86,7 +86,7 @@ public class BoltOutputCollectorImpl implements IOutputCollector {
     @IntelSGXOcall
     public static void annotated_emit(ExecutorTransfer xsfer, AddressedTuple EnclaveAddressedTuple, Queue<AddressedTuple> EnclaveAddressedTupleQueue){
         exitEnclaveCount++;
-        LOG.info("Emitting tuple inside enclave : "+EnclaveAddressedTuple.toString());
+        //LOG.info("Emitting tuple inside enclave : "+EnclaveAddressedTuple.toString());
         SimpleDateFormat sdf = new SimpleDateFormat();
         sdf.applyPattern("SSS");
         Date date = new Date();

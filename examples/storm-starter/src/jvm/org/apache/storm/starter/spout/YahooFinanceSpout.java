@@ -32,7 +32,12 @@ public class YahooFinanceSpout implements IRichSpout {
         try {
             //Stock stock = YahooFinance.get("INTC");
             //BigDecimal price = stock.getQuote().getPrice();
+            /*
+            Sent request:
 
+            https://query1.finance.yahoo.com/v7/finance/quote?symbols=INTC
+
+             */
             //this.collector.emit(new Values("INTC", price.doubleValue()));
             this.collector.emit(new Values("INTC", 67.27));
             //stock = YahooFinance.get("GOOGL");
