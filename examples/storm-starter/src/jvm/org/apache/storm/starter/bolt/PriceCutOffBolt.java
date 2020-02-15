@@ -44,7 +44,7 @@ public class PriceCutOffBolt implements IRichBolt {
             }
         }
 
-        collector.ack(tuple);
+        collector.emit(new Values(company, price));
     }
 
     public void cleanup() {

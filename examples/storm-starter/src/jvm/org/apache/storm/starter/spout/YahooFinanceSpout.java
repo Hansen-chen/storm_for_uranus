@@ -5,6 +5,7 @@ import java.io.*;
 import java.math.BigDecimal;
 
 //import yahoofinace packages
+import org.apache.storm.utils.Utils;
 import yahoofinance.YahooFinance;
 import yahoofinance.Stock;
 
@@ -42,6 +43,7 @@ public class YahooFinanceSpout implements IRichSpout {
 
             this.collector.emit(new Values("AAPL", price.doubleValue()));
         } catch(Exception e) {}
+        Utils.sleep(1000*60*60);
     }
 
     public void declareOutputFields(OutputFieldsDeclarer declarer) {

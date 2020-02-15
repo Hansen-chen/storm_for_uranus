@@ -268,7 +268,7 @@ public class BoltExecutor extends Executor {
                 boltObject.execute(tuple);
             }
             else {
-                //LOG.info(boltObject.toString() + " entering enclave with tuple " + tuple.toString());
+                LOG.info(boltObject.toString() + " entering enclave with tuple " + tuple.toString());
                 if(tuple!=null && idToTask!=null)
                 {
                     enterEnclaveCount++;
