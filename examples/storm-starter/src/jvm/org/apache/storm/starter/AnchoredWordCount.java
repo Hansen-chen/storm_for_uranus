@@ -52,6 +52,7 @@ public class AnchoredWordCount extends ConfigurableTopology {
         conf.setNumWorkers(1);
         conf.setDebug(false);
         conf.put(Config.TOPOLOGY_ACKER_EXECUTORS, 0);
+        conf.registerMetricsConsumer(org.apache.storm.metric.LoggingMetricsConsumer.class);
         //config.setMaxSpoutPending(500);
 
         if (args != null && args.length > 0) {

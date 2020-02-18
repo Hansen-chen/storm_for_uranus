@@ -38,7 +38,7 @@ import edu.anonymity.sgx.Tools;
 public class BoltOutputCollectorImpl implements IOutputCollector {
 
     private static final Logger LOG = LoggerFactory.getLogger(BoltOutputCollectorImpl.class);
-    private static int exitEnclaveCount = 0;
+    //private static int exitEnclaveCount = 0;
 
     private final BoltExecutor executor;
     private final Task task;
@@ -85,13 +85,13 @@ public class BoltOutputCollectorImpl implements IOutputCollector {
 
     @IntelSGXOcall
     public static void annotated_emit(ExecutorTransfer xsfer, AddressedTuple EnclaveAddressedTuple, Queue<AddressedTuple> EnclaveAddressedTupleQueue){
-        exitEnclaveCount++;
+        //exitEnclaveCount++;
         //LOG.info("Emitting tuple inside enclave : "+EnclaveAddressedTuple.toString());
-        SimpleDateFormat sdf = new SimpleDateFormat();
-        sdf.applyPattern("SSS");
-        Date date = new Date();
-        int result = Integer.parseInt(sdf.format(date));
-        if(result<200&&result>100){ LOG.info("emit count: "+exitEnclaveCount);}
+        //SimpleDateFormat sdf = new SimpleDateFormat();
+        //sdf.applyPattern("SSS");
+        //Date date = new Date();
+        //int result = Integer.parseInt(sdf.format(date));
+        //if(result<200&&result>100){ LOG.info("emit count: "+exitEnclaveCount);}
         xsfer.tryTransfer(EnclaveAddressedTuple, EnclaveAddressedTupleQueue);
     }
 
