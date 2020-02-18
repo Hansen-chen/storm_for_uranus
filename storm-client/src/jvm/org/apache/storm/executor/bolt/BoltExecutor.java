@@ -264,7 +264,7 @@ public class BoltExecutor extends Executor {
             //Date date = new Date();
             //int result = Integer.parseInt(sdf.format(date));
             //if(result<200&&result>100){ LOG.info(boltObject.toString()+" enter count: "+enterEnclaveCount); }
-            if(boltObject instanceof Acker || boltObject instanceof MetricsConsumerBolt || boltObject instanceof EventLoggerBolt){
+            if(boltObject instanceof Acker || boltObject instanceof MetricsConsumerBolt || boltObject instanceof EventLoggerBolt || boltObject instanceof SystemBolt){
                 boltObject.execute(tuple);
             }
             else {
