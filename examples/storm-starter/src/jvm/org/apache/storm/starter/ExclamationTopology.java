@@ -50,7 +50,8 @@ public class ExclamationTopology extends ConfigurableTopology {
         builder.setBolt("exclaim1", new ExclamationBolt(), 1).shuffleGrouping("word");
         builder.setBolt("exclaim2", new ExclamationBolt(), 1).shuffleGrouping("exclaim1");
 
-        conf.setDebug(true);
+        conf.setDebug(false);
+        conf.registerMetricsConsumer(org.apache.storm.metric.LoggingMetricsConsumer.class);
 
         String topologyName = "test";
 
