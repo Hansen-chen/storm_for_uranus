@@ -83,28 +83,15 @@ public class ExclamationTopology extends ConfigurableTopology {
         }
 
     }
-    public class ExclamationTestWordSpout extends BaseRichSpout {
+    public static class ExclamationTestWordSpout extends BaseRichSpout {
 
-        boolean isDistributed;
         SpoutOutputCollector collector;
-
-        public ExclamationTestWordSpout() {
-            this(true);
-        }
-
-        public ExclamationTestWordSpout(boolean isDistributed) {
-            this.isDistributed = isDistributed;
-        }
 
         @Override
         public void open(Map<String, Object> conf, TopologyContext context, SpoutOutputCollector collector) {
             this.collector = collector;
         }
 
-        @Override
-        public void close() {
-
-        }
 
         @Override
         public void nextTuple() {
@@ -132,13 +119,7 @@ public class ExclamationTopology extends ConfigurableTopology {
 
         @Override
         public Map<String, Object> getComponentConfiguration() {
-            if (!isDistributed) {
-                Map<String, Object> ret = new HashMap<String, Object>();
-                ret.put(Config.TOPOLOGY_MAX_TASK_PARALLELISM, 1);
-                return ret;
-            } else {
-                return null;
-            }
+            return null;
         }
     }
 
