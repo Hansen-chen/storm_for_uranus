@@ -89,14 +89,6 @@ public class AnchoredWordCount extends ConfigurableTopology {
         }
 
         @Override
-        public void ack(Object id) {
-        }
-
-        @Override
-        public void fail(Object id) {
-        }
-
-        @Override
         public void declareOutputFields(OutputFieldsDeclarer declarer) {
             declarer.declare(new Fields("sentence"));
         }
@@ -118,7 +110,7 @@ public class AnchoredWordCount extends ConfigurableTopology {
                 //LOG.info("Split sentence, emit : "+word);
                 collector.emit(tuple,new Values(word));
             }
-            collector.ack(tuple);
+            //collector.ack(tuple);
         }
 
 
@@ -155,7 +147,7 @@ public class AnchoredWordCount extends ConfigurableTopology {
 
             //LOG.info("Calculating "+word + ": " + count);
             collector.emit(tuple, new Values(word, count));
-            collector.ack(tuple);
+            //collector.ack(tuple);
         }
 
 
