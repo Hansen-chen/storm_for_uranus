@@ -98,7 +98,7 @@ public class AnchoredWordCount extends ConfigurableTopology {
 
         @Override
         public void declareOutputFields(OutputFieldsDeclarer declarer) {
-            declarer.declare(new Fields("word"));
+            declarer.declare(new Fields("sentence"));
         }
     }
 
@@ -116,14 +116,14 @@ public class AnchoredWordCount extends ConfigurableTopology {
             String sentence = tuple.getString(0);
             for (String word : sentence.split("\\s+")) {
                 //LOG.info("Split sentence, emit : "+word);
-                collector.emit(tuple,new Values(word, 1));
+                collector.emit(tuple,new Values(word));
             }
             collector.ack(tuple);
         }
 
 
         public void declareOutputFields(OutputFieldsDeclarer declarer) {
-            declarer.declare(new Fields("word", "count"));
+            declarer.declare(new Fields("word"));
         }
 
         public void cleanup() {
@@ -154,7 +154,7 @@ public class AnchoredWordCount extends ConfigurableTopology {
             counts.put(word, count);
 
             //LOG.info("Calculating "+word + ": " + count);
-            //collector.emit(new Values(word, count));
+            collector.emit(tuple, new Values(word, count));
             collector.ack(tuple);
         }
 
