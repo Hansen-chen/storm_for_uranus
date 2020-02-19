@@ -15,11 +15,9 @@ package org.apache.storm.starter;
 import java.util.*;
 import org.apache.storm.Config;
 import org.apache.storm.spout.SpoutOutputCollector;
+import org.apache.storm.task.OutputCollector;
 import org.apache.storm.task.TopologyContext;
-import org.apache.storm.topology.BasicOutputCollector;
-import org.apache.storm.topology.ConfigurableTopology;
-import org.apache.storm.topology.OutputFieldsDeclarer;
-import org.apache.storm.topology.TopologyBuilder;
+import org.apache.storm.topology.*;
 import org.apache.storm.topology.base.BaseBasicBolt;
 import org.apache.storm.topology.base.BaseRichSpout;
 import org.apache.storm.tuple.Fields;
@@ -104,27 +102,48 @@ public class AnchoredWordCount extends ConfigurableTopology {
         }
     }
 
-    public static class SplitSentence extends BaseBasicBolt {
-        @Override
-        public void execute(Tuple tuple, BasicOutputCollector collector) {
+    public static class SplitSentence implements IRichBolt {
+
+        private OutputCollector collector;
+
+        public void prepare(Map conf, TopologyContext context, OutputCollector collector) {
+
+            this.collector = collector;
+        }
+
+
+        public void execute(Tuple tuple) {
             String sentence = tuple.getString(0);
             for (String word : sentence.split("\\s+")) {
                 //LOG.info("Split sentence, emit : "+word);
                 collector.emit(new Values(word, 1));
             }
+            collector.ack(tuple);
         }
 
-        @Override
+
         public void declareOutputFields(OutputFieldsDeclarer declarer) {
             declarer.declare(new Fields("word", "count"));
         }
+
+        public void cleanup() {
+
+        }
+        public Map<String, Object> getComponentConfiguration() {
+            return null;
+        }
     }
 
-    public static class WordCount extends BaseBasicBolt {
+    public static class WordCount implements IRichBolt {
         Map<String, Integer> counts = new HashMap<>();
+        private OutputCollector collector;
 
-        @Override
-        public void execute(Tuple tuple, BasicOutputCollector collector) {
+        public void prepare(Map conf, TopologyContext context, OutputCollector collector) {
+
+            this.collector = collector;
+        }
+
+        public void execute(Tuple tuple) {
             String word = tuple.getString(0);
 
             Integer count = counts.get(word);
@@ -136,14 +155,15 @@ public class AnchoredWordCount extends ConfigurableTopology {
 
             //LOG.info("Calculating "+word + ": " + count);
             collector.emit(new Values(word, count));
+            collector.ack(tuple);
         }
 
-        @Override
+
         public void declareOutputFields(OutputFieldsDeclarer declarer) {
             declarer.declare(new Fields("word", "count"));
         }
 
-        @Override
+
         public void cleanup() {
 
             LOG.info("--- FINAL COUNTS ---");
@@ -157,6 +177,9 @@ public class AnchoredWordCount extends ConfigurableTopology {
 
 
 
+        }
+        public Map<String, Object> getComponentConfiguration() {
+            return null;
         }
     }
 }
