@@ -37,13 +37,13 @@ public class AnchoredWordCount extends ConfigurableTopology {
     protected int run(String[] args) throws Exception {
         TopologyBuilder builder = new TopologyBuilder();
 
-        builder.setSpout("spout", new RandomSentenceSpout(), 4);
+        builder.setSpout("spout", new RandomSentenceSpout(), 1);
 
-        builder.setBolt("split", new SplitSentence(), 4).shuffleGrouping("spout");
-        builder.setBolt("count", new WordCount(), 4).fieldsGrouping("split", new Fields("word"));
+        builder.setBolt("split", new SplitSentence(), 1).shuffleGrouping("spout");
+        builder.setBolt("count", new WordCount(), 1).fieldsGrouping("split", new Fields("word"));
 
         Config conf = new Config();
-        conf.setMaxTaskParallelism(3);
+        conf.setMaxTaskParallelism(1);
 
         String topologyName = "word-count";
 
@@ -154,7 +154,7 @@ public class AnchoredWordCount extends ConfigurableTopology {
             counts.put(word, count);
 
             //LOG.info("Calculating "+word + ": " + count);
-            collector.emit(new Values(word, count));
+            //collector.emit(new Values(word, count));
             collector.ack(tuple);
         }
 

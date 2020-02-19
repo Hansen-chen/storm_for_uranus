@@ -38,7 +38,6 @@ import edu.anonymity.sgx.Tools;
 public class BoltOutputCollectorImpl implements IOutputCollector {
 
     private static final Logger LOG = LoggerFactory.getLogger(BoltOutputCollectorImpl.class);
-    //private static int exitEnclaveCount = 0;
 
     private final BoltExecutor executor;
     private final Task task;
@@ -85,13 +84,6 @@ public class BoltOutputCollectorImpl implements IOutputCollector {
 
     @IntelSGXOcall
     public static void annotated_emit(ExecutorTransfer xsfer, AddressedTuple EnclaveAddressedTuple, Queue<AddressedTuple> EnclaveAddressedTupleQueue){
-        //exitEnclaveCount++;
-        //LOG.info("Emitting tuple inside enclave : "+EnclaveAddressedTuple.toString());
-        //SimpleDateFormat sdf = new SimpleDateFormat();
-        //sdf.applyPattern("SSS");
-        //Date date = new Date();
-        //int result = Integer.parseInt(sdf.format(date));
-        //if(result<200&&result>100){ LOG.info("emit count: "+exitEnclaveCount);}
         xsfer.tryTransfer(EnclaveAddressedTuple, EnclaveAddressedTupleQueue);
     }
 
@@ -188,6 +180,22 @@ public class BoltOutputCollectorImpl implements IOutputCollector {
     }
 
 
+    //new static function ocall
+    /*
+    @IntelSGXOcall
+    public static void annotated_ack(){
+
+    }
+
+    @IntelSGXOcall
+    public static void annotated_fail(){
+
+    }
+
+     */
+
+
+    @IntelSGXOcall
     @Override
     public void ack(Tuple input) {
 
@@ -215,12 +223,10 @@ public class BoltOutputCollectorImpl implements IOutputCollector {
                     task.getTaskMetrics().getAcked(input.getSourceStreamId()));
         }
 
-
-
     }
 
 
-
+    @IntelSGXOcall
     @Override
     public void fail(Tuple input) {
 
@@ -242,7 +248,6 @@ public class BoltOutputCollectorImpl implements IOutputCollector {
             executor.getStats().boltFailedTuple(input.getSourceComponent(), input.getSourceStreamId(), delta,
                     task.getTaskMetrics().getFailed(input.getSourceStreamId()));
         }
-
 
     }
 
