@@ -180,25 +180,10 @@ public class BoltOutputCollectorImpl implements IOutputCollector {
     }
 
 
-    //new static function ocall
-    /*
-    @IntelSGXOcall
-    public static void annotated_ack(){
-
-    }
-
-    @IntelSGXOcall
-    public static void annotated_fail(){
-
-    }
-
-     */
 
 
     @IntelSGXOcall
-    @Override
-    public void ack(Tuple input) {
-
+    public static void annotated_ack(boolean ackingEnabled, Tuple input, Task task, BoltExecutor executor, boolean isDebug, int taskId){
         if (!ackingEnabled) {
             return;
         }
@@ -225,10 +210,8 @@ public class BoltOutputCollectorImpl implements IOutputCollector {
 
     }
 
-
     @IntelSGXOcall
-    @Override
-    public void fail(Tuple input) {
+    public static void annotated_fail(boolean ackingEnabled, Tuple input, Task task, BoltExecutor executor, boolean isDebug, int taskId){
 
         if (!ackingEnabled) {
             return;
@@ -248,6 +231,73 @@ public class BoltOutputCollectorImpl implements IOutputCollector {
             executor.getStats().boltFailedTuple(input.getSourceComponent(), input.getSourceStreamId(), delta,
                     task.getTaskMetrics().getFailed(input.getSourceStreamId()));
         }
+
+    }
+
+
+
+
+    @Override
+    public void ack(Tuple input) {
+
+        annotated_ack(ackingEnabled, input, task, executor, isDebug, taskId);
+        /*
+
+        if (!ackingEnabled) {
+            return;
+        }
+        long ackValue = ((TupleImpl) input).getAckVal();
+        Map<Long, Long> anchorsToIds = input.getMessageId().getAnchorsToIds();
+        for (Map.Entry<Long, Long> entry : anchorsToIds.entrySet()) {
+            task.sendUnanchored(Acker.ACKER_ACK_STREAM_ID,
+                    new Values(entry.getKey(), Utils.bitXor(entry.getValue(), ackValue)),
+                    executor.getExecutorTransfer(), executor.getPendingEmits());
+        }
+        long delta = tupleTimeDelta((TupleImpl) input);
+        if (isDebug) {
+            LOG.info("BOLT ack TASK: {} TIME: {} TUPLE: {}", taskId, delta, input);
+        }
+
+        if (!task.getUserContext().getHooks().isEmpty()) {
+            BoltAckInfo boltAckInfo = new BoltAckInfo(input, taskId, delta);
+            boltAckInfo.applyOn(task.getUserContext());
+        }
+        if (delta >= 0) {
+            executor.getStats().boltAckedTuple(input.getSourceComponent(), input.getSourceStreamId(), delta,
+                    task.getTaskMetrics().getAcked(input.getSourceStreamId()));
+        }
+
+         */
+
+
+    }
+
+
+    @Override
+    public void fail(Tuple input) {
+        annotated_fail(ackingEnabled, input, task, executor, isDebug, taskId);
+
+        /*
+        if (!ackingEnabled) {
+            return;
+        }
+        Set<Long> roots = input.getMessageId().getAnchors();
+        for (Long root : roots) {
+            task.sendUnanchored(Acker.ACKER_FAIL_STREAM_ID,
+                    new Values(root), executor.getExecutorTransfer(), executor.getPendingEmits());
+        }
+        long delta = tupleTimeDelta((TupleImpl) input);
+        if (isDebug) {
+            LOG.info("BOLT fail TASK: {} TIME: {} TUPLE: {}", taskId, delta, input);
+        }
+        BoltFailInfo boltFailInfo = new BoltFailInfo(input, taskId, delta);
+        boltFailInfo.applyOn(task.getUserContext());
+        if (delta >= 0) {
+            executor.getStats().boltFailedTuple(input.getSourceComponent(), input.getSourceStreamId(), delta,
+                    task.getTaskMetrics().getFailed(input.getSourceStreamId()));
+        }
+
+         */
 
     }
 
@@ -276,7 +326,7 @@ public class BoltOutputCollectorImpl implements IOutputCollector {
         executor.getReportError().report(error);
     }
 
-    private long tupleTimeDelta(TupleImpl tuple) {
+    private static long tupleTimeDelta(TupleImpl tuple) {
         Long ms = tuple.getProcessSampleStartTime();
         if (ms != null) {
             return Time.deltaMs(ms);

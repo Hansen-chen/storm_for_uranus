@@ -66,7 +66,6 @@ import edu.anonymity.sgx.Tools;
 public class BoltExecutor extends Executor {
 
     private static final Logger LOG = LoggerFactory.getLogger(BoltExecutor.class);
-    //private static int enterEnclaveCount = 0;
 
     private final BooleanSupplier executeSampler;
     private final boolean isSystemBoltExecutor;
@@ -259,22 +258,13 @@ public class BoltExecutor extends Executor {
                 tuple.setExecuteSampleStartTime(now);
             }
             //boltObject.execute(tuple);
-            //SimpleDateFormat sdf = new SimpleDateFormat();
-            //sdf.applyPattern("SSS");
-            //Date date = new Date();
-            //int result = Integer.parseInt(sdf.format(date));
-            //if(result<200&&result>100){ LOG.info(boltObject.toString()+" enter count: "+enterEnclaveCount); }
             if(boltObject instanceof Acker || boltObject instanceof MetricsConsumerBolt || boltObject instanceof EventLoggerBolt || boltObject instanceof SystemBolt){
                 boltObject.execute(tuple);
             }
             else {
-                //LOG.info(boltObject.toString() + " entering enclave with tuple " + tuple.toString());
                 if(tuple!=null && idToTask!=null)
                 {
-                    //enterEnclaveCount++;
-                    ArrayList<Task> enclaveIdToTask = idToTask;
-                    int enclaveIdToTaskBase = idToTaskBase;
-                    annotated_exec(enclaveIdToTask, taskId, enclaveIdToTaskBase, tuple);
+                    annotated_exec(idToTask, taskId, idToTaskBase, tuple);
                 }
             }
 
