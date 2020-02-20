@@ -239,28 +239,14 @@ public class BoltOutputCollectorImpl implements IOutputCollector {
     @Override
     public void ack(Tuple input) {
 
-        try {
-            annotated_ack(
-                    ackingEnabled,
-                    input,
-                    (Task)Tools.deep_copy(task),
-                    (BoltExecutor)Tools.deep_copy(executor),
-                    isDebug,
-                    taskId
-            );
-        }
-        catch (UnsatisfiedLinkError ex){
-            annotated_ack(
-                    ackingEnabled,
-                    input,
-                    task,
-                    executor,
-                    isDebug,
-                    taskId
-            );
-
-        }
-
+        annotated_ack(
+                ackingEnabled,
+                input,
+                task,
+                executor,
+                isDebug,
+                taskId
+        );
 
         /*
 
@@ -296,30 +282,14 @@ public class BoltOutputCollectorImpl implements IOutputCollector {
     @Override
     public void fail(Tuple input) {
 
-        try {
-
-            annotated_fail(
-                    ackingEnabled,
-                    input,
-                    (Task)Tools.deep_copy(task),
-                    (BoltExecutor)Tools.deep_copy(executor),
-                    isDebug,
-                    taskId
-            );
-
-        }
-        catch (UnsatisfiedLinkError ex){
-
-            annotated_fail(
-                    ackingEnabled,
-                    input,
-                    task,
-                    executor,
-                    isDebug,
-                    taskId
-            );
-
-        }
+        annotated_fail(
+                ackingEnabled,
+                input,
+                task,
+                executor,
+                isDebug,
+                taskId
+        );
 
         /*
         if (!ackingEnabled) {
