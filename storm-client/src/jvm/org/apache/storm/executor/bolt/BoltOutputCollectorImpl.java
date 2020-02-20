@@ -124,13 +124,12 @@ public class BoltOutputCollectorImpl implements IOutputCollector {
 
             //Need to add crypto.sgx_encrypt
 
-            Queue<AddressedTuple> EnclaveAddressedTupleQueue = executor.getPendingEmits();
 
 
             annotated_emit(
-                    (ExecutorTransfer)Tools.deep_copy(xsfer),
+                    xsfer,
                     (AddressedTuple)Tools.deep_copy(EnclaveAddressedTuple),
-                    (Queue<AddressedTuple>)Tools.deep_copy(EnclaveAddressedTupleQueue)
+                    executor.getPendingEmits()
 
             );
         }
