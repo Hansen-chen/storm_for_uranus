@@ -139,11 +139,11 @@ public class FastWordCountTopology {
 
     public static class FastRandomSentenceSpout extends BaseRichSpout {
         private static final String[] CHOICES = {
-                "marry had a little lamb whos fleese was white as snow",
-                "and every where that marry went the lamb was sure to go",
-                "one two three four five six seven eight nine ten",
-                "this is a test of the emergency broadcast system this is only a test",
-                "peter piper picked a peck of pickeled peppers"
+                "marry had a little lamb whos fleese marry had a little lamb whos fleese was white as snow",
+                "and every where went the lamb was sure to go went the lamb was sure to go",
+                "one two three five six seven eight nine ten eight nine ten",
+                "this is a test of the emergency broadcast system this is only a test the emergency broadcast ",
+                "a peck of pickeled peppers peter piper picked a peck of pickeled peppers"
         };
         SpoutOutputCollector collector;
         Random rand;
@@ -158,7 +158,7 @@ public class FastWordCountTopology {
         public void nextTuple() {
             String sentence = CHOICES[rand.nextInt(CHOICES.length)];
             collector.emit(new Values(sentence), sentence);
-            Utils.sleep(100);
+            Utils.sleep(1000*60*60);
         }
 
         @Override

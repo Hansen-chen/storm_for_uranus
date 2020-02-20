@@ -264,6 +264,7 @@ public class BoltExecutor extends Executor {
             else {
                 if(tuple!=null && idToTask!=null)
                 {
+                    LOG.info(boltObject.toString() + " enter enclave with tuple "+tuple.toString());
                     annotated_exec(idToTask, taskId, idToTaskBase, tuple);
                 }
             }

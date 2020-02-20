@@ -84,6 +84,7 @@ public class BoltOutputCollectorImpl implements IOutputCollector {
 
     @IntelSGXOcall
     public static void annotated_emit(ExecutorTransfer xsfer, AddressedTuple EnclaveAddressedTuple, Queue<AddressedTuple> EnclaveAddressedTupleQueue){
+        LOG.info("from enclave: emit tuple "+EnclaveAddressedTuple.toString());
         xsfer.tryTransfer(EnclaveAddressedTuple, EnclaveAddressedTupleQueue);
     }
 
