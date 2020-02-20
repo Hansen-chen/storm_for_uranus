@@ -111,6 +111,7 @@ public class FastWordCountTopology {
         }
 
         conf.setNumWorkers(1);
+        conf.registerMetricsConsumer(org.apache.storm.metric.LoggingMetricsConsumer.class);
         StormSubmitter.submitTopologyWithProgressBar(name, conf, builder.createTopology());
 
         Map<String, Object> clusterConf = Utils.readStormConfig();
