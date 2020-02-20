@@ -97,10 +97,10 @@ public class FastWordCountTopology {
 
         TopologyBuilder builder = new TopologyBuilder();
 
-        builder.setSpout("spout", new FastRandomSentenceSpout(), 4);
+        builder.setSpout("spout", new FastRandomSentenceSpout(), 1);
 
-        builder.setBolt("split", new SplitSentence(), 4).shuffleGrouping("spout");
-        builder.setBolt("count", new WordCount(), 4).fieldsGrouping("split", new Fields("word"));
+        builder.setBolt("split", new SplitSentence(), 1).shuffleGrouping("spout");
+        builder.setBolt("count", new WordCount(), 1).fieldsGrouping("split", new Fields("word"));
 
         Config conf = new Config();
         conf.registerMetricsConsumer(org.apache.storm.metric.LoggingMetricsConsumer.class);
