@@ -62,21 +62,29 @@ public class FastWordCountTopology {
         double weightedAvgTotal = 0.0;
         for (ExecutorSummary exec : info.get_executors()) {
             if ("spout".equals(exec.get_component_id())) {
-                SpoutStats stats = exec.get_stats().get_specific().get_spout();
-                Map<String, Long> failedMap = stats.get_failed().get(":all-time");
-                Map<String, Long> ackedMap = stats.get_acked().get(":all-time");
-                Map<String, Double> avgLatMap = stats.get_complete_ms_avg().get(":all-time");
-                for (String key : ackedMap.keySet()) {
-                    if (failedMap != null) {
-                        Long tmp = failedMap.get(key);
-                        if (tmp != null) {
-                            failed += tmp;
+                try{
+                    SpoutStats stats = exec.get_stats().get_specific().get_spout();
+                    Map<String, Long> failedMap = stats.get_failed().get(":all-time");
+                    Map<String, Long> ackedMap = stats.get_acked().get(":all-time");
+                    Map<String, Double> avgLatMap = stats.get_complete_ms_avg().get(":all-time");
+                    for (String key : ackedMap.keySet()) {
+                        if (failedMap != null) {
+                            Long tmp = failedMap.get(key);
+                            if (tmp != null) {
+                                failed += tmp;
+                            }
                         }
+                        long ackVal = ackedMap.get(key);
+                        double latVal = avgLatMap.get(key) * ackVal;
+                        acked += ackVal;
+                        weightedAvgTotal += latVal;
                     }
-                    long ackVal = ackedMap.get(key);
-                    double latVal = avgLatMap.get(key) * ackVal;
-                    acked += ackVal;
-                    weightedAvgTotal += latVal;
+                }
+                catch (Exception ex){
+                    System.out.println("=============");
+                    System.out.println(ex.toString());
+                    System.out.println(exec.toString());
+                    System.out.println("=============");
                 }
             }
         }
@@ -121,12 +129,9 @@ public class FastWordCountTopology {
         //Sleep for 5 mins
         for (int i = 0; i < 10; i++) {
             Utils.sleep(30 * 1000);
-            try {
-                printMetrics(client, name);
-            }
-            catch (Exception ex){
-                System.out.println("From print metrics: "+ex.toString());
-            }
+            printMetrics(client, name);
+
+
 
         }
         kill(client, name);
