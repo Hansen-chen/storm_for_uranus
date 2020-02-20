@@ -121,7 +121,13 @@ public class FastWordCountTopology {
         //Sleep for 5 mins
         for (int i = 0; i < 10; i++) {
             Thread.sleep(30 * 1000);
-            printMetrics(client, name);
+            try {
+                printMetrics(client, name);
+            }
+            catch (Exception ex){
+                System.out.println("From print metrics: "+ex.toString());
+            }
+
         }
         kill(client, name);
     }
