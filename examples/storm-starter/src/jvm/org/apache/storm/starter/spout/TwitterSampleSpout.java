@@ -1,3 +1,5 @@
+package org.apache.storm.starter.spout;
+
 import java.util.Map;
 import java.util.concurrent.LinkedBlockingQueue;
 
@@ -44,30 +46,32 @@ public class TwitterSampleSpout extends BaseRichSpout {
         this.keyWords = keyWords;
     }
 
-    public TwitterSampleSpout() {
-        // TODO Auto-generated constructor stub
-    }
-
     public void open(Map conf, TopologyContext context,
                      SpoutOutputCollector collector) {
         queue = new LinkedBlockingQueue<Status>(1000);
         _collector = collector;
-        StatusListener listener = new StatusListener() {
 
+        StatusListener listener = new StatusListener() {
+            @Override
             public void onStatus(Status status) {
                 queue.offer(status);
             }
 
+            @Override
             public void onDeletionNotice(StatusDeletionNotice sdn) {}
 
+            @Override
             public void onTrackLimitationNotice(int i) {}
 
+            @Override
             public void onScrubGeo(long l, long l1) {}
 
+            @Override
             public void onException(Exception ex) {}
 
+            @Override
             public void onStallWarning(StallWarning arg0) {
-                // TODO Auto-generated method stub
+
             }
         };
 

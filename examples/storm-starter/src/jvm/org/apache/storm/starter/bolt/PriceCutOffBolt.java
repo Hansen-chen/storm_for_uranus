@@ -1,3 +1,5 @@
+package org.apache.storm.starter.bolt;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -42,7 +44,7 @@ public class PriceCutOffBolt implements IRichBolt {
             }
         }
 
-        collector.ack(tuple);
+        collector.emit(new Values(company, price));
     }
 
     public void cleanup() {

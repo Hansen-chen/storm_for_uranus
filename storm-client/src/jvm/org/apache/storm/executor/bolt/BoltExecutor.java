@@ -12,6 +12,8 @@
 
 package org.apache.storm.executor.bolt;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -223,8 +225,12 @@ public class BoltExecutor extends Executor {
      */
     @IntelSGX
     public static void annotated_exec(ArrayList<Task> idToTask, int taskId, int idToTaskBase,TupleImpl tuple){
-        IBolt boltObject = (IBolt) idToTask.get(taskId - idToTaskBase).getTaskObject();
-        boltObject.execute(tuple);
+        try{
+            IBolt boltObject = (IBolt) idToTask.get(taskId - idToTaskBase).getTaskObject();
+            boltObject.execute(tuple);
+        } catch (Exception e){
+
+        }
     }
 
 
@@ -252,14 +258,15 @@ public class BoltExecutor extends Executor {
                 tuple.setExecuteSampleStartTime(now);
             }
             //boltObject.execute(tuple);
-            if(boltObject instanceof Acker || boltObject instanceof MetricsConsumerBolt || boltObject instanceof EventLoggerBolt){
+            if(boltObject instanceof Acker || boltObject instanceof MetricsConsumerBolt || boltObject instanceof EventLoggerBolt || boltObject instanceof SystemBolt){
                 boltObject.execute(tuple);
             }
             else {
-                LOG.info(boltObject.toString() + " entering enclave with tuple " + tuple.toString());
-                ArrayList<Task> enclaveIdToTask = idToTask;
-                int enclaveIdToTaskBase = idToTaskBase;
-                annotated_exec(enclaveIdToTask, taskId, enclaveIdToTaskBase, tuple);
+                if(tuple!=null && idToTask!=null)
+                {
+                    LOG.info(boltObject.toString() + " enter enclave with tuple "+tuple.toString());
+                    annotated_exec(idToTask, taskId, idToTaskBase, tuple);
+                }
             }
 
 

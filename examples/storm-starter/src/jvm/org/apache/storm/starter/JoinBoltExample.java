@@ -50,6 +50,8 @@ public class JoinBoltExample {
         builder.setBolt("printer", new PrinterBolt()).shuffleGrouping("joiner");
 
         Config conf = new Config();
+        conf.setDebug(false);
+        conf.put(Config.TOPOLOGY_ACKER_EXECUTORS, 0);
         StormSubmitter.submitTopologyWithProgressBar("join-example", conf, builder.createTopology());
 
         generateGenderData(genderSpout);

@@ -48,7 +48,9 @@ public class LambdaTopology extends ConfigurableTopology {
         builder.setBolt("bolt2", tuple -> System.out.println(tuple)).shuffleGrouping("bolt1");
 
         Config conf = new Config();
-        conf.setDebug(true);
+        //conf.setDebug(true);
+        conf.setDebug(false);
+        conf.put(Config.TOPOLOGY_ACKER_EXECUTORS, 0);
         conf.setNumWorkers(2);
 
         return submit("lambda-demo", conf, builder);

@@ -1,3 +1,5 @@
+package org.apache.storm.starter.bolt;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -28,8 +30,7 @@ public class CallLogCounterBolt implements IRichBolt {
             Integer c = counterMap.get(call) + 1;
             counterMap.put(call, c);
         }
-
-        collector.ack(tuple);
+        collector.emit((new Values(call, duration)));
     }
 
     public void cleanup() {

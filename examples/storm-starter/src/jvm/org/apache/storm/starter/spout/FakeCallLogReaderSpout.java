@@ -1,3 +1,5 @@
+package org.apache.storm.starter.spout;
+
 import java.util.*;
 //import storm tuple packages
 import org.apache.storm.tuple.Fields;

@@ -12,7 +12,10 @@
 
 package org.apache.storm.starter;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Random;
+import java.util.UUID;
 import org.apache.storm.Config;
 import org.apache.storm.spout.SpoutOutputCollector;
 import org.apache.storm.task.TopologyContext;
@@ -26,33 +29,30 @@ import org.apache.storm.tuple.Fields;
 import org.apache.storm.tuple.Tuple;
 import org.apache.storm.tuple.Values;
 import org.apache.storm.utils.Utils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class AnchoredWordCount extends ConfigurableTopology {
+
     public static void main(String[] args) throws Exception {
         ConfigurableTopology.start(new AnchoredWordCount(), args);
     }
-    private static final Logger LOG = LoggerFactory.getLogger(StatefulWindowingTopology.class);
 
-    @Override
     protected int run(String[] args) throws Exception {
         TopologyBuilder builder = new TopologyBuilder();
 
-        builder.setSpout("spout", new RandomSentenceSpout(), 4);
+        builder.setSpout("spout", new RandomSentenceSpout(), 1);
 
-        builder.setBolt("split", new SplitSentence(), 4).shuffleGrouping("spout");
-        builder.setBolt("count", new WordCount(), 4).fieldsGrouping("split", new Fields("word"));
+        builder.setBolt("split", new SplitSentence(), 1).shuffleGrouping("spout");
+        builder.setBolt("count", new WordCount(), 1).fieldsGrouping("split", new Fields("word"));
 
         Config conf = new Config();
-        conf.setMaxTaskParallelism(3);
+        conf.setMaxTaskParallelism(1);
 
         String topologyName = "word-count";
 
         conf.setNumWorkers(1);
+
         conf.setDebug(false);
-        conf.put(Config.TOPOLOGY_ACKER_EXECUTORS, 0);
-        //config.setMaxSpoutPending(500);
+        conf.registerMetricsConsumer(org.apache.storm.metric.LoggingMetricsConsumer.class);
 
         if (args != null && args.length > 0) {
             topologyName = args[0];
@@ -75,9 +75,9 @@ public class AnchoredWordCount extends ConfigurableTopology {
         public void nextTuple() {
             Utils.sleep(10);
             String[] sentences = new String[]{
-                sentence("the cow jumped over the moon"), sentence("an apple a day keeps the doctor away"),
-                sentence("four score and seven years ago"),
-                sentence("snow white and the seven dwarfs"), sentence("i am at two with nature")
+                    sentence("the cow jumped over the moon"), sentence("an apple a day keeps the doctor away"),
+                    sentence("four score and seven years ago"),
+                    sentence("snow white and the seven dwarfs"), sentence("i am at two with nature")
             };
             final String sentence = sentences[random.nextInt(sentences.length)];
 
@@ -107,7 +107,6 @@ public class AnchoredWordCount extends ConfigurableTopology {
         public void execute(Tuple tuple, BasicOutputCollector collector) {
             String sentence = tuple.getString(0);
             for (String word : sentence.split("\\s+")) {
-                //LOG.info("Split sentence, emit : "+word);
                 collector.emit(new Values(word, 1));
             }
         }
@@ -124,37 +123,18 @@ public class AnchoredWordCount extends ConfigurableTopology {
         @Override
         public void execute(Tuple tuple, BasicOutputCollector collector) {
             String word = tuple.getString(0);
-
             Integer count = counts.get(word);
             if (count == null) {
                 count = 0;
             }
             count++;
             counts.put(word, count);
-
-            //LOG.info("Calculating "+word + ": " + count);
             collector.emit(new Values(word, count));
         }
 
         @Override
         public void declareOutputFields(OutputFieldsDeclarer declarer) {
             declarer.declare(new Fields("word", "count"));
-        }
-
-        @Override
-        public void cleanup() {
-
-            LOG.info("--- FINAL COUNTS ---");
-            List<String> keys = new ArrayList<String>();
-            keys.addAll(this.counts.keySet());
-            Collections.sort(keys);
-            for (String key : keys) {
-                LOG.info(key + " : " + this.counts.get(key));
-            }
-            LOG.info("--------------");
-
-
-
         }
     }
 }
