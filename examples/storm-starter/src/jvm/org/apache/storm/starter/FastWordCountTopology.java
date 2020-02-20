@@ -120,7 +120,7 @@ public class FastWordCountTopology {
 
         //Sleep for 5 mins
         for (int i = 0; i < 10; i++) {
-            Thread.sleep(30 * 1000);
+            Utils.sleep(30 * 1000);
             try {
                 printMetrics(client, name);
             }
@@ -153,6 +153,7 @@ public class FastWordCountTopology {
         public void nextTuple() {
             String sentence = CHOICES[rand.nextInt(CHOICES.length)];
             collector.emit(new Values(sentence), sentence);
+            Utils.sleep(100);
         }
 
         @Override
