@@ -124,12 +124,11 @@ public class BoltOutputCollectorImpl implements IOutputCollector {
 
             //Need to add crypto.sgx_encrypt
 
-            ExecutorTransfer enclavexsfer = xsfer;
             Queue<AddressedTuple> EnclaveAddressedTupleQueue = executor.getPendingEmits();
 
 
             annotated_emit(
-                    (ExecutorTransfer)Tools.deep_copy(enclavexsfer),
+                    (ExecutorTransfer)Tools.deep_copy(xsfer),
                     (AddressedTuple)Tools.deep_copy(EnclaveAddressedTuple),
                     (Queue<AddressedTuple>)Tools.deep_copy(EnclaveAddressedTupleQueue)
 
@@ -243,7 +242,7 @@ public class BoltOutputCollectorImpl implements IOutputCollector {
         try {
             annotated_ack(
                     ackingEnabled,
-                    input,
+                    (Tuple) Tools.deep_copy(input),
                     (Task)Tools.deep_copy(task),
                     (BoltExecutor)Tools.deep_copy(executor),
                     isDebug,
@@ -301,7 +300,7 @@ public class BoltOutputCollectorImpl implements IOutputCollector {
 
             annotated_fail(
                     ackingEnabled,
-                    input,
+                    (Tuple)Tools.deep_copy(input),
                     (Task)Tools.deep_copy(task),
                     (BoltExecutor)Tools.deep_copy(executor),
                     isDebug,
