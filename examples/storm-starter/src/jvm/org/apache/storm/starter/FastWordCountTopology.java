@@ -168,7 +168,7 @@ public class FastWordCountTopology {
 
         @Override
         public void ack(Object id) {
-            LOG.info("Got acked :" + id);
+            System.out.println("Got acked :" + id);
         }
 
         @Override
