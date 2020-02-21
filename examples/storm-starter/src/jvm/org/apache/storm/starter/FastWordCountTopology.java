@@ -18,6 +18,7 @@ import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 import org.apache.storm.Config;
 import org.apache.storm.StormSubmitter;
+import org.apache.storm.executor.bolt.BoltExecutor;
 import org.apache.storm.generated.ClusterSummary;
 import org.apache.storm.generated.ExecutorSummary;
 import org.apache.storm.generated.KillOptions;
@@ -37,12 +38,16 @@ import org.apache.storm.tuple.Tuple;
 import org.apache.storm.tuple.Values;
 import org.apache.storm.utils.NimbusClient;
 import org.apache.storm.utils.Utils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * WordCount but the spout does not stop, and the bolts are implemented in
  * java.  This can show how fast the word count can run.
  */
 public class FastWordCountTopology {
+
+    private static final Logger LOG = LoggerFactory.getLogger(BoltExecutor.class);
 
     public static void printMetrics(Nimbus.Iface client, String name) throws Exception {
         ClusterSummary summary = client.getClusterInfo();
@@ -163,7 +168,7 @@ public class FastWordCountTopology {
 
         @Override
         public void ack(Object id) {
-            //Ignored
+            LOG.info("Got acked :" + id.toString());
         }
 
         @Override

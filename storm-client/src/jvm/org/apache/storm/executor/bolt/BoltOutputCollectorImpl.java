@@ -206,7 +206,7 @@ public class BoltOutputCollectorImpl implements IOutputCollector {
             executor.getStats().boltAckedTuple(input.getSourceComponent(), input.getSourceStreamId(), delta,
                     task.getTaskMetrics().getAcked(input.getSourceStreamId()));
         }
-
+        LOG.info("BOLT ack TASK: {} TIME: {} TUPLE: {}", taskId, delta, input);
     }
 
     @IntelSGXOcall
@@ -230,6 +230,7 @@ public class BoltOutputCollectorImpl implements IOutputCollector {
             executor.getStats().boltFailedTuple(input.getSourceComponent(), input.getSourceStreamId(), delta,
                     task.getTaskMetrics().getFailed(input.getSourceStreamId()));
         }
+        LOG.info("BOLT fail TASK: {} TIME: {} TUPLE: {}", taskId, delta, input);
 
     }
 
