@@ -48,8 +48,7 @@ import org.apache.storm.stats.ClientStatsUtil;
 import org.apache.storm.task.IBolt;
 import org.apache.storm.task.OutputCollector;
 import org.apache.storm.task.TopologyContext;
-import org.apache.storm.topology.base.BaseBasicBolt;
-import org.apache.storm.topology.base.BaseRichBolt;
+import org.apache.storm.topology.IRichBolt;
 import org.apache.storm.tuple.AddressedTuple;
 import org.apache.storm.tuple.TupleImpl;
 import org.apache.storm.utils.ConfigUtils;
@@ -260,6 +259,19 @@ public class BoltExecutor extends Executor {
                 tuple.setExecuteSampleStartTime(now);
             }
             //boltObject.execute(tuple);
+
+            if(boltObject instanceof IRichBolt){
+                if(tuple!=null && idToTask!=null)
+                {
+                    LOG.info(boltObject.toString() + " enter enclave with tuple "+tuple.toString());
+                    annotated_exec(idToTask, taskId, idToTaskBase, tuple);
+                }
+            }
+            else {
+                boltObject.execute(tuple);
+            }
+
+            /*
             if(boltObject instanceof Acker || boltObject instanceof MetricsConsumerBolt || boltObject instanceof EventLoggerBolt || boltObject instanceof SystemBolt){
                 boltObject.execute(tuple);
             }
@@ -270,6 +282,8 @@ public class BoltExecutor extends Executor {
                     annotated_exec(idToTask, taskId, idToTaskBase, tuple);
                 }
             }
+
+             */
 
 
 
