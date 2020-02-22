@@ -48,6 +48,7 @@ public class AnchoredWordCount extends ConfigurableTopology {
         Config conf = new Config();
         //conf.setMaxTaskParallelism(3);
         conf.registerMetricsConsumer(org.apache.storm.metric.LoggingMetricsConsumer.class);
+        conf.put(Config.TOPOLOGY_ACKER_EXECUTORS, 5);
 
         String topologyName = "word-count";
 
@@ -72,7 +73,7 @@ public class AnchoredWordCount extends ConfigurableTopology {
 
         @Override
         public void nextTuple() {
-            Utils.sleep(10);
+            Utils.sleep(1000);
             String[] sentences = new String[]{
                     sentence("the cow jumped over the moon"), sentence("an apple a day keeps the doctor away"),
                     sentence("four score and seven years ago"),
