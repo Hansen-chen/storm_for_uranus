@@ -36,23 +36,22 @@ public class AnchoredWordCount extends ConfigurableTopology {
         ConfigurableTopology.start(new AnchoredWordCount(), args);
     }
 
+
     protected int run(String[] args) throws Exception {
         TopologyBuilder builder = new TopologyBuilder();
 
         builder.setSpout("spout", new RandomSentenceSpout(), 1);
 
-        builder.setBolt("split", new SplitSentence(), 1).shuffleGrouping("spout");
-        builder.setBolt("count", new WordCount(), 1).fieldsGrouping("split", new Fields("word"));
+        builder.setBolt("split", new SplitSentence(), 2).shuffleGrouping("spout");
+        builder.setBolt("count", new WordCount(), 2).fieldsGrouping("split", new Fields("word"));
 
         Config conf = new Config();
-        conf.setMaxTaskParallelism(1);
+        //conf.setMaxTaskParallelism(3);
+        conf.registerMetricsConsumer(org.apache.storm.metric.LoggingMetricsConsumer.class);
 
         String topologyName = "word-count";
 
         conf.setNumWorkers(1);
-
-        conf.setDebug(false);
-        conf.registerMetricsConsumer(org.apache.storm.metric.LoggingMetricsConsumer.class);
 
         if (args != null && args.length > 0) {
             topologyName = args[0];
@@ -81,7 +80,7 @@ public class AnchoredWordCount extends ConfigurableTopology {
             };
             final String sentence = sentences[random.nextInt(sentences.length)];
 
-            this.collector.emit(new Values(sentence), UUID.randomUUID());
+            this.collector.emit(new Values(sentence), sentence);
         }
 
         protected String sentence(String input) {
@@ -94,6 +93,7 @@ public class AnchoredWordCount extends ConfigurableTopology {
 
         @Override
         public void fail(Object id) {
+            this.collector.emit(new Values(id), id);
         }
 
         @Override
