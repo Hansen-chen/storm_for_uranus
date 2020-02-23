@@ -42,7 +42,7 @@ public class AnchoredWordCount extends ConfigurableTopology {
 
         builder.setSpout("spout", new RandomSentenceSpout(), 1);
 
-        builder.setBolt("split", new SplitSentence(), 2).shuffleGrouping("spout");
+        builder.setBolt("split", new SplitSentence(), 1).shuffleGrouping("spout");
         builder.setBolt("count", new WordCount(), 2).fieldsGrouping("split", new Fields("word"));
 
         Config conf = new Config();
@@ -63,23 +63,32 @@ public class AnchoredWordCount extends ConfigurableTopology {
     public static class RandomSentenceSpout extends BaseRichSpout {
         SpoutOutputCollector collector;
         Random random;
+        int counter;
 
 
         @Override
         public void open(Map conf, TopologyContext context, SpoutOutputCollector collector) {
             this.collector = collector;
             this.random = new Random();
+            this.counter=0;
         }
 
         @Override
         public void nextTuple() {
-            Utils.sleep(1000);
+            if (counter >4){
+                Utils.sleep(1000*60*60);
+            }
+            else
+            {
+                Utils.sleep(100);
+            }
             String[] sentences = new String[]{
                     sentence("the cow jumped over the moon"), sentence("an apple a day keeps the doctor away"),
                     sentence("four score and seven years ago"),
                     sentence("snow white and the seven dwarfs"), sentence("i am at two with nature")
             };
-            final String sentence = sentences[random.nextInt(sentences.length)];
+            final String sentence = sentences[this.counter];
+            this.counter++;
 
             this.collector.emit(new Values(sentence), sentence);
         }
@@ -90,10 +99,12 @@ public class AnchoredWordCount extends ConfigurableTopology {
 
         @Override
         public void ack(Object id) {
+            System.out.println("Got ack from "+id);
         }
 
         @Override
         public void fail(Object id) {
+            System.out.println("Got fail from "+id);
             this.collector.emit(new Values(id), id);
         }
 
