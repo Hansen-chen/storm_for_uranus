@@ -116,7 +116,7 @@ public class FastWordCountTopology {
         builder.setBolt("count", new WordCount(), 1).fieldsGrouping("split", new Fields("word"));
 
         Config conf = new Config();
-        conf.registerMetricsConsumer(org.apache.storm.metric.LoggingMetricsConsumer.class);
+        conf.registerMetricsConsumer(org.apache.storm.metric.LoggingMetricsConsumer.class,1);
 
         String name = "wc-test";
         if (args != null && args.length > 0) {
@@ -163,7 +163,7 @@ public class FastWordCountTopology {
         public void nextTuple() {
             String sentence = CHOICES[rand.nextInt(CHOICES.length)];
             collector.emit(new Values(sentence), sentence);
-            Utils.sleep(1000*60*60);
+            Utils.sleep(100);
         }
 
         @Override
