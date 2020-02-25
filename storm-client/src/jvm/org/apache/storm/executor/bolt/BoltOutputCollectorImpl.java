@@ -83,7 +83,7 @@ public class BoltOutputCollectorImpl implements IOutputCollector {
 
     @IntelSGXOcall
     public static void annotated_emit(ExecutorTransfer xsfer, AddressedTuple EnclaveAddressedTuple, Queue<AddressedTuple> EnclaveAddressedTupleQueue){
-        LOG.info("from enclave: emit tuple "+EnclaveAddressedTuple.toString());
+        //LOG.info("from enclave: emit tuple "+EnclaveAddressedTuple.toString());
         xsfer.tryTransfer(EnclaveAddressedTuple, EnclaveAddressedTupleQueue);
     }
 
@@ -205,7 +205,7 @@ public class BoltOutputCollectorImpl implements IOutputCollector {
             executor.getStats().boltAckedTuple(input.getSourceComponent(), input.getSourceStreamId(), delta,
                     task.getTaskMetrics().getAcked(input.getSourceStreamId()));
         }
-        LOG.info("BOLT ack TASK: {} TIME: {} TUPLE: {}", taskId, delta, input);
+        //LOG.info("BOLT ack TASK: {} TIME: {} TUPLE: {}", taskId, delta, input);
     }
 
     @IntelSGXOcall
@@ -229,7 +229,7 @@ public class BoltOutputCollectorImpl implements IOutputCollector {
             executor.getStats().boltFailedTuple(input.getSourceComponent(), input.getSourceStreamId(), delta,
                     task.getTaskMetrics().getFailed(input.getSourceStreamId()));
         }
-        LOG.info("BOLT fail TASK: {} TIME: {} TUPLE: {}", taskId, delta, input);
+        //LOG.info("BOLT fail TASK: {} TIME: {} TUPLE: {}", taskId, delta, input);
 
     }
 
