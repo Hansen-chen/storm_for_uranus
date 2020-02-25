@@ -19,6 +19,8 @@ storm.local.dir: "/home/hansen/storm-local-data"
 storm.zookeeper.servers:
     - "localhost"
 
+storm.zookeeper.root: "/home/hansen/zk-storm"
+
 nimbus.seeds: ["localhost"]
 
 # netty transport
