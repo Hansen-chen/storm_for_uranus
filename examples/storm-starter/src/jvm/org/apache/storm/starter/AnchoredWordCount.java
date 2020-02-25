@@ -52,7 +52,7 @@ public class AnchoredWordCount extends ConfigurableTopology {
 
         String topologyName = "word-count";
 
-        conf.setNumWorkers(1);
+        conf.setNumWorkers(2);
 
         if (args != null && args.length > 0) {
             topologyName = args[0];
@@ -75,20 +75,22 @@ public class AnchoredWordCount extends ConfigurableTopology {
 
         @Override
         public void nextTuple() {
-            if (counter >4){
-                Utils.sleep(1000*60*60);
-            }
-            else
-            {
+            //if (counter >4){
+            //    Utils.sleep(1000*60*60);
+            //}
+            //else
+            //{
                 Utils.sleep(100);
-            }
+            //}
             String[] sentences = new String[]{
                     sentence("the cow jumped over the moon"), sentence("an apple a day keeps the doctor away"),
                     sentence("four score and seven years ago"),
                     sentence("snow white and the seven dwarfs"), sentence("i am at two with nature")
             };
-            final String sentence = sentences[this.counter];
-            this.counter++;
+            //final String sentence = sentences[this.counter];
+            //this.counter++;
+
+            final String sentence = sentences[random.nextInt(sentences.length)];
 
             this.collector.emit(new Values(sentence), sentence);
         }
