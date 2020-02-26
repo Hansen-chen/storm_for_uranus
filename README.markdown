@@ -5,6 +5,11 @@
 ### No. : 14
 ### Gate : gatekeeper.cs.hku.hk
 
+## Zookeeper Server
+### Address : 202.45.128.161 
+### No. : 2
+
+
 ## Build Storm
 
 0. wget binary targz file from (https://maven.apache.org/download.cgi?Preferred=http%3A%2F%2Fapache.01link.hk%2F)

@@ -22,12 +22,12 @@ java.library.path: "/usr/local/lib:/opt/local/lib:/usr/lib:/usr/lib64"
 
 ### storm.* configs are general configurations
 # the local dir is where jars are kept
-storm.local.dir: "storm-local"
+storm.local.dir: "/home/hansen/storm-local-data"
 storm.log4j2.conf.dir: "log4j2"
 storm.zookeeper.servers:
-    - "localhost"
+    - "202.45.128.161"
 storm.zookeeper.port: 2181
-storm.zookeeper.root: "/storm"
+storm.zookeeper.root: "/home/hansen/storm"
 storm.zookeeper.session.timeout: 20000
 storm.zookeeper.connection.timeout: 15000
 storm.zookeeper.retry.times: 5
@@ -212,7 +212,7 @@ topology.worker.receiver.thread.count: 1
 # Cause the ui only show built in metrics, we should keep sync with the built in metrics interval,
 # also the metrics consumer's collecting interval.
 # See topology.builtin.metrics.bucket.size.secs and storm.cluster.metrics.consumer.publish.interval.secs.
-executor.metrics.frequency.secs: 60
+executor.metrics.frequency.secs: 30
 
 task.heartbeat.frequency.secs: 3
 task.refresh.poll.secs: 10
@@ -348,7 +348,7 @@ blacklist.scheduler.reporter: "org.apache.storm.scheduler.blacklist.reporters.Lo
 blacklist.scheduler.strategy: "org.apache.storm.scheduler.blacklist.strategies.DefaultBlacklistStrategy"
 blacklist.scheduler.assume.supervisor.bad.based.on.bad.slot: true
 
-dev.zookeeper.path: "/tmp/dev-storm-zookeeper"
+dev.zookeeper.path: "/home/hansen/apache-zookeeper-3.5.7"
 
 pacemaker.servers: []
 pacemaker.port: 6699
@@ -363,7 +363,7 @@ pacemaker.thrift.message.size.max: 10485760
 
 #default storm daemon metrics reporter plugins
 storm.daemon.metrics.reporter.plugins:
-     - "org.apache.storm.daemon.metrics.reporters.JmxPreparableReporter"
+    - "org.apache.storm.daemon.metrics.reporters.JmxPreparableReporter"
 
 storm.metricstore.class: "org.apache.storm.metricstore.rocksdb.RocksDbStore"
 storm.metricprocessor.class: "org.apache.storm.metricstore.NimbusMetricProcessor"
@@ -373,7 +373,7 @@ storm.metricstore.rocksdb.metadata_string_cache_capacity: 4000
 storm.metricstore.rocksdb.retention_hours: 240
 
 # configuration of cluster metrics consumer
-storm.cluster.metrics.consumer.publish.interval.secs: 60
+storm.cluster.metrics.consumer.publish.interval.secs: 30
 
 storm.resource.isolation.plugin: "org.apache.storm.container.cgroup.CgroupManager"
 # Also determines whether the unit tests for cgroup runs.  
