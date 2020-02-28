@@ -116,7 +116,9 @@ public class FastWordCountTopology {
         builder.setBolt("count", new WordCount(), 1).fieldsGrouping("split", new Fields("word"));
 
         Config conf = new Config();
-        conf.registerMetricsConsumer(org.apache.storm.metric.LoggingMetricsConsumer.class,1);
+        conf.registerMetricsConsumer(org.apache.storm.metric.LoggingMetricsConsumer.class,4);
+        conf.setMaxSpoutPending(5000);
+        conf.setStatsSampleRate(1.0d);
 
         String name = "wc-test";
         if (args != null && args.length > 0) {
