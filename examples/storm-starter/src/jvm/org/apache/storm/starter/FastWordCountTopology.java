@@ -117,7 +117,7 @@ public class FastWordCountTopology {
 
         Config conf = new Config();
         conf.registerMetricsConsumer(org.apache.storm.metric.LoggingMetricsConsumer.class,4);
-        conf.setMaxSpoutPending(500);
+        conf.setMaxSpoutPending(200);
         conf.setStatsSampleRate(1.0d);
         conf.put(Config.TOPOLOGY_TRANSFER_BUFFER_SIZE,32);
         conf.put(Config.TOPOLOGY_EXECUTOR_RECEIVE_BUFFER_SIZE,16384);
