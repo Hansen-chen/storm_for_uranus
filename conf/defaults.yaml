@@ -25,7 +25,8 @@ java.library.path: "/usr/local/lib:/opt/local/lib:/usr/lib:/usr/lib64"
 storm.local.dir: "/home/hansen/storm-local-data"
 storm.log4j2.conf.dir: "log4j2"
 storm.zookeeper.servers:
-    - "202.45.128.161"
+    - "localhost"
+    #- "202.45.128.161"
 storm.zookeeper.port: 2181
 storm.zookeeper.root: "/home/hansen/storm"
 storm.zookeeper.session.timeout: 20000
