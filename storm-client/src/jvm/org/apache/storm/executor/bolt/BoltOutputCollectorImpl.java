@@ -64,20 +64,10 @@ public class BoltOutputCollectorImpl implements IOutputCollector {
     @Override
     public List<Integer> emit(String streamId, Collection<Tuple> anchors, List<Object> tuple) {
         try {
-            List<Integer> outTasks = task.getOutgoingTasksNoUpdate(streamId, tuple);
-            boltEmitOcallEntry((String)Tools.deep_copy(streamId), (Collection<Tuple>)Tools.deep_copy(anchors), (List<Object>)Tools.deep_copy(tuple),(List<Integer>)Tools.deep_copy(outTasks), task, ackingEnabled, random, executor, taskId, xsfer, isEventLoggers);
-            return (List<Integer>)Tools.deep_copy(outTasks);
+            return boltEmitOcallEntry(streamId, anchors, tuple, null);
         } catch (InterruptedException e) {
             LOG.warn("Thread interrupted when emiting tuple.");
             throw new RuntimeException(e);
-        }
-        catch (UnsatisfiedLinkError ex) {
-            try {
-                return boltEmit(streamId, anchors, tuple, null);
-            } catch (InterruptedException e) {
-                LOG.warn("Thread interrupted when emiting tuple.");
-                throw new RuntimeException(e);
-            }
         }
     }
 
@@ -92,11 +82,19 @@ public class BoltOutputCollectorImpl implements IOutputCollector {
     }
 
     @IntelSGXOcall
-    public static void boltEmitOcallEntry(String streamId, Collection<Tuple> anchors, List<Object> values,
-                                          List<Integer> outTasks, Task task, boolean ackingEnabled, Random random, BoltExecutor executor, int taskId, ExecutorTransfer xsfer, boolean isEventLoggers)
-                                            throws InterruptedException {
+    public static void annotated_emit(ExecutorTransfer xsfer, AddressedTuple EnclaveAddressedTuple, Queue<AddressedTuple> EnclaveAddressedTupleQueue){
+        //LOG.info("from enclave: emit tuple "+EnclaveAddressedTuple.toString());
+        xsfer.tryTransfer(EnclaveAddressedTuple, EnclaveAddressedTupleQueue);
+    }
 
-        task.updateOutgoingTasks(streamId, values, outTasks);
+    private List<Integer> boltEmitOcallEntry(String streamId, Collection<Tuple> anchors, List<Object> values,
+                                             Integer targetTaskId) throws InterruptedException {
+        List<Integer> outTasks;
+        if (targetTaskId != null) {
+            outTasks = task.getOutgoingTasks(targetTaskId, streamId, values);
+        } else {
+            outTasks = task.getOutgoingTasks(streamId, values);
+        }
 
         for (int i = 0; i < outTasks.size(); ++i) {
             Integer t = outTasks.get(i);
@@ -109,11 +107,7 @@ public class BoltOutputCollectorImpl implements IOutputCollector {
                         long edgeId = MessageId.generateId(random);
                         ((TupleImpl) a).updateAckVal(edgeId);
                         for (Long rootId : rootIds) {
-                            Long curr = anchorsToIds.get(rootId);
-                            if (curr == null) {
-                                curr = 0L;
-                            }
-                            anchorsToIds.put(rootId, Utils.bitXor(curr, edgeId));
+                            putXor(anchorsToIds, rootId, edgeId);
                         }
                     }
                 }
@@ -121,17 +115,29 @@ public class BoltOutputCollectorImpl implements IOutputCollector {
             } else {
                 msgId = MessageId.makeUnanchored();
             }
+
+
             TupleImpl tupleExt = new TupleImpl(
                     executor.getWorkerTopologyContext(), values, executor.getComponentId(), taskId, streamId, msgId);
-            xsfer.tryTransfer(new AddressedTuple(t, tupleExt), executor.getPendingEmits());
+            AddressedTuple EnclaveAddressedTuple = new AddressedTuple(t, tupleExt);
+            //xsfer.tryTransfer(new AddressedTuple(t, tupleExt), executor.getPendingEmits());
+
+            //Need to add crypto.sgx_encrypt
+
+
+
+            annotated_emit(
+                    xsfer,
+                    (AddressedTuple)Tools.deep_copy(EnclaveAddressedTuple),
+                    executor.getPendingEmits()
+
+            );
         }
         if (isEventLoggers) {
             task.sendToEventLogger(executor, values, executor.getComponentId(), null, random, executor.getPendingEmits());
         }
-
+        return outTasks;
     }
-
-
 
     private List<Integer> boltEmit(String streamId, Collection<Tuple> anchors, List<Object> values,
                                    Integer targetTaskId) throws InterruptedException {
@@ -233,42 +239,39 @@ public class BoltOutputCollectorImpl implements IOutputCollector {
     @Override
     public void ack(Tuple input) {
 
-        try {
-            annotated_ack(
-                    ackingEnabled,
-                    (Tuple)Tools.deep_copy(input),
-                    task,
-                    executor,
-                    isDebug,
-                    taskId
-            );
-        }
-        catch (UnsatisfiedLinkError ex){
-            if (!ackingEnabled) {
-                return;
-            }
-            long ackValue = ((TupleImpl) input).getAckVal();
-            Map<Long, Long> anchorsToIds = input.getMessageId().getAnchorsToIds();
-            for (Map.Entry<Long, Long> entry : anchorsToIds.entrySet()) {
-                task.sendUnanchored(Acker.ACKER_ACK_STREAM_ID,
-                        new Values(entry.getKey(), Utils.bitXor(entry.getValue(), ackValue)),
-                        executor.getExecutorTransfer(), executor.getPendingEmits());
-            }
-            long delta = tupleTimeDelta((TupleImpl) input);
-            if (isDebug) {
-                LOG.info("BOLT ack TASK: {} TIME: {} TUPLE: {}", taskId, delta, input);
-            }
+        annotated_ack(
+                ackingEnabled,
+                input,
+                task,
+                executor,
+                isDebug,
+                taskId
+        );
 
-            if (!task.getUserContext().getHooks().isEmpty()) {
-                BoltAckInfo boltAckInfo = new BoltAckInfo(input, taskId, delta);
-                boltAckInfo.applyOn(task.getUserContext());
-            }
-            if (delta >= 0) {
-                executor.getStats().boltAckedTuple(input.getSourceComponent(), input.getSourceStreamId(), delta,
-                        task.getTaskMetrics().getAcked(input.getSourceStreamId()));
-            }
+        /*
+        if (!ackingEnabled) {
+            return;
         }
-
+        long ackValue = ((TupleImpl) input).getAckVal();
+        Map<Long, Long> anchorsToIds = input.getMessageId().getAnchorsToIds();
+        for (Map.Entry<Long, Long> entry : anchorsToIds.entrySet()) {
+            task.sendUnanchored(Acker.ACKER_ACK_STREAM_ID,
+                    new Values(entry.getKey(), Utils.bitXor(entry.getValue(), ackValue)),
+                    executor.getExecutorTransfer(), executor.getPendingEmits());
+        }
+        long delta = tupleTimeDelta((TupleImpl) input);
+        if (isDebug) {
+            LOG.info("BOLT ack TASK: {} TIME: {} TUPLE: {}", taskId, delta, input);
+        }
+        if (!task.getUserContext().getHooks().isEmpty()) {
+            BoltAckInfo boltAckInfo = new BoltAckInfo(input, taskId, delta);
+            boltAckInfo.applyOn(task.getUserContext());
+        }
+        if (delta >= 0) {
+            executor.getStats().boltAckedTuple(input.getSourceComponent(), input.getSourceStreamId(), delta,
+                    task.getTaskMetrics().getAcked(input.getSourceStreamId()));
+        }
+         */
 
     }
 
@@ -276,37 +279,35 @@ public class BoltOutputCollectorImpl implements IOutputCollector {
     @Override
     public void fail(Tuple input) {
 
-        try {
-            annotated_fail(
-                    ackingEnabled,
-                    (Tuple)Tools.deep_copy(input),
-                    task,
-                    executor,
-                    isDebug,
-                    taskId
-            );
-        }
-        catch (UnsatisfiedLinkError ex){
-            if (!ackingEnabled) {
-                return;
-            }
-            Set<Long> roots = input.getMessageId().getAnchors();
-            for (Long root : roots) {
-                task.sendUnanchored(Acker.ACKER_FAIL_STREAM_ID,
-                        new Values(root), executor.getExecutorTransfer(), executor.getPendingEmits());
-            }
-            long delta = tupleTimeDelta((TupleImpl) input);
-            if (isDebug) {
-                LOG.info("BOLT fail TASK: {} TIME: {} TUPLE: {}", taskId, delta, input);
-            }
-            BoltFailInfo boltFailInfo = new BoltFailInfo(input, taskId, delta);
-            boltFailInfo.applyOn(task.getUserContext());
-            if (delta >= 0) {
-                executor.getStats().boltFailedTuple(input.getSourceComponent(), input.getSourceStreamId(), delta,
-                        task.getTaskMetrics().getFailed(input.getSourceStreamId()));
-            }
-        }
+        annotated_fail(
+                ackingEnabled,
+                input,
+                task,
+                executor,
+                isDebug,
+                taskId
+        );
 
+        /*
+        if (!ackingEnabled) {
+            return;
+        }
+        Set<Long> roots = input.getMessageId().getAnchors();
+        for (Long root : roots) {
+            task.sendUnanchored(Acker.ACKER_FAIL_STREAM_ID,
+                    new Values(root), executor.getExecutorTransfer(), executor.getPendingEmits());
+        }
+        long delta = tupleTimeDelta((TupleImpl) input);
+        if (isDebug) {
+            LOG.info("BOLT fail TASK: {} TIME: {} TUPLE: {}", taskId, delta, input);
+        }
+        BoltFailInfo boltFailInfo = new BoltFailInfo(input, taskId, delta);
+        boltFailInfo.applyOn(task.getUserContext());
+        if (delta >= 0) {
+            executor.getStats().boltFailedTuple(input.getSourceComponent(), input.getSourceStreamId(), delta,
+                    task.getTaskMetrics().getFailed(input.getSourceStreamId()));
+        }
+         */
 
     }
 

@@ -93,7 +93,7 @@ public class Task {
     }
 
     private static HashMap<String, ArrayList<LoadAwareCustomStreamGrouping>> getGroupersPerStream(
-        Map<String, Map<String, LoadAwareCustomStreamGrouping>> streamComponentToGrouper) {
+            Map<String, Map<String, LoadAwareCustomStreamGrouping>> streamComponentToGrouper) {
         HashMap<String, ArrayList<LoadAwareCustomStreamGrouping>> result = new HashMap<>(streamComponentToGrouper.size());
 
         for (Entry<String, Map<String, LoadAwareCustomStreamGrouping>> entry : streamComponentToGrouper.entrySet()) {
@@ -178,41 +178,6 @@ public class Task {
         return outTasks;
     }
 
-    public List<Integer> getOutgoingTasksNoUpdate(String stream, List<Object> values) {
-
-        ArrayList<Integer> outTasks = new ArrayList<>();
-
-        ArrayList<LoadAwareCustomStreamGrouping> groupers = streamToGroupers.get(stream);
-        if (null != groupers) {
-            for (int i = 0; i < groupers.size(); ++i) {
-                LoadAwareCustomStreamGrouping grouper = groupers.get(i);
-                if (grouper == GrouperFactory.DIRECT) {
-                    throw new IllegalArgumentException("Cannot do regular emit to direct stream");
-                }
-                List<Integer> compTasks = grouper.chooseTasks(taskId, values);
-                outTasks.addAll(compTasks);
-            }
-        } else {
-            throw new IllegalArgumentException("Unknown stream ID: " + stream);
-        }
-
-        return outTasks;
-    }
-
-    public void updateOutgoingTasks(String stream, List<Object> values, List<Integer> outTasks){
-        if (!userTopologyContext.getHooks().isEmpty()) {
-            new EmitInfo(values, stream, taskId, outTasks).applyOn(userTopologyContext);
-        }
-        try {
-            if (emitSampler.getAsBoolean()) {
-                executorStats.emittedTuple(stream, this.taskMetrics.getEmitted(stream));
-                executorStats.transferredTuples(stream, outTasks.size(), this.taskMetrics.getTransferred(stream));
-            }
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
-
     public Tuple getTuple(String stream, List values) {
         return new TupleImpl(systemTopologyContext, values, executor.getComponentId(), systemTopologyContext.getThisTaskId(), stream);
     }
@@ -260,33 +225,33 @@ public class Task {
         double spct = ((debugOptions != null) && (debugOptions.is_enable())) ? debugOptions.get_samplingpct() : 0;
         if (spct > 0 && (random.nextDouble() * 100) < spct) {
             sendUnanchored(StormCommon.EVENTLOGGER_STREAM_ID,
-                           new Values(componentId, messageId, System.currentTimeMillis(), values),
-                           executor.getExecutorTransfer(), overflow);
+                    new Values(componentId, messageId, System.currentTimeMillis(), values),
+                    executor.getExecutorTransfer(), overflow);
         }
     }
 
     private TopologyContext mkTopologyContext(StormTopology topology) throws IOException {
         Map<String, Object> conf = workerData.getConf();
         return new TopologyContext(
-            topology,
-            workerData.getTopologyConf(),
-            workerData.getTaskToComponent(),
-            workerData.getComponentToSortedTasks(),
-            workerData.getComponentToStreamToFields(),
-            // This is updated by the Worker and the topology has shared access to it
-            workerData.getBlobToLastKnownVersion(),
-            workerData.getTopologyId(),
-            ConfigUtils.supervisorStormResourcesPath(
-                ConfigUtils.supervisorStormDistRoot(conf, workerData.getTopologyId())),
-            ConfigUtils.workerPidsRoot(conf, workerData.getWorkerId()),
-            taskId,
-            workerData.getPort(), workerData.getLocalTaskIds(),
-            workerData.getDefaultSharedResources(),
-            workerData.getUserSharedResources(),
-            executor.getSharedExecutorData(),
-            executor.getIntervalToTaskToMetricToRegistry(),
-            executor.getOpenOrPrepareWasCalled(),
-            workerData.getMetricRegistry());
+                topology,
+                workerData.getTopologyConf(),
+                workerData.getTaskToComponent(),
+                workerData.getComponentToSortedTasks(),
+                workerData.getComponentToStreamToFields(),
+                // This is updated by the Worker and the topology has shared access to it
+                workerData.getBlobToLastKnownVersion(),
+                workerData.getTopologyId(),
+                ConfigUtils.supervisorStormResourcesPath(
+                        ConfigUtils.supervisorStormDistRoot(conf, workerData.getTopologyId())),
+                ConfigUtils.workerPidsRoot(conf, workerData.getWorkerId()),
+                taskId,
+                workerData.getPort(), workerData.getLocalTaskIds(),
+                workerData.getDefaultSharedResources(),
+                workerData.getUserSharedResources(),
+                executor.getSharedExecutorData(),
+                executor.getIntervalToTaskToMetricToRegistry(),
+                executor.getOpenOrPrepareWasCalled(),
+                workerData.getMetricRegistry());
     }
 
     private Object mkTaskObject() {
