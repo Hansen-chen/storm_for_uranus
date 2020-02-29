@@ -69,6 +69,14 @@ public class BoltOutputCollectorImpl implements IOutputCollector {
             LOG.warn("Thread interrupted when emiting tuple.");
             throw new RuntimeException(e);
         }
+        catch (UnsatisfiedLinkError ex) {
+            try {
+                return boltEmit(streamId, anchors, tuple, null);
+            } catch (InterruptedException e) {
+                LOG.warn("Thread interrupted when emiting tuple.");
+                throw new RuntimeException(e);
+            }
+        }
     }
 
     @Override
