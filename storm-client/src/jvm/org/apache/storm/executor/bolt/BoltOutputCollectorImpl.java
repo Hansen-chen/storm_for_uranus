@@ -102,7 +102,11 @@ public class BoltOutputCollectorImpl implements IOutputCollector {
                         long edgeId = MessageId.generateId(random);
                         ((TupleImpl) a).updateAckVal(edgeId);
                         for (Long rootId : rootIds) {
-                            putXor(anchorsToIds, rootId, edgeId);
+                            Long curr = anchorsToIds.get(rootId);
+                            if (curr == null) {
+                                curr = 0L;
+                            }
+                            anchorsToIds.put(rootId, Utils.bitXor(curr, edgeId));
                         }
                     }
                 }
@@ -331,7 +335,7 @@ public class BoltOutputCollectorImpl implements IOutputCollector {
         return -1;
     }
 
-    private static void putXor(Map<Long, Long> pending, Long key, Long id) {
+    private void putXor(Map<Long, Long> pending, Long key, Long id) {
         Long curr = pending.get(key);
         if (curr == null) {
             curr = 0L;
