@@ -92,8 +92,7 @@ public class BoltOutputCollectorImpl implements IOutputCollector {
     @IntelSGXOcall
     public static List<Integer> boltEmitOcallEntry(String streamId, Collection<Tuple> anchors, List<Object> values,
                                                     Task task, boolean ackingEnabled, Random random, BoltExecutor executor, int taskId, ExecutorTransfer xsfer, boolean isEventLoggers) throws InterruptedException {
-
-
+        LOG.info("Emitting Tuple: taskId={} stream={} values={}", taskId, streamId, values);
         List<Integer> outTasks = task.getOutgoingTasks(streamId, values);
 
         for (int i = 0; i < outTasks.size(); ++i) {
