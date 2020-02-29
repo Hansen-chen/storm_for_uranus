@@ -125,13 +125,17 @@ public class BoltOutputCollectorImpl implements IOutputCollector {
             //Need to add crypto.sgx_encrypt
 
 
+            try {
+                annotated_emit(
+                        xsfer,
+                        (AddressedTuple) Tools.deep_copy(EnclaveAddressedTuple),
+                        executor.getPendingEmits()
 
-            annotated_emit(
-                    xsfer,
-                    (AddressedTuple)Tools.deep_copy(EnclaveAddressedTuple),
-                    executor.getPendingEmits()
-
-            );
+                );
+            }
+            catch (UnsatisfiedLinkError ex){
+                xsfer.tryTransfer(EnclaveAddressedTuple, executor.getPendingEmits());
+            }
         }
         if (isEventLoggers) {
             task.sendToEventLogger(executor, values, executor.getComponentId(), null, random, executor.getPendingEmits());
@@ -238,15 +242,26 @@ public class BoltOutputCollectorImpl implements IOutputCollector {
 
     @Override
     public void ack(Tuple input) {
-
-        annotated_ack(
-                ackingEnabled,
-                input,
-                task,
-                executor,
-                isDebug,
-                taskId
-        );
+        try {
+            annotated_ack(
+                    ackingEnabled,
+                    (Tuple)Tools.deep_copy(input),
+                    task,
+                    executor,
+                    isDebug,
+                    taskId
+            );
+        }
+        catch (UnsatisfiedLinkError ex){
+            annotated_ack(
+                    ackingEnabled,
+                    input,
+                    task,
+                    executor,
+                    isDebug,
+                    taskId
+            );
+        }
 
         /*
         if (!ackingEnabled) {
@@ -279,14 +294,26 @@ public class BoltOutputCollectorImpl implements IOutputCollector {
     @Override
     public void fail(Tuple input) {
 
-        annotated_fail(
-                ackingEnabled,
-                input,
-                task,
-                executor,
-                isDebug,
-                taskId
-        );
+        try {
+            annotated_fail(
+                    ackingEnabled,
+                    (Tuple)Tools.deep_copy(input),
+                    task,
+                    executor,
+                    isDebug,
+                    taskId
+            );
+        }
+        catch (UnsatisfiedLinkError ex){
+            annotated_fail(
+                    ackingEnabled,
+                    input,
+                    task,
+                    executor,
+                    isDebug,
+                    taskId
+            );
+        }
 
         /*
         if (!ackingEnabled) {
