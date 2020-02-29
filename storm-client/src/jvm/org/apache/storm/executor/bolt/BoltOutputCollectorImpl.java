@@ -64,7 +64,7 @@ public class BoltOutputCollectorImpl implements IOutputCollector {
     @Override
     public List<Integer> emit(String streamId, Collection<Tuple> anchors, List<Object> tuple) {
         try {
-            return boltEmitOcallEntry(streamId, anchors, tuple, null);
+            return boltEmitOcallEntry(streamId, anchors, (List<Object>)Tools.deep_copy(tuple), null, task, ackingEnabled, random, executor, taskId, xsfer, isEventLoggers);
         } catch (InterruptedException e) {
             LOG.warn("Thread interrupted when emiting tuple.");
             throw new RuntimeException(e);
@@ -82,13 +82,8 @@ public class BoltOutputCollectorImpl implements IOutputCollector {
     }
 
     @IntelSGXOcall
-    public static void annotated_emit(ExecutorTransfer xsfer, AddressedTuple EnclaveAddressedTuple, Queue<AddressedTuple> EnclaveAddressedTupleQueue){
-        //LOG.info("from enclave: emit tuple "+EnclaveAddressedTuple.toString());
-        xsfer.tryTransfer(EnclaveAddressedTuple, EnclaveAddressedTupleQueue);
-    }
-
-    private List<Integer> boltEmitOcallEntry(String streamId, Collection<Tuple> anchors, List<Object> values,
-                                   Integer targetTaskId) throws InterruptedException {
+    private static List<Integer> boltEmitOcallEntry(String streamId, Collection<Tuple> anchors, List<Object> values, Integer targetTaskId,
+                                                    Task task, boolean ackingEnabled, Random random, BoltExecutor executor, int taskId, ExecutorTransfer xsfer, boolean isEventLoggers) throws InterruptedException {
         List<Integer> outTasks;
         if (targetTaskId != null) {
             outTasks = task.getOutgoingTasks(targetTaskId, streamId, values);
@@ -115,29 +110,17 @@ public class BoltOutputCollectorImpl implements IOutputCollector {
             } else {
                 msgId = MessageId.makeUnanchored();
             }
-
-
             TupleImpl tupleExt = new TupleImpl(
-                   executor.getWorkerTopologyContext(), values, executor.getComponentId(), taskId, streamId, msgId);
-            AddressedTuple EnclaveAddressedTuple = new AddressedTuple(t, tupleExt);
-            //xsfer.tryTransfer(new AddressedTuple(t, tupleExt), executor.getPendingEmits());
-
-            //Need to add crypto.sgx_encrypt
-
-
-
-            annotated_emit(
-                    xsfer,
-                    (AddressedTuple)Tools.deep_copy(EnclaveAddressedTuple),
-                    executor.getPendingEmits()
-
-            );
+                    executor.getWorkerTopologyContext(), values, executor.getComponentId(), taskId, streamId, msgId);
+            xsfer.tryTransfer(new AddressedTuple(t, tupleExt), executor.getPendingEmits());
         }
         if (isEventLoggers) {
             task.sendToEventLogger(executor, values, executor.getComponentId(), null, random, executor.getPendingEmits());
         }
         return outTasks;
     }
+
+
 
     private List<Integer> boltEmit(String streamId, Collection<Tuple> anchors, List<Object> values,
                                    Integer targetTaskId) throws InterruptedException {
@@ -348,7 +331,7 @@ public class BoltOutputCollectorImpl implements IOutputCollector {
         return -1;
     }
 
-    private void putXor(Map<Long, Long> pending, Long key, Long id) {
+    private static void putXor(Map<Long, Long> pending, Long key, Long id) {
         Long curr = pending.get(key);
         if (curr == null) {
             curr = 0L;
