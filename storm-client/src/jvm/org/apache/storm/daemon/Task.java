@@ -178,6 +178,41 @@ public class Task {
         return outTasks;
     }
 
+    public List<Integer> getOutgoingTasksNoUpdate(String stream, List<Object> values) {
+
+        ArrayList<Integer> outTasks = new ArrayList<>();
+
+        ArrayList<LoadAwareCustomStreamGrouping> groupers = streamToGroupers.get(stream);
+        if (null != groupers) {
+            for (int i = 0; i < groupers.size(); ++i) {
+                LoadAwareCustomStreamGrouping grouper = groupers.get(i);
+                if (grouper == GrouperFactory.DIRECT) {
+                    throw new IllegalArgumentException("Cannot do regular emit to direct stream");
+                }
+                List<Integer> compTasks = grouper.chooseTasks(taskId, values);
+                outTasks.addAll(compTasks);
+            }
+        } else {
+            throw new IllegalArgumentException("Unknown stream ID: " + stream);
+        }
+
+        return outTasks;
+    }
+
+    public void updateOutgoingTasks(String stream, List<Object> values, List<Integer> outTasks){
+        if (!userTopologyContext.getHooks().isEmpty()) {
+            new EmitInfo(values, stream, taskId, outTasks).applyOn(userTopologyContext);
+        }
+        try {
+            if (emitSampler.getAsBoolean()) {
+                executorStats.emittedTuple(stream, this.taskMetrics.getEmitted(stream));
+                executorStats.transferredTuples(stream, outTasks.size(), this.taskMetrics.getTransferred(stream));
+            }
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     public Tuple getTuple(String stream, List values) {
         return new TupleImpl(systemTopologyContext, values, executor.getComponentId(), systemTopologyContext.getThisTaskId(), stream);
     }
