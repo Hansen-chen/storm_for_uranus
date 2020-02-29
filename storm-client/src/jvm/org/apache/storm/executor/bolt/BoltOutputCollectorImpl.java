@@ -64,7 +64,7 @@ public class BoltOutputCollectorImpl implements IOutputCollector {
     @Override
     public List<Integer> emit(String streamId, Collection<Tuple> anchors, List<Object> tuple) {
         try {
-            return boltEmitOcallEntry((String)Tools.deep_copy(streamId), (Collection<Tuple>)Tools.deep_copy(anchors), (List<Object>)Tools.deep_copy(tuple), null, task, ackingEnabled, random, executor, taskId, xsfer, isEventLoggers);
+            return boltEmitOcallEntry((String)Tools.deep_copy(streamId), (Collection<Tuple>)Tools.deep_copy(anchors), (List<Object>)Tools.deep_copy(tuple), task, ackingEnabled, random, executor, taskId, xsfer, isEventLoggers);
         } catch (InterruptedException e) {
             LOG.warn("Thread interrupted when emiting tuple.");
             throw new RuntimeException(e);
@@ -90,14 +90,11 @@ public class BoltOutputCollectorImpl implements IOutputCollector {
     }
 
     @IntelSGXOcall
-    private static List<Integer> boltEmitOcallEntry(String streamId, Collection<Tuple> anchors, List<Object> values, Integer targetTaskId,
+    public static List<Integer> boltEmitOcallEntry(String streamId, Collection<Tuple> anchors, List<Object> values,
                                                     Task task, boolean ackingEnabled, Random random, BoltExecutor executor, int taskId, ExecutorTransfer xsfer, boolean isEventLoggers) throws InterruptedException {
-        List<Integer> outTasks;
-        if (targetTaskId != null) {
-            outTasks = task.getOutgoingTasks(targetTaskId, streamId, values);
-        } else {
-            outTasks = task.getOutgoingTasks(streamId, values);
-        }
+
+
+        List<Integer> outTasks = task.getOutgoingTasks(streamId, values);
 
         for (int i = 0; i < outTasks.size(); ++i) {
             Integer t = outTasks.get(i);
@@ -129,7 +126,9 @@ public class BoltOutputCollectorImpl implements IOutputCollector {
         if (isEventLoggers) {
             task.sendToEventLogger(executor, values, executor.getComponentId(), null, random, executor.getPendingEmits());
         }
+
         return outTasks;
+
     }
 
 
