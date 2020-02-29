@@ -228,7 +228,7 @@ public class BoltOutputCollectorImpl implements IOutputCollector {
 
         annotated_ack(
                 ackingEnabled,
-                input,
+                (Tuple)Tools.deep_copy(input),
                 task,
                 executor,
                 isDebug,
@@ -271,7 +271,7 @@ public class BoltOutputCollectorImpl implements IOutputCollector {
 
         annotated_fail(
                 ackingEnabled,
-                input,
+                (Tuple)Tools.deep_copy(input),
                 task,
                 executor,
                 isDebug,
