@@ -309,7 +309,7 @@ topology.tuple.serializer: "org.apache.storm.serialization.types.ListDelegateSer
 topology.trident.batch.emit.interval.millis: 500
 topology.testing.always.try.serialize: false
 topology.classpath: null
-#topology.environment: {"JAVA_HOME":"~\/openjdk-sgx\/build\/linux-x86_64-normal-server-release\/images\/j2sdk-image"}
+#topology.environment: {"JAVA_HOME":"~/openjdk-sgx/build/linux-x86_64-normal-server-release/images/j2sdk-image"}
 topology.environment: null
 
 topology.transfer.buffer.size: 1000   # size of recv  queue for transfer worker thread

@@ -97,15 +97,17 @@ public class FastWordCountTopology {
 
         TopologyBuilder builder = new TopologyBuilder();
 
-        builder.setSpout("spout", new FastRandomSentenceSpout(), 4);
+        builder.setSpout("spout", new FastRandomSentenceSpout(), 1);
 
         builder.setBolt("split", new SplitSentence(), 4).shuffleGrouping("spout");
         builder.setBolt("count", new WordCount(), 4).fieldsGrouping("split", new Fields("word"));
 
         Config conf = new Config();
         conf.registerMetricsConsumer(org.apache.storm.metric.LoggingMetricsConsumer.class);
+        conf.setStatsSampleRate(1.0d);
         //Map<String, Object> env = new HashMap<String, Object>();
         //env.put("JAVA_HOME", "~/openjdk-sgx/build/linux-x86_64-normal-server-release/images/j2sdk-image");
+        //env.put("PATH", "$JAVA_HOME/bin:$PATH");
         //conf.put(Config.TOPOLOGY_ENVIRONMENT, env);
 
         String name = "wc-test";
@@ -149,6 +151,7 @@ public class FastWordCountTopology {
         public void nextTuple() {
             String sentence = CHOICES[rand.nextInt(CHOICES.length)];
             collector.emit(new Values(sentence), sentence);
+            Utils.sleep(100);
         }
 
         @Override
