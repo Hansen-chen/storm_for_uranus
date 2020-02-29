@@ -18,7 +18,6 @@ import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 import org.apache.storm.Config;
 import org.apache.storm.StormSubmitter;
-import org.apache.storm.executor.bolt.BoltExecutor;
 import org.apache.storm.generated.ClusterSummary;
 import org.apache.storm.generated.ExecutorSummary;
 import org.apache.storm.generated.KillOptions;
@@ -38,16 +37,12 @@ import org.apache.storm.tuple.Tuple;
 import org.apache.storm.tuple.Values;
 import org.apache.storm.utils.NimbusClient;
 import org.apache.storm.utils.Utils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * WordCount but the spout does not stop, and the bolts are implemented in
  * java.  This can show how fast the word count can run.
  */
 public class FastWordCountTopology {
-
-    private static final Logger LOG = LoggerFactory.getLogger(BoltExecutor.class);
 
     public static void printMetrics(Nimbus.Iface client, String name) throws Exception {
         ClusterSummary summary = client.getClusterInfo();
@@ -67,29 +62,21 @@ public class FastWordCountTopology {
         double weightedAvgTotal = 0.0;
         for (ExecutorSummary exec : info.get_executors()) {
             if ("spout".equals(exec.get_component_id())) {
-                try{
-                    SpoutStats stats = exec.get_stats().get_specific().get_spout();
-                    Map<String, Long> failedMap = stats.get_failed().get(":all-time");
-                    Map<String, Long> ackedMap = stats.get_acked().get(":all-time");
-                    Map<String, Double> avgLatMap = stats.get_complete_ms_avg().get(":all-time");
-                    for (String key : ackedMap.keySet()) {
-                        if (failedMap != null) {
-                            Long tmp = failedMap.get(key);
-                            if (tmp != null) {
-                                failed += tmp;
-                            }
+                SpoutStats stats = exec.get_stats().get_specific().get_spout();
+                Map<String, Long> failedMap = stats.get_failed().get(":all-time");
+                Map<String, Long> ackedMap = stats.get_acked().get(":all-time");
+                Map<String, Double> avgLatMap = stats.get_complete_ms_avg().get(":all-time");
+                for (String key : ackedMap.keySet()) {
+                    if (failedMap != null) {
+                        Long tmp = failedMap.get(key);
+                        if (tmp != null) {
+                            failed += tmp;
                         }
-                        long ackVal = ackedMap.get(key);
-                        double latVal = avgLatMap.get(key) * ackVal;
-                        acked += ackVal;
-                        weightedAvgTotal += latVal;
                     }
-                }
-                catch (Exception ex){
-                    System.out.println("=============");
-                    System.out.println(ex.toString());
-                    System.out.println(exec.toString());
-                    System.out.println("=============");
+                    long ackVal = ackedMap.get(key);
+                    double latVal = avgLatMap.get(key) * ackVal;
+                    acked += ackVal;
+                    weightedAvgTotal += latVal;
                 }
             }
         }
@@ -110,18 +97,16 @@ public class FastWordCountTopology {
 
         TopologyBuilder builder = new TopologyBuilder();
 
-        builder.setSpout("spout", new FastRandomSentenceSpout(), 1);
+        builder.setSpout("spout", new FastRandomSentenceSpout(), 4);
 
-        builder.setBolt("split", new SplitSentence(), 1).shuffleGrouping("spout");
-        builder.setBolt("count", new WordCount(), 1).fieldsGrouping("split", new Fields("word"));
+        builder.setBolt("split", new SplitSentence(), 4).shuffleGrouping("spout");
+        builder.setBolt("count", new WordCount(), 4).fieldsGrouping("split", new Fields("word"));
 
         Config conf = new Config();
-        conf.registerMetricsConsumer(org.apache.storm.metric.LoggingMetricsConsumer.class,4);
-        conf.setMaxSpoutPending(200);
-        conf.setStatsSampleRate(1.0d);
-        conf.put(Config.TOPOLOGY_TRANSFER_BUFFER_SIZE,32);
-        conf.put(Config.TOPOLOGY_EXECUTOR_RECEIVE_BUFFER_SIZE,16384);
-
+        conf.registerMetricsConsumer(org.apache.storm.metric.LoggingMetricsConsumer.class);
+        //Map<String, Object> env = new HashMap<String, Object>();
+        //env.put("JAVA_HOME", "~/openjdk-sgx/build/linux-x86_64-normal-server-release/images/j2sdk-image");
+        //conf.put(Config.TOPOLOGY_ENVIRONMENT, env);
 
         String name = "wc-test";
         if (args != null && args.length > 0) {
@@ -129,7 +114,6 @@ public class FastWordCountTopology {
         }
 
         conf.setNumWorkers(1);
-
         StormSubmitter.submitTopologyWithProgressBar(name, conf, builder.createTopology());
 
         Map<String, Object> clusterConf = Utils.readStormConfig();
@@ -138,22 +122,19 @@ public class FastWordCountTopology {
 
         //Sleep for 5 mins
         for (int i = 0; i < 10; i++) {
-            Utils.sleep(30 * 1000);
+            Thread.sleep(30 * 1000);
             printMetrics(client, name);
-
-
-
         }
         kill(client, name);
     }
 
     public static class FastRandomSentenceSpout extends BaseRichSpout {
         private static final String[] CHOICES = {
-                "marry had a little lamb whos fleese marry had a little lamb whos fleese was white as snow",
-                "and every where went the lamb was sure to go went the lamb was sure to go",
-                "one two three five six seven eight nine ten eight nine ten",
-                "this is a test of the emergency broadcast system this is only a test the emergency broadcast ",
-                "a peck of pickeled peppers peter piper picked a peck of pickeled peppers"
+                "marry had a little lamb whos fleese was white as snow",
+                "and every where that marry went the lamb was sure to go",
+                "one two three four five six seven eight nine ten",
+                "this is a test of the emergency broadcast system this is only a test",
+                "peter piper picked a peck of pickeled peppers"
         };
         SpoutOutputCollector collector;
         Random rand;
@@ -168,12 +149,11 @@ public class FastWordCountTopology {
         public void nextTuple() {
             String sentence = CHOICES[rand.nextInt(CHOICES.length)];
             collector.emit(new Values(sentence), sentence);
-            Utils.sleep(100);
         }
 
         @Override
         public void ack(Object id) {
-            System.out.println("Got acked :" + id);
+            //Ignored
         }
 
         @Override

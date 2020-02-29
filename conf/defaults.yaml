@@ -26,9 +26,8 @@ storm.local.dir: "/home/hansen/storm-local-data"
 storm.log4j2.conf.dir: "log4j2"
 storm.zookeeper.servers:
     - "localhost"
-    #- "202.45.128.161"
 storm.zookeeper.port: 2181
-storm.zookeeper.root: "/home/hansen/storm"
+storm.zookeeper.root: "/home/hansen/storm-zk"
 storm.zookeeper.session.timeout: 20000
 storm.zookeeper.connection.timeout: 15000
 storm.zookeeper.retry.times: 5
@@ -213,7 +212,7 @@ topology.worker.receiver.thread.count: 1
 # Cause the ui only show built in metrics, we should keep sync with the built in metrics interval,
 # also the metrics consumer's collecting interval.
 # See topology.builtin.metrics.bucket.size.secs and storm.cluster.metrics.consumer.publish.interval.secs.
-executor.metrics.frequency.secs: 30
+executor.metrics.frequency.secs: 60
 
 task.heartbeat.frequency.secs: 3
 task.refresh.poll.secs: 10
@@ -258,7 +257,7 @@ topology.acker.executors: null
 topology.eventlogger.executors: 0
 topology.tasks: null
 # maximum amount of time a message has to complete before it's considered failed
-topology.message.timeout.secs: 60
+topology.message.timeout.secs: 30
 topology.multilang.serializer: "org.apache.storm.multilang.JsonSerializer"
 topology.shellbolt.max.pending: 100
 topology.skip.missing.kryo.registrations: false
@@ -310,7 +309,7 @@ topology.tuple.serializer: "org.apache.storm.serialization.types.ListDelegateSer
 topology.trident.batch.emit.interval.millis: 500
 topology.testing.always.try.serialize: false
 topology.classpath: null
-topology.environment: null
+topology.environment: {"JAVA_HOME":"~\/openjdk-sgx\/build\/linux-x86_64-normal-server-release\/images\/j2sdk-image"}
 
 topology.transfer.buffer.size: 1000   # size of recv  queue for transfer worker thread
 topology.transfer.batch.size: 1       # can be no larger than half of `topology.transfer.buffer.size`
@@ -349,7 +348,7 @@ blacklist.scheduler.reporter: "org.apache.storm.scheduler.blacklist.reporters.Lo
 blacklist.scheduler.strategy: "org.apache.storm.scheduler.blacklist.strategies.DefaultBlacklistStrategy"
 blacklist.scheduler.assume.supervisor.bad.based.on.bad.slot: true
 
-dev.zookeeper.path: "/home/hansen/zk"
+dev.zookeeper.path: "/tmp/dev-storm-zookeeper"
 
 pacemaker.servers: []
 pacemaker.port: 6699
@@ -374,7 +373,7 @@ storm.metricstore.rocksdb.metadata_string_cache_capacity: 4000
 storm.metricstore.rocksdb.retention_hours: 240
 
 # configuration of cluster metrics consumer
-storm.cluster.metrics.consumer.publish.interval.secs: 30
+storm.cluster.metrics.consumer.publish.interval.secs: 60
 
 storm.resource.isolation.plugin: "org.apache.storm.container.cgroup.CgroupManager"
 # Also determines whether the unit tests for cgroup runs.  
