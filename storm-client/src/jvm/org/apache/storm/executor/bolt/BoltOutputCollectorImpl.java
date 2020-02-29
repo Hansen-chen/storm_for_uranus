@@ -244,7 +244,7 @@ public class BoltOutputCollectorImpl implements IOutputCollector {
                     taskId
             );
         }
-        catch (Exception ex){
+        catch (UnsatisfiedLinkError ex){
             if (!ackingEnabled) {
                 return;
             }
@@ -287,7 +287,7 @@ public class BoltOutputCollectorImpl implements IOutputCollector {
                     taskId
             );
         }
-        catch (Exception ex){
+        catch (UnsatisfiedLinkError ex){
             if (!ackingEnabled) {
                 return;
             }
