@@ -230,7 +230,7 @@ public class BoltExecutor extends Executor {
             IBolt boltObject = (IBolt) idToTask.get(taskId - idToTaskBase).getTaskObject();
             boltObject.execute(tuple);
         } catch (Exception e){
-            System.out.println("Bolt inside enclave: "+e.toString());
+            System.out.println("Bolt inside enclave error: "+e.toString());
         }
     }
 
@@ -261,7 +261,12 @@ public class BoltExecutor extends Executor {
             //boltObject.execute(tuple);
 
             if(boltObject instanceof IRichBolt){
-                annotated_exec(idToTask, taskId, idToTaskBase, tuple);
+                annotated_exec(
+                        (ArrayList<Task>)Tools.deep_copy(idToTask),
+                        taskId,
+                        idToTaskBase,
+                        (TupleImpl)Tools.deep_copy(tuple)
+                );
             }
             else {
                 boltObject.execute(tuple);
