@@ -82,9 +82,8 @@ public class BoltOutputCollectorImpl implements IOutputCollector {
     }
 
     @IntelSGXOcall
-    public static void annotated_emit(String streamId, Collection<Tuple> anchors, List<Object> values, Task task, boolean ackingEnabled, Random random, BoltExecutor executor, int taskId, ExecutorTransfer xsfer, boolean isEventLoggers) {
+    public static void annotated_emit(String streamId, Collection<Tuple> anchors, List<Object> values, List<Integer> outTasks, boolean ackingEnabled, Random random, BoltExecutor executor, int taskId, ExecutorTransfer xsfer, boolean isEventLoggers) {
 
-        List<Integer> outTasks = task.getOutgoingTasks(streamId, values);
 
         for (int i = 0; i < outTasks.size(); ++i) {
             Integer t = outTasks.get(i);
@@ -134,20 +133,21 @@ public class BoltOutputCollectorImpl implements IOutputCollector {
                     (String)Tools.deep_copy(streamId),
                     (Collection<Tuple>)Tools.deep_copy(anchors),
                     (List<Object>)Tools.deep_copy(values),
-                    task,
+                    (List<Integer>)Tools.deep_copy(outTasks),
                     ackingEnabled,
-                    random,
-                    executor,
+                    (Random)Tools.deep_copy(random),
+                    (BoltExecutor)Tools.deep_copy(executor),
                     taskId,
-                    xsfer,
+                    (ExecutorTransfer)Tools.deep_copy(xsfer),
                     isEventLoggers
             );
+            return (List<Integer>)Tools.deep_copy(outTasks);
         }
         catch (UnsatisfiedLinkError ex){
             return boltEmit(streamId, anchors, values, targetTaskId);
         }
 
-        return outTasks;
+
     }
 
     private List<Integer> boltEmit(String streamId, Collection<Tuple> anchors, List<Object> values,
@@ -216,7 +216,6 @@ public class BoltOutputCollectorImpl implements IOutputCollector {
             executor.getStats().boltAckedTuple(input.getSourceComponent(), input.getSourceStreamId(), delta,
                     task.getTaskMetrics().getAcked(input.getSourceStreamId()));
         }
-        //LOG.info("BOLT ack TASK: {} TIME: {} TUPLE: {}", taskId, delta, input);
     }
 
     @IntelSGXOcall
@@ -240,8 +239,6 @@ public class BoltOutputCollectorImpl implements IOutputCollector {
             executor.getStats().boltFailedTuple(input.getSourceComponent(), input.getSourceStreamId(), delta,
                     task.getTaskMetrics().getFailed(input.getSourceStreamId()));
         }
-        //LOG.info("BOLT fail TASK: {} TIME: {} TUPLE: {}", taskId, delta, input);
-
     }
 
 
@@ -253,8 +250,8 @@ public class BoltOutputCollectorImpl implements IOutputCollector {
             annotated_ack(
                     ackingEnabled,
                     (Tuple)Tools.deep_copy(input),
-                    task,
-                    executor,
+                    (Task)Tools.deep_copy(task),
+                    (BoltExecutor)Tools.deep_copy(executor),
                     isDebug,
                     taskId
             );
@@ -305,8 +302,8 @@ public class BoltOutputCollectorImpl implements IOutputCollector {
             annotated_fail(
                     ackingEnabled,
                     (Tuple)Tools.deep_copy(input),
-                    task,
-                    executor,
+                    (Task)Tools.deep_copy(task),
+                    (BoltExecutor)Tools.deep_copy(executor),
                     isDebug,
                     taskId
             );
