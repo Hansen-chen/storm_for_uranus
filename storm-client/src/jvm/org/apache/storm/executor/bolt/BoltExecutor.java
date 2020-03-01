@@ -262,10 +262,10 @@ public class BoltExecutor extends Executor {
 
             if(boltObject instanceof IRichBolt){
                 annotated_exec(
-                        (ArrayList<Task>)Tools.deep_copy(idToTask),
+                        idToTask,
                         taskId,
                         idToTaskBase,
-                        (TupleImpl)Tools.deep_copy(tuple)
+                        tuple
                 );
             }
             else {
