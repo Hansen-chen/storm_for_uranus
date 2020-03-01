@@ -82,19 +82,9 @@ public class BoltOutputCollectorImpl implements IOutputCollector {
     }
 
     @IntelSGXOcall
-    public static void annotated_emit(ExecutorTransfer xsfer, AddressedTuple EnclaveAddressedTuple, Queue<AddressedTuple> EnclaveAddressedTupleQueue){
-        //LOG.info("from enclave: emit tuple "+EnclaveAddressedTuple.toString());
-        xsfer.tryTransfer(EnclaveAddressedTuple, EnclaveAddressedTupleQueue);
-    }
+    public static void annotated_emit(String streamId, Collection<Tuple> anchors, List<Object> values, Task task, boolean ackingEnabled, Random random, BoltExecutor executor, int taskId, ExecutorTransfer xsfer, boolean isEventLoggers) {
 
-    private List<Integer> boltEmitOcallEntry(String streamId, Collection<Tuple> anchors, List<Object> values,
-                                             Integer targetTaskId) throws InterruptedException {
-        List<Integer> outTasks;
-        if (targetTaskId != null) {
-            outTasks = task.getOutgoingTasks(targetTaskId, streamId, values);
-        } else {
-            outTasks = task.getOutgoingTasks(streamId, values);
-        }
+        List<Integer> outTasks = task.getOutgoingTasks(streamId, values);
 
         for (int i = 0; i < outTasks.size(); ++i) {
             Integer t = outTasks.get(i);
@@ -107,7 +97,11 @@ public class BoltOutputCollectorImpl implements IOutputCollector {
                         long edgeId = MessageId.generateId(random);
                         ((TupleImpl) a).updateAckVal(edgeId);
                         for (Long rootId : rootIds) {
-                            putXor(anchorsToIds, rootId, edgeId);
+                            Long curr = anchorsToIds.get(rootId);
+                            if (curr == null) {
+                                curr = 0L;
+                            }
+                            anchorsToIds.put(rootId, Utils.bitXor(curr, edgeId));
                         }
                     }
                 }
@@ -119,27 +113,40 @@ public class BoltOutputCollectorImpl implements IOutputCollector {
 
             TupleImpl tupleExt = new TupleImpl(
                     executor.getWorkerTopologyContext(), values, executor.getComponentId(), taskId, streamId, msgId);
-            AddressedTuple EnclaveAddressedTuple = new AddressedTuple(t, tupleExt);
-            //xsfer.tryTransfer(new AddressedTuple(t, tupleExt), executor.getPendingEmits());
 
-            //Need to add crypto.sgx_encrypt
+            xsfer.tryTransfer(new AddressedTuple(t, tupleExt), executor.getPendingEmits());
 
 
-            try {
-                annotated_emit(
-                        xsfer,
-                        (AddressedTuple) Tools.deep_copy(EnclaveAddressedTuple),
-                        executor.getPendingEmits()
-
-                );
-            }
-            catch (UnsatisfiedLinkError ex){
-                xsfer.tryTransfer(EnclaveAddressedTuple, executor.getPendingEmits());
-            }
         }
         if (isEventLoggers) {
             task.sendToEventLogger(executor, values, executor.getComponentId(), null, random, executor.getPendingEmits());
         }
+
+    }
+
+    private List<Integer> boltEmitOcallEntry(String streamId, Collection<Tuple> anchors, List<Object> values,
+                                             Integer targetTaskId) throws InterruptedException {
+        List<Integer> outTasks = task.getOutgoingTasks(streamId, values);
+        try {
+            //Need to add crypto.sgx_encrypt
+
+            annotated_emit(
+                    (String)Tools.deep_copy(streamId),
+                    (Collection<Tuple>)Tools.deep_copy(anchors),
+                    (List<Object>)Tools.deep_copy(values),
+                    task,
+                    ackingEnabled,
+                    random,
+                    executor,
+                    taskId,
+                    xsfer,
+                    isEventLoggers
+            );
+        }
+        catch (UnsatisfiedLinkError ex){
+            return boltEmit(streamId, anchors, values, targetTaskId);
+        }
+
         return outTasks;
     }
 
