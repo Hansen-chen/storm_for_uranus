@@ -82,8 +82,11 @@ public class BoltOutputCollectorImpl implements IOutputCollector {
     }
 
     @IntelSGXOcall
-    public static void annotated_emit(String streamId, Collection<Tuple> anchors, List<Object> values, Task task, List<Integer> outTasks, boolean ackingEnabled, Random random, BoltExecutor executor, int taskId, ExecutorTransfer xsfer, boolean isEventLoggers) {
+    public static void annotated_emit(String streamId, Collection<Tuple> anchors, List<Object> values, Task task, List<Integer> _outTasks, boolean ackingEnabled, Random random, BoltExecutor executor, int taskId, ExecutorTransfer xsfer, boolean isEventLoggers) {
 
+        List<Integer> outTasks = task.getOutgoingTasks(streamId, values);
+
+        LOG.info("outTasks inside enclave and outside enclave are same: "+ (_outTasks==outTasks));
 
         for (int i = 0; i < outTasks.size(); ++i) {
             Integer t = outTasks.get(i);
@@ -125,7 +128,7 @@ public class BoltOutputCollectorImpl implements IOutputCollector {
 
     private List<Integer> boltEmitOcallEntry(String streamId, Collection<Tuple> anchors, List<Object> values,
                                              Integer targetTaskId) throws InterruptedException {
-        List<Integer> outTasks = task.getOutgoingTasks(streamId, values);
+        List<Integer> outTasks = task.getOutgoingTasksNoLOG(streamId, values);
         try {
             //Need to add crypto.sgx_encrypt
 
