@@ -46,8 +46,9 @@ public class AnchoredWordCount extends ConfigurableTopology {
         builder.setBolt("count", new WordCount(), 2).fieldsGrouping("split", new Fields("word"));
 
         Config conf = new Config();
-        //conf.setMaxTaskParallelism(3);
-        conf.registerMetricsConsumer(org.apache.storm.metric.LoggingMetricsConsumer.class,1);
+        conf.setDebug(true);
+        //conf.registerMetricsConsumer(org.apache.storm.metric.LoggingMetricsConsumer.class,1);
+        //conf.setStatsSampleRate(1.0d);
         conf.put(Config.TOPOLOGY_ACKER_EXECUTORS, 5);
 
         String topologyName = "word-count";
