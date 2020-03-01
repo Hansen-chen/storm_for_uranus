@@ -87,6 +87,8 @@ public class BoltOutputCollectorImpl implements IOutputCollector {
         List<Integer> outTasks = task.getOutgoingTasks(streamId, values);
 
         LOG.info("outTasks inside enclave and outside enclave are same: "+ (_outTasks==outTasks));
+        LOG.info("outTasks inside enclave: "+ _outTasks.toString());
+        LOG.info("outTasks outside enclave are same: "+ outTasks.toString());
 
         for (int i = 0; i < outTasks.size(); ++i) {
             Integer t = outTasks.get(i);
