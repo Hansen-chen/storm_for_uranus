@@ -70,7 +70,7 @@ public class BoltOutputCollectorImpl implements IOutputCollector {
                 annotated_emit(
                         (String)Tools.deep_copy(streamId),
                         (Collection<Tuple>)Tools.deep_copy(anchors),
-                        (List<Object>)Tools.deep_copy(values),
+                        (List<Object>)Tools.deep_copy(tuple),
                         (Task)Tools.deep_copy(task),
                         (List<Integer>)Tools.deep_copy(outTasks),
                         ackingEnabled,
