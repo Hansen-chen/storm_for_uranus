@@ -42,12 +42,12 @@ public class AnchoredWordCount extends ConfigurableTopology {
 
         builder.setSpout("spout", new RandomSentenceSpout(), 1);
 
-        builder.setBolt("split", new SplitSentence(), 1).shuffleGrouping("spout");
-        builder.setBolt("count", new WordCount(), 2).fieldsGrouping("split", new Fields("word"));
+        builder.setBolt("split", new SplitSentence(), 8).shuffleGrouping("spout");
+        builder.setBolt("count", new WordCount(), 16).fieldsGrouping("split", new Fields("word"));
 
         Config conf = new Config();
         conf.setDebug(true);
-        //conf.registerMetricsConsumer(org.apache.storm.metric.LoggingMetricsConsumer.class,1);
+        conf.registerMetricsConsumer(org.apache.storm.metric.LoggingMetricsConsumer.class,1);
         //conf.setStatsSampleRate(1.0d);
         conf.put(Config.TOPOLOGY_MAX_SPOUT_PENDING, 50);
         conf.put(Config.TOPOLOGY_MESSAGE_TIMEOUT_SECS, 60);
