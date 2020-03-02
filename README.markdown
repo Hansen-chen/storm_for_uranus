@@ -5,11 +5,6 @@
 ### No. : 14
 ### Gate : gatekeeper.cs.hku.hk
 
-## Zookeeper Server
-### Address : 202.45.128.161 
-### No. : 2
-
-
 ## Build Storm
 
 0. wget binary targz file from (https://maven.apache.org/download.cgi?Preferred=http%3A%2F%2Fapache.01link.hk%2F)
@@ -29,8 +24,9 @@
 ## Run Examples (~/openjdk-sgx/ev_test/TestSuit.java, 202.45.128.173, javac -d . -cp path_to_rt.jar TestSuit.java, java -ea TestSuit)
 
 ### Other terminals:
+0. run zookeeper using normal java
 1. export JAVA_HOME=~/openjdk-sgx/build/linux-x86_64-normal-server-release/images/j2sdk-image && export PATH=$JAVA_HOME/bin:$PATH
-2. run zookeeper, nimbus, supervisor http://admicloud.github.io/www/storm.html
+2. run nimbus, supervisor http://admicloud.github.io/www/storm.html
 
 ### One terminal:
 0. cd ~/source_code/storm/compiled/apache-storm-2.2.0-SNAPSHOT/examples/storm-starter
