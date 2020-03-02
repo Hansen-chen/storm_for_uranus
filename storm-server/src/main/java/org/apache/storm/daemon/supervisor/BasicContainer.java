@@ -596,7 +596,7 @@ public class BasicContainer extends Container {
     protected String javaCmd(String cmd) {
         String ret = null;
         //String javaHome = System.getenv().get("JAVA_HOME");
-        String javaHome = "~/openjdk-sgx/build/linux-x86_64-normal-server-release/images/j2sdk-image";
+        String javaHome = "/home/hansen/openjdk-sgx/build/linux-x86_64-normal-server-release/images/j2sdk-image";
         if (StringUtils.isNotBlank(javaHome)) {
             ret = javaHome + File.separator + "bin" + File.separator + cmd;
         } else {
