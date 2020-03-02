@@ -178,7 +178,7 @@ public class Task {
         return outTasks;
     }
 
-    public List<Integer> getOutgoingTasksLOG(String stream, List<Object> values) {
+    public void getOutgoingTasksLOG(String stream, List<Object> values) {
 
         if (debug) {
             LOG.info("Emitting Tuple: taskId={} componentId={} stream={} values={}", taskId, componentId, stream, values);
