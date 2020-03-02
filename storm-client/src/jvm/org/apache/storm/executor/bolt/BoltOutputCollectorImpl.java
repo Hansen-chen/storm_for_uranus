@@ -64,7 +64,30 @@ public class BoltOutputCollectorImpl implements IOutputCollector {
     @Override
     public List<Integer> emit(String streamId, Collection<Tuple> anchors, List<Object> tuple) {
         try {
-            return boltEmitOcallEntry(streamId, anchors, tuple, null);
+            try {
+                //Need to add crypto.sgx_encrypt
+                List<Integer> outTasks = task.getOutgoingTasksNoLOG(streamId, tuple);
+                annotated_emit(
+                        (String)Tools.deep_copy(streamId),
+                        (Collection<Tuple>)Tools.deep_copy(anchors),
+                        (List<Object>)Tools.deep_copy(values),
+                        (Task)Tools.deep_copy(task),
+                        (List<Integer>)Tools.deep_copy(outTasks),
+                        ackingEnabled,
+                        (Random)Tools.deep_copy(random),
+                        (BoltExecutor)Tools.deep_copy(executor),
+                        taskId,
+                        (ExecutorTransfer)Tools.deep_copy(xsfer),
+                        isEventLoggers
+                );
+                return (List<Integer>)Tools.deep_copy(outTasks);
+
+            }
+            catch (UnsatisfiedLinkError ex){
+                return boltEmit(streamId, anchors, tuple, null);
+            }
+
+
         } catch (InterruptedException e) {
             LOG.warn("Thread interrupted when emiting tuple.");
             throw new RuntimeException(e);
@@ -124,32 +147,6 @@ public class BoltOutputCollectorImpl implements IOutputCollector {
 
     }
 
-    private List<Integer> boltEmitOcallEntry(String streamId, Collection<Tuple> anchors, List<Object> values,
-                                             Integer targetTaskId) throws InterruptedException {
-        List<Integer> outTasks = task.getOutgoingTasksNoLOG(streamId, values);
-        try {
-            //Need to add crypto.sgx_encrypt
-            annotated_emit(
-                    (String)Tools.deep_copy(streamId),
-                    (Collection<Tuple>)Tools.deep_copy(anchors),
-                    (List<Object>)Tools.deep_copy(values),
-                    (Task)Tools.deep_copy(task),
-                    (List<Integer>)Tools.deep_copy(outTasks),
-                    ackingEnabled,
-                    (Random)Tools.deep_copy(random),
-                    (BoltExecutor)Tools.deep_copy(executor),
-                    taskId,
-                    (ExecutorTransfer)Tools.deep_copy(xsfer),
-                    isEventLoggers
-            );
-            return (List<Integer>)Tools.deep_copy(outTasks);
-        }
-        catch (UnsatisfiedLinkError ex){
-            return boltEmit(streamId, anchors, values, targetTaskId);
-        }
-
-
-    }
 
     private List<Integer> boltEmit(String streamId, Collection<Tuple> anchors, List<Object> values,
                                    Integer targetTaskId) throws InterruptedException {
