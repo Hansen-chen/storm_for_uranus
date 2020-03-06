@@ -40,10 +40,10 @@ public class AnchoredWordCount extends ConfigurableTopology {
     protected int run(String[] args) throws Exception {
         TopologyBuilder builder = new TopologyBuilder();
 
-        builder.setSpout("spout", new RandomSentenceSpout(), 1);
+        builder.setSpout("spout", new RandomSentenceSpout(), 2);
 
-        builder.setBolt("split", new SplitSentence(), 8).shuffleGrouping("spout");
-        builder.setBolt("count", new WordCount(), 16).fieldsGrouping("split", new Fields("word"));
+        builder.setBolt("split", new SplitSentence(), 2).shuffleGrouping("spout");
+        builder.setBolt("count", new WordCount(), 4).fieldsGrouping("split", new Fields("word"));
 
         Config conf = new Config();
         conf.setDebug(true);
@@ -110,7 +110,7 @@ public class AnchoredWordCount extends ConfigurableTopology {
         @Override
         public void fail(Object id) {
             System.out.println("Got fail from "+id);
-            this.collector.emit(new Values(id), id);
+            //this.collector.emit(new Values(id), id);
         }
 
         @Override
