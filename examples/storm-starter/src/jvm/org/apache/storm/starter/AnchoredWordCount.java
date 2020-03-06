@@ -40,10 +40,10 @@ public class AnchoredWordCount extends ConfigurableTopology {
     protected int run(String[] args) throws Exception {
         TopologyBuilder builder = new TopologyBuilder();
 
-        builder.setSpout("spout", new RandomSentenceSpout(), 2);
+        builder.setSpout("spout", new RandomSentenceSpout(), 1);
 
-        builder.setBolt("split", new SplitSentence(), 2).shuffleGrouping("spout");
-        builder.setBolt("count", new WordCount(), 4).fieldsGrouping("split", new Fields("word"));
+        builder.setBolt("split", new SplitSentence(), 1).shuffleGrouping("spout");
+        builder.setBolt("count", new WordCount(), 1).fieldsGrouping("split", new Fields("word"));
 
         Config conf = new Config();
         conf.setDebug(true);
@@ -83,7 +83,7 @@ public class AnchoredWordCount extends ConfigurableTopology {
             //}
             //else
             //{
-                Utils.sleep(100);
+                Utils.sleep(1000);
             //}
             String[] sentences = new String[]{
                     sentence("the cow jumped over the moon"), sentence("an apple a day keeps the doctor away"),
