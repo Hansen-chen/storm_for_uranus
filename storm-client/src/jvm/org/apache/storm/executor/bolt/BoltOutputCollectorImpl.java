@@ -71,13 +71,13 @@ public class BoltOutputCollectorImpl implements IOutputCollector {
                         (String)Tools.deep_copy(streamId),
                         (Collection<Tuple>)Tools.deep_copy(anchors),
                         (List<Object>)Tools.deep_copy(tuple),
-                        (Task)Tools.deep_copy(task),
+                        task,
                         (List<Integer>)Tools.deep_copy(outTasks),
                         ackingEnabled,
-                        (Random)Tools.deep_copy(random),
-                        (BoltExecutor)Tools.deep_copy(executor),
+                        random,
+                        executor,
                         taskId,
-                        (ExecutorTransfer)Tools.deep_copy(xsfer),
+                        xsfer,
                         isEventLoggers
                 );
                 return (List<Integer>)Tools.deep_copy(outTasks);
@@ -248,8 +248,8 @@ public class BoltOutputCollectorImpl implements IOutputCollector {
             annotated_ack(
                     ackingEnabled,
                     (Tuple)Tools.deep_copy(input),
-                    (Task)Tools.deep_copy(task),
-                    (BoltExecutor)Tools.deep_copy(executor),
+                    task,
+                    executor,
                     isDebug,
                     taskId
             );
@@ -289,8 +289,8 @@ public class BoltOutputCollectorImpl implements IOutputCollector {
             annotated_fail(
                     ackingEnabled,
                     (Tuple)Tools.deep_copy(input),
-                    (Task)Tools.deep_copy(task),
-                    (BoltExecutor)Tools.deep_copy(executor),
+                    task,
+                    executor,
                     isDebug,
                     taskId
             );
