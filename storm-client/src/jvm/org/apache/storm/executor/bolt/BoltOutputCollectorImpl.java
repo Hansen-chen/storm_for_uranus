@@ -66,7 +66,7 @@ public class BoltOutputCollectorImpl implements IOutputCollector {
         try {
             try {
                 //Need to add crypto.sgx_encrypt
-                //List<Integer> outTasks = new ArrayList<Integer>();
+                List<Integer> outTasks = new ArrayList<Integer>();
                         //task.getOutgoingTasksNoLOG(streamId, tuple);
                 annotated_emit(
                         (String)Tools.deep_copy(streamId),
@@ -80,7 +80,7 @@ public class BoltOutputCollectorImpl implements IOutputCollector {
                         xsfer,
                         isEventLoggers
                 );
-                return null;
+                return (List<Integer>)Tools.deep_copy(outTasks);
 
             }
             catch (UnsatisfiedLinkError ex){
