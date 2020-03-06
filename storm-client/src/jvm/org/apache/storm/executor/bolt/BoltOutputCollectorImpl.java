@@ -80,7 +80,7 @@ public class BoltOutputCollectorImpl implements IOutputCollector {
                         xsfer,
                         isEventLoggers
                 );
-                return outTasks;
+                return (List<Integer>)Tools.deep_copy(outTasks);;
 
             }
             catch (UnsatisfiedLinkError ex){
