@@ -66,13 +66,13 @@ public class BoltOutputCollectorImpl implements IOutputCollector {
         try {
             try {
                 //Need to add crypto.sgx_encrypt
-                List<Integer> outTasks = task.getOutgoingTasksNoLOG(streamId, tuple);
+                //List<Integer> outTasks = new ArrayList<Integer>();
+                        //task.getOutgoingTasksNoLOG(streamId, tuple);
                 annotated_emit(
                         (String)Tools.deep_copy(streamId),
                         (Collection<Tuple>)Tools.deep_copy(anchors),
                         (List<Object>)Tools.deep_copy(tuple),
                         task,
-                        (List<Integer>)Tools.deep_copy(outTasks),
                         ackingEnabled,
                         random,
                         executor,
@@ -80,7 +80,7 @@ public class BoltOutputCollectorImpl implements IOutputCollector {
                         xsfer,
                         isEventLoggers
                 );
-                return (List<Integer>)Tools.deep_copy(outTasks);
+                return null;
 
             }
             catch (UnsatisfiedLinkError ex){
@@ -105,9 +105,9 @@ public class BoltOutputCollectorImpl implements IOutputCollector {
     }
 
     @IntelSGXOcall
-    public static void annotated_emit(String streamId, Collection<Tuple> anchors, List<Object> values, Task task, List<Integer> outTasks, boolean ackingEnabled, Random random, BoltExecutor executor, int taskId, ExecutorTransfer xsfer, boolean isEventLoggers) {
+    public static void annotated_emit(String streamId, Collection<Tuple> anchors, List<Object> values, Task task, boolean ackingEnabled, Random random, BoltExecutor executor, int taskId, ExecutorTransfer xsfer, boolean isEventLoggers) {
 
-        task.getOutgoingTasksLOG(streamId, values);
+        List<Integer> outTasks = task.getOutgoingTasks(streamId, values);
 
         for (int i = 0; i < outTasks.size(); ++i) {
             Integer t = outTasks.get(i);
