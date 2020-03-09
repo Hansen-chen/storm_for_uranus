@@ -20,8 +20,9 @@ public class LogAnalyserStorm extends ConfigurableTopology {
     @Override
     protected int run(String[] args) throws Exception {
         //Create Config instance for cluster configuration
-        conf.setDebug(false);
-        conf.put(Config.TOPOLOGY_ACKER_EXECUTORS, 0);
+        conf.setDebug(true);
+        conf.registerMetricsConsumer(org.apache.storm.metric.LoggingMetricsConsumer.class);
+        conf.setStatsSampleRate(1.0d);
 
 
         TopologyBuilder builder = new TopologyBuilder();
