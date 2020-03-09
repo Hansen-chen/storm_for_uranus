@@ -10,6 +10,7 @@ import org.apache.storm.topology.IRichSpout;
 import org.apache.storm.topology.OutputFieldsDeclarer;
 import org.apache.storm.spout.SpoutOutputCollector;
 import org.apache.storm.task.TopologyContext;
+import org.apache.storm.utils.Utils;
 
 //Create a class FakeLogReaderSpout which implement IRichSpout interface to access functionalities
 
@@ -39,7 +40,7 @@ public class FakeCallLogReaderSpout implements IRichSpout {
             mobileNumbers.add("1234123404");
 
             Integer localIdx = 0;
-            while(localIdx++ < 100 && this.idx++ < 1000) {
+            if (localIdx++ < 100 && this.idx++ < 1000) {
                 String fromMobileNumber = mobileNumbers.get(randomGenerator.nextInt(4));
                 String toMobileNumber = mobileNumbers.get(randomGenerator.nextInt(4));
 
@@ -48,9 +49,10 @@ public class FakeCallLogReaderSpout implements IRichSpout {
                 }
 
                 Integer duration = randomGenerator.nextInt(60);
-                this.collector.emit(new Values(fromMobileNumber, toMobileNumber, duration));
+                this.collector.emit(new Values(fromMobileNumber, toMobileNumber, duration), fromMobileNumber);
             }
         }
+        Utils.sleep(1000);
     }
 
     public void declareOutputFields(OutputFieldsDeclarer declarer) {
