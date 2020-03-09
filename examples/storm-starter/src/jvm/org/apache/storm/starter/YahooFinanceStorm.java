@@ -18,8 +18,12 @@ public class YahooFinanceStorm extends ConfigurableTopology {
 
     @Override
     protected int run(String[] args) throws Exception {
-        conf.setDebug(false);
-        conf.put(Config.TOPOLOGY_ACKER_EXECUTORS, 0);
+        conf.setDebug(true);
+        conf.registerMetricsConsumer(org.apache.storm.metric.LoggingMetricsConsumer.class,1);
+        //conf.setStatsSampleRate(1.0d);
+        conf.put(Config.TOPOLOGY_MAX_SPOUT_PENDING, 50);
+        conf.put(Config.TOPOLOGY_MESSAGE_TIMEOUT_SECS, 60);
+        conf.put(Config.TOPOLOGY_ACKER_EXECUTORS, 5);
         TopologyBuilder builder = new TopologyBuilder();
         builder.setSpout("yahoo-finance-spout", new YahooFinanceSpout());
 

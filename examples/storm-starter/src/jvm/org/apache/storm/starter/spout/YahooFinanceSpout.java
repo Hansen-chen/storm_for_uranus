@@ -39,19 +39,27 @@ public class YahooFinanceSpout implements IRichSpout {
 
              */
             //this.collector.emit(new Values("INTC", price.doubleValue()));
-            this.collector.emit(new Values("INTC", 67.27));
+
+            Utils.sleep(100);
+            final String[] stockName = new String[]{ "INTC", "GOOGL", "AAPL"};
+            final Random rand = new Random();
+            final String stock = stockName[rand.nextInt(stockName.length)];
+            final Double[] stockPrice = new Double[]{ 67.27, 1518.73, 324.95};
+            final Double price = stockPrice[rand.nextInt(stockPrice.length)];
+
+
             //stock = YahooFinance.get("GOOGL");
             //price = stock.getQuote().getPrice();
 
-            this.collector.emit(new Values("GOOGL", 1,518.73));
+
             //this.collector.emit(new Values("GOOGL", price.doubleValue()));
             //stock = YahooFinance.get("AAPL");
             //price = stock.getQuote().getPrice();
 
             //this.collector.emit(new Values("AAPL", price.doubleValue()));
-            this.collector.emit(new Values("AAPL", 324.95));
+            this.collector.emit(new Values(stock, price), stock);
         } catch(Exception e) {}
-        Utils.sleep(1000*60*60);
+        Utils.sleep(100);
     }
 
     public void declareOutputFields(OutputFieldsDeclarer declarer) {
