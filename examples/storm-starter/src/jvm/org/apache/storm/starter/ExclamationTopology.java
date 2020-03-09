@@ -101,7 +101,7 @@ public class ExclamationTopology extends ConfigurableTopology {
 
         @Override
         public void nextTuple() {
-            Utils.sleep(100);
+            Utils.sleep(1000);
             final String[] words = new String[]{ "nathan", "mike", "jackson", "golda", "bertels" };
             final Random rand = new Random();
             final String word = words[rand.nextInt(words.length)];
