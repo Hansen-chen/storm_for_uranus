@@ -33,7 +33,7 @@
 1. mvn package -Dcheckstyle.skip 
 
 ### One terminal:
-3. ./bin/storm jar example/storm-starter/target/storm-starter-2.2.0-SNAPSHOT.jar org.apache.storm.starter.AnchoredWordCount testing
+3. ./bin/storm jar examples/storm-starter/target/storm-starter-2.2.0-SNAPSHOT.jar org.apache.storm.starter.AnchoredWordCount testing
 4. ./bin/storm kill testing
 
 
