@@ -67,6 +67,7 @@ public class SpoutOutputCollectorImpl implements ISpoutOutputCollector {
     @Override
     public List<Integer> emit(String streamId, List<Object> tuple, Object messageId) {
         try {
+            //annotation below function
             return sendSpoutMsg(streamId, tuple, messageId, null);
         } catch (InterruptedException e) {
             LOG.warn("Spout thread interrupted during emit().");
@@ -137,6 +138,7 @@ public class SpoutOutputCollectorImpl implements ISpoutOutputCollector {
             final TupleImpl tuple =
                 new TupleImpl(executor.getWorkerTopologyContext(), values, executor.getComponentId(), this.taskId, stream, msgId);
             AddressedTuple adrTuple = new AddressedTuple(t, tuple);
+            // should enter enclave here
             executor.getExecutorTransfer().tryTransfer(adrTuple, executor.getPendingEmits());
         }
         if (isEventLoggers) {
