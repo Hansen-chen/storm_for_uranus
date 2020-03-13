@@ -12,6 +12,7 @@
 
 package org.apache.storm.executor.bolt;
 
+import java.io.*;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.concurrent.Callable;
@@ -214,6 +215,17 @@ public class BoltExecutor extends Executor {
         };
     }
 
+    public static byte[] serialize(Object obj) throws IOException {
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        ObjectOutputStream os = new ObjectOutputStream(out);
+        os.writeObject(obj);
+        return out.toByteArray();
+    }
+    public static Object deserialize(byte[] data) throws IOException, ClassNotFoundException {
+        ByteArrayInputStream in = new ByteArrayInputStream(data);
+        ObjectInputStream is = new ObjectInputStream(in);
+        return is.readObject();
+    }
     // Add JECall ,need to add crypto.sgx_decrypt
     /*
         outputstream/bytearraystream/other stream class => function
@@ -228,7 +240,7 @@ public class BoltExecutor extends Executor {
 
             byte[] decryptedData = Crypto.sgx_decrypt(encrptedValues, false);
             List<Object> updateVal = new ArrayList<>();
-            ((Collection<Object>)updateVal).add(decryptedData);
+            updateVal.add(deserialize(decryptedData));
             tuple.updateVal(updateVal);
 
             boltObject.execute(tuple);
