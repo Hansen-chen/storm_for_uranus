@@ -29,6 +29,9 @@ import org.apache.storm.utils.RotatingMap;
 import org.apache.storm.utils.Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import edu.anonymity.sgx.IntelSGX;
+import edu.anonymity.sgx.IntelSGXOcall;
+import edu.anonymity.sgx.Tools;
 
 /**
  * Methods are not thread safe. Each thread expected to have a separate instance, or else synchronize externally
@@ -107,6 +110,18 @@ public class SpoutOutputCollectorImpl implements ISpoutOutputCollector {
         executor.getReportError().report(error);
     }
 
+    // Add JECall ,need to add crypto.sgx_decrypt
+    /*
+        outputstream/bytearraystream/other stream class => function
+        change to byte[]
+        sgx_encrypt()
+        return byte[]
+     */
+    @IntelSGX
+    public static void enclaveEncryptionEmit(SpoutExecutor executor, AddressedTuple adrTuple){
+        executor.getExecutorTransfer().tryTransfer(adrTuple, executor.getPendingEmits());
+    }
+
     private List<Integer> sendSpoutMsg(String stream, List<Object> values, Object messageId, Integer outTaskId) throws
         InterruptedException {
         emittedCount.increment();
@@ -139,7 +154,8 @@ public class SpoutOutputCollectorImpl implements ISpoutOutputCollector {
                 new TupleImpl(executor.getWorkerTopologyContext(), values, executor.getComponentId(), this.taskId, stream, msgId);
             AddressedTuple adrTuple = new AddressedTuple(t, tuple);
             // should enter enclave here
-            executor.getExecutorTransfer().tryTransfer(adrTuple, executor.getPendingEmits());
+            enclaveEncryptionEmit(executor, adrTuple);
+            //executor.getExecutorTransfer().tryTransfer(adrTuple, executor.getPendingEmits());
         }
         if (isEventLoggers) {
             taskData.sendToEventLogger(executor, values, executor.getComponentId(), messageId, random, executor.getPendingEmits());
