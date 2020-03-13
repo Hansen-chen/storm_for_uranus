@@ -52,7 +52,7 @@ public final class AddressedTuple {
         }
         catch (Exception ex)
         {
-            return "[dest: " + dest + " tuple: " + tuple.getValues() + "]";
+            return "[dest: " + dest + " tuple: unknown text ]";
         }
     }
 }
