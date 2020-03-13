@@ -234,11 +234,11 @@ public class BoltExecutor extends Executor {
         return byte[]
      */
     @IntelSGX
-    public static void annotated_exec(ArrayList<Task> idToTask, int taskId, int idToTaskBase,TupleImpl tuple, byte[] encrptedValues){
+    public static void annotated_exec(ArrayList<Task> idToTask, int taskId, int idToTaskBase,TupleImpl tuple, byte[] encryptedValues){
         try{
             IBolt boltObject = (IBolt) idToTask.get(taskId - idToTaskBase).getTaskObject();
 
-            byte[] decryptedData = Crypto.sgx_decrypt(encrptedValues, false);
+            byte[] decryptedData = Crypto.sgx_decrypt(encryptedValues, false);
             List<Object> updateVal = new ArrayList<>();
             updateVal.add(deserialize(decryptedData));
             tuple.updateVal(updateVal);
@@ -275,14 +275,14 @@ public class BoltExecutor extends Executor {
             }
             //boltObject.execute(tuple);
 
-            if(boltObject instanceof IRichBolt){
-                byte[] encrptedValues = (byte[])tuple.getValues().get(0);
+            if(boltObject instanceof IRichBolt && !(streamId.contains("ack") || streamId.contains("metrics"))){
+                byte[] encryptedValues = (byte[])tuple.getValues().get(0);
                 annotated_exec(
                         idToTask,
                         taskId,
                         idToTaskBase,
                         tuple,
-                        encrptedValues
+                        encryptedValues
                 );
             }
             else {
