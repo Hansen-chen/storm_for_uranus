@@ -63,6 +63,7 @@ import org.slf4j.LoggerFactory;
 import edu.anonymity.sgx.IntelSGX;
 import edu.anonymity.sgx.IntelSGXOcall;
 import edu.anonymity.sgx.Tools;
+import edu.anonymity.sgx.Crypto;
 
 public class BoltExecutor extends Executor {
 
