@@ -178,9 +178,10 @@ public class SpoutOutputCollectorImpl implements ISpoutOutputCollector {
 
                 byte[] encryptedTuple = enclaveEncryption(rawData);
 
-                encryptedValues.add(deserialize(encryptedTuple));
+                encryptedValues.add(encryptedTuple);
             }
             catch (Exception ex){
+                LOG.info("Spout sgx encrypt error: " + ex.toString());
                 encryptedValues = values;
             }
 
