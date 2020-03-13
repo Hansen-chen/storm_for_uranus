@@ -234,19 +234,22 @@ public class BoltExecutor extends Executor {
         return byte[]
      */
     @IntelSGX
-    public static void annotated_exec(ArrayList<Task> idToTask, int taskId, int idToTaskBase,TupleImpl tuple, byte[] encryptedValues){
+    public static void annotated_exec(ArrayList<Task> idToTask, int taskId, int idToTaskBase,TupleImpl tuple){
         try{
             IBolt boltObject = (IBolt) idToTask.get(taskId - idToTaskBase).getTaskObject();
-
-            byte[] decryptedData = Crypto.sgx_decrypt(encryptedValues, false);
-            List<Object> updateVal = new ArrayList<>();
-            updateVal.add(deserialize(decryptedData));
-            tuple.updateVal(updateVal);
-
             boltObject.execute(tuple);
         } catch (Exception e){
             System.out.println("Bolt inside enclave error: "+e.toString());
         }
+    }
+
+    @IntelSGX
+    public static byte[] enclaveDecryption(byte[] values){
+        byte[] decryptedData = Crypto.sgx_decrypt(values, false);
+
+        return (byte[])Tools.deep_copy(decryptedData);
+
+
     }
 
 
@@ -277,12 +280,17 @@ public class BoltExecutor extends Executor {
 
             if(boltObject instanceof IRichBolt && !(streamId.contains("ack") || streamId.contains("metrics"))){
                 byte[] encryptedValues = (byte[])tuple.getValues().get(0);
+                byte[] decryptedData = enclaveDecryption(encryptedValues)
+                List<Object> updateVal = new ArrayList<>();
+                updateVal.add(deserialize(decryptedData));
+                tuple.updateVal(updateVal);
+
+
                 annotated_exec(
                         idToTask,
                         taskId,
                         idToTaskBase,
-                        tuple,
-                        encryptedValues
+                        tuple
                 );
             }
             else {
