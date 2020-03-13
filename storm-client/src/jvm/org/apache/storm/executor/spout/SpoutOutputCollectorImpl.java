@@ -133,21 +133,10 @@ public class SpoutOutputCollectorImpl implements ISpoutOutputCollector {
         return byte[]
      */
     @IntelSGX
-    public static List<Object> enclaveEncryption(List<Object> values){
-        List<Object> encryptedTuple = new ArrayList<>();
+    public static byte[] enclaveEncryption(byte[] values){
+        byte[] encryptedData = Crypto.sgx_encrypt(values, false);
 
-        try {
-            byte[] rawData = serialize(values);
-            byte[] encrypteData = Crypto.sgx_encrypt(rawData, false);
-            encryptedTuple.add(deserialize(encrypteData));
-
-            return (List<Object>)Tools.deep_copy(encryptedTuple);
-        }
-        catch (Exception ex){
-            return (List<Object>)Tools.deep_copy(encryptedTuple);
-
-        }
-
+        return (byte[])Tools.deep_copy(encryptedData);
 
 
     }
@@ -181,7 +170,19 @@ public class SpoutOutputCollectorImpl implements ISpoutOutputCollector {
             }
 
             // sgx encrypt inside enclave here
-            List<Object> encryptedValues = enclaveEncryption(values);
+            List<Object> encryptedValues = new ArrayList<>();
+
+
+            try{
+                byte[] rawData = serialize(values);
+
+                byte[] encryptedTuple = enclaveEncryption(rawData);
+
+                encryptedValues.add(deserialize(encryptedTuple));
+            }
+            catch (Exception ex){
+                encryptedValues = values;
+            }
 
             final TupleImpl tuple =
                 new TupleImpl(executor.getWorkerTopologyContext(), encryptedValues, executor.getComponentId(), this.taskId, stream, msgId);
