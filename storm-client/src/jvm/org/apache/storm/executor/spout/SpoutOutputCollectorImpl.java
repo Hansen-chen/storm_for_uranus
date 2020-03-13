@@ -12,6 +12,8 @@
 
 package org.apache.storm.executor.spout;
 
+import java.io.*;
+import java.security.CryptoPrimitive;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -32,6 +34,7 @@ import org.slf4j.LoggerFactory;
 import edu.anonymity.sgx.IntelSGX;
 import edu.anonymity.sgx.IntelSGXOcall;
 import edu.anonymity.sgx.Tools;
+import edu.anonymity.sgx.Crypto;
 
 /**
  * Methods are not thread safe. Each thread expected to have a separate instance, or else synchronize externally
@@ -110,6 +113,18 @@ public class SpoutOutputCollectorImpl implements ISpoutOutputCollector {
         executor.getReportError().report(error);
     }
 
+    public static byte[] serialize(Object obj) throws IOException {
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        ObjectOutputStream os = new ObjectOutputStream(out);
+        os.writeObject(obj);
+        return out.toByteArray();
+    }
+    public static Object deserialize(byte[] data) throws IOException, ClassNotFoundException {
+        ByteArrayInputStream in = new ByteArrayInputStream(data);
+        ObjectInputStream is = new ObjectInputStream(in);
+        return is.readObject();
+    }
+
     // Add JECall ,need to add crypto.sgx_decrypt
     /*
         outputstream/bytearraystream/other stream class => function
@@ -118,8 +133,23 @@ public class SpoutOutputCollectorImpl implements ISpoutOutputCollector {
         return byte[]
      */
     @IntelSGX
-    public static void enclaveEncryptionEmit(SpoutExecutor executor, AddressedTuple adrTuple){
-        executor.getExecutorTransfer().tryTransferSpoutEnclaveNoLog(adrTuple, executor.getPendingEmits());
+    public static List<Object> enclaveEncryption(List<Object> values){
+        List<Object> encryptedTuple = new ArrayList<>();
+
+        try {
+            byte[] rawData = serialize(values);
+            byte[] encrypteData = Crypto.sgx_encrypt(rawData, false);
+            encryptedTuple.add(deserialize(encrypteData));
+
+            return (List<Object>)Tools.deep_copy(encryptedTuple);
+        }
+        catch (Exception ex){
+            return (List<Object>)Tools.deep_copy(encryptedTuple);
+
+        }
+
+
+
     }
 
     private List<Integer> sendSpoutMsg(String stream, List<Object> values, Object messageId, Integer outTaskId) throws
@@ -150,13 +180,16 @@ public class SpoutOutputCollectorImpl implements ISpoutOutputCollector {
                 msgId = MessageId.makeUnanchored();
             }
 
+            // sgx encrypt inside enclave here
+            List<Object> encryptedValues = enclaveEncryption(values);
+
             final TupleImpl tuple =
-                new TupleImpl(executor.getWorkerTopologyContext(), values, executor.getComponentId(), this.taskId, stream, msgId);
+                new TupleImpl(executor.getWorkerTopologyContext(), encryptedValues, executor.getComponentId(), this.taskId, stream, msgId);
             AddressedTuple adrTuple = new AddressedTuple(t, tuple);
-            executor.getExecutorTransfer().tryTransferSpoutEnclaveLog(adrTuple);
-            // should enter enclave here
-            enclaveEncryptionEmit(executor, adrTuple);
-            //executor.getExecutorTransfer().tryTransfer(adrTuple, executor.getPendingEmits());
+
+
+
+            executor.getExecutorTransfer().tryTransfer(adrTuple, executor.getPendingEmits());
         }
         if (isEventLoggers) {
             taskData.sendToEventLogger(executor, values, executor.getComponentId(), messageId, random, executor.getPendingEmits());

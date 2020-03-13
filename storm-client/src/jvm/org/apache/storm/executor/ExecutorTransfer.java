@@ -66,26 +66,6 @@ public class ExecutorTransfer {
         return workerData.tryTransferRemote(addressedTuple, pendingEmits, serializer);
     }
 
-    // adds addressedTuple to destination Q if it is not full. else adds to pendingEmits (if its not null)
-    public void tryTransferSpoutEnclaveNoLog(AddressedTuple addressedTuple, Queue<AddressedTuple> pendingEmits) {
-
-        JCQueue localQueue = getLocalQueue(addressedTuple);
-        if (localQueue != null) {
-            tryTransferLocal(addressedTuple, localQueue, pendingEmits);
-        }
-        else {
-            workerData.tryTransferRemote(addressedTuple, pendingEmits, serializer);
-        }
-
-    }
-
-    // adds addressedTuple to destination Q if it is not full. else adds to pendingEmits (if its not null)
-    public void tryTransferSpoutEnclaveLog(AddressedTuple addressedTuple) {
-        if (isDebug) {
-            LOG.info("TRANSFERRING tuple {}", addressedTuple);
-        }
-    }
-
 
     // flushes local and remote messages
     public void flush() throws InterruptedException {
