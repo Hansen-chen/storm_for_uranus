@@ -62,26 +62,6 @@ public class BoltOutputCollectorImpl implements IOutputCollector {
         this.xsfer = executor.getExecutorTransfer();
     }
 
-    public static byte[] serialize(Object obj) throws IOException {
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
-        ObjectOutputStream os = new ObjectOutputStream(out);
-        os.writeObject(obj);
-        return out.toByteArray();
-    }
-    public static Object deserialize(byte[] data) throws IOException, ClassNotFoundException {
-        ByteArrayInputStream in = new ByteArrayInputStream(data);
-        ObjectInputStream is = new ObjectInputStream(in);
-        return is.readObject();
-    }
-
-    @IntelSGX
-    public static byte[] enclaveEncryption(byte[] values){
-        byte[] encryptedData = Crypto.sgx_encrypt(values, false);
-
-        return (byte[])Tools.deep_copy(encryptedData);
-
-
-    }
 
     @Override
     public List<Integer> emit(String streamId, Collection<Tuple> anchors, List<Object> tuple) {
@@ -90,10 +70,25 @@ public class BoltOutputCollectorImpl implements IOutputCollector {
             try {
                 //Need to add crypto.sgx_encrypt
 
+                //serialize inside enclave
+                byte[] rawData;
+                byte[] encryptedData;
+                try{
+                    ByteArrayOutputStream out = new ByteArrayOutputStream();
+                    ObjectOutputStream os = new ObjectOutputStream(out);
+                    os.writeObject(tuple);
+                    rawData = out.toByteArray();
+                    encryptedData = Crypto.sgx_encrypt(rawData, false);
+                }
+                catch (Exception ex){
+                    encryptedData = new byte[1];
+                }
+
                 annotated_emit(
                         (String)Tools.deep_copy(streamId),
                         (Collection<Tuple>)Tools.deep_copy(anchors),
                         (List<Object>)Tools.deep_copy(tuple),
+                        (byte[])Tools.deep_copy(encryptedData),
                         task,
                         ackingEnabled,
                         random,
@@ -129,7 +124,7 @@ public class BoltOutputCollectorImpl implements IOutputCollector {
     }
 
     @IntelSGXOcall
-    public static void annotated_emit(String streamId, Collection<Tuple> anchors, List<Object> values, Task task, boolean ackingEnabled, Random random, BoltExecutor executor, int taskId, ExecutorTransfer xsfer, boolean isEventLoggers) {
+    public static void annotated_emit(String streamId, Collection<Tuple> anchors, List<Object> values, byte[] encryptedTuple,Task task, boolean ackingEnabled, Random random, BoltExecutor executor, int taskId, ExecutorTransfer xsfer, boolean isEventLoggers) {
 
         List<Integer> outTasks = task.getOutgoingTasks(streamId, values);
 
@@ -164,9 +159,9 @@ public class BoltOutputCollectorImpl implements IOutputCollector {
             if (!(streamId.contains("ack") || streamId.contains("metrics")))
             {
                 try{
-                    byte[] rawData = serialize(values);
+                    //byte[] rawData = serialize(values);
 
-                    byte[] encryptedTuple = enclaveEncryption(rawData);
+                    //byte[] encryptedTuple = enclaveEncryption(rawData);
 
                     encryptedValues.add(encryptedTuple);
 

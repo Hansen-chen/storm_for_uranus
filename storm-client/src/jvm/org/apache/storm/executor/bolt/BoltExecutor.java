@@ -215,17 +215,6 @@ public class BoltExecutor extends Executor {
         };
     }
 
-    public static byte[] serialize(Object obj) throws IOException {
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
-        ObjectOutputStream os = new ObjectOutputStream(out);
-        os.writeObject(obj);
-        return out.toByteArray();
-    }
-    public static Object deserialize(byte[] data) throws IOException, ClassNotFoundException {
-        ByteArrayInputStream in = new ByteArrayInputStream(data);
-        ObjectInputStream is = new ObjectInputStream(in);
-        return is.readObject();
-    }
     // Add JECall ,need to add crypto.sgx_decrypt
     /*
         outputstream/bytearraystream/other stream class => function
@@ -234,23 +223,22 @@ public class BoltExecutor extends Executor {
         return byte[]
      */
     @IntelSGX
-    public static void annotated_exec(ArrayList<Task> idToTask, int taskId, int idToTaskBase,TupleImpl tuple){
+    public static void annotated_exec(ArrayList<Task> idToTask, int taskId, int idToTaskBase,TupleImpl tuple, byte[] encryptedValues){
         try{
+            byte[] decryptedData = Crypto.sgx_decrypt(encryptedValues, false);
+            ByteArrayInputStream in = new ByteArrayInputStream(decryptedData);
+            ObjectInputStream is = new ObjectInputStream(in);
+            List<Object> updateVal = (List<Object>)is.readObject();
+
+            TupleImpl tupleExt = new TupleImpl(tuple.getContext(), updateVal, tuple.getSourceComponent(), tuple.getSourceTask(), tuple.getSourceStreamId(), tuple.getMessageId());
             IBolt boltObject = (IBolt) idToTask.get(taskId - idToTaskBase).getTaskObject();
-            boltObject.execute(tuple);
+            boltObject.execute(tupleExt);
+
         } catch (Exception e){
             System.out.println("Bolt inside enclave error: "+e.toString());
         }
     }
 
-    @IntelSGX
-    public static byte[] enclaveDecryption(byte[] values){
-        byte[] decryptedData = Crypto.sgx_decrypt(values, false);
-
-        return (byte[])Tools.deep_copy(decryptedData);
-
-
-    }
 
 
     @Override
@@ -283,19 +271,15 @@ public class BoltExecutor extends Executor {
                     byte[] encryptedValues = (byte[])tuple.getValues().get(0);
 
                     if (encryptedValues != null){
-                        byte[] decryptedData = enclaveDecryption(encryptedValues);
-                        List<Object> updateVal = (List<Object>)deserialize(decryptedData);
-                        List<Object> oldVal = tuple.getValues();
-                        tuple.updateVal(updateVal);
 
                         annotated_exec(
                                 idToTask,
                                 taskId,
                                 idToTaskBase,
-                                tuple
+                                tuple,
+                                encryptedValues
                         );
 
-                        //tuple.updateVal(oldVal);
                     }
                     else {
                         boltObject.execute(tuple);

@@ -113,17 +113,6 @@ public class SpoutOutputCollectorImpl implements ISpoutOutputCollector {
         executor.getReportError().report(error);
     }
 
-    public static byte[] serialize(Object obj) throws IOException {
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
-        ObjectOutputStream os = new ObjectOutputStream(out);
-        os.writeObject(obj);
-        return out.toByteArray();
-    }
-    public static Object deserialize(byte[] data) throws IOException, ClassNotFoundException {
-        ByteArrayInputStream in = new ByteArrayInputStream(data);
-        ObjectInputStream is = new ObjectInputStream(in);
-        return is.readObject();
-    }
 
     // Add JECall ,need to add crypto.sgx_decrypt
     /*
@@ -133,8 +122,20 @@ public class SpoutOutputCollectorImpl implements ISpoutOutputCollector {
         return byte[]
      */
     @IntelSGX
-    public static byte[] enclaveEncryption(byte[] values){
-        byte[] encryptedData = Crypto.sgx_encrypt(values, false);
+    public static byte[] enclaveEncryption(List<Object> values){
+
+        byte[] rawData;
+        try{
+            ByteArrayOutputStream out = new ByteArrayOutputStream();
+            ObjectOutputStream os = new ObjectOutputStream(out);
+            os.writeObject(values);
+            rawData = out.toByteArray();
+        }
+        catch (Exception ex){
+            rawData = new byte[1];
+        }
+
+        byte[] encryptedData = Crypto.sgx_encrypt(rawData, false);
 
         return (byte[])Tools.deep_copy(encryptedData);
 
@@ -175,9 +176,8 @@ public class SpoutOutputCollectorImpl implements ISpoutOutputCollector {
             if (!(stream.contains("ack") || stream.contains("metrics")))
             {
                 try{
-                    byte[] rawData = serialize(values);
 
-                    byte[] encryptedTuple = enclaveEncryption(rawData);
+                    byte[] encryptedTuple = enclaveEncryption(values);
 
                     encryptedValues.add(encryptedTuple);
                 }
