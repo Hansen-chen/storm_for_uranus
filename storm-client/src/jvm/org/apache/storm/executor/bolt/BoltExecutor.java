@@ -225,9 +225,15 @@ public class BoltExecutor extends Executor {
         return byte[]
      */
     @IntelSGX
-    public static void annotated_exec(ArrayList<Task> idToTask, int taskId, int idToTaskBase,TupleImpl tuple){
+    public static void annotated_exec(ArrayList<Task> idToTask, int taskId, int idToTaskBase,TupleImpl tuple, Object encrptedValues){
         try{
             IBolt boltObject = (IBolt) idToTask.get(taskId - idToTaskBase).getTaskObject();
+
+            byte[] decryptedData = Crypto.sgx_decrypt(encrptedValues, false);
+            List<Object> updateVal = new ArrayList<>();
+            updateVal.add(decryptedData);
+            tuple.updateVal(updateVal);
+
             boltObject.execute(tuple);
         } catch (Exception e){
             System.out.println("Bolt inside enclave error: "+e.toString());
@@ -261,11 +267,13 @@ public class BoltExecutor extends Executor {
             //boltObject.execute(tuple);
 
             if(boltObject instanceof IRichBolt){
+                Object encrptedValues = tuple.getValues().get(0);
                 annotated_exec(
                         idToTask,
                         taskId,
                         idToTaskBase,
-                        tuple
+                        tuple,
+                        encrptedValues
                 );
             }
             else {

@@ -91,6 +91,8 @@ public class TupleImpl implements Tuple {
         return outAckVal;
     }
 
+    public void updateVal(List<Object> decryptedVal) {this.values = decryptedVal;}
+
     @Override
     public int size() {
         return values.size();
