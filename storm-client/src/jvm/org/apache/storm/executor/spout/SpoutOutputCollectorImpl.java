@@ -119,7 +119,7 @@ public class SpoutOutputCollectorImpl implements ISpoutOutputCollector {
      */
     @IntelSGX
     public static void enclaveEncryptionEmit(SpoutExecutor executor, AddressedTuple adrTuple){
-        executor.getExecutorTransfer().tryTransfer(adrTuple, executor.getPendingEmits());
+        executor.getExecutorTransfer().tryTransferSpoutEnclaveNoLog(adrTuple, executor.getPendingEmits());
     }
 
     private List<Integer> sendSpoutMsg(String stream, List<Object> values, Object messageId, Integer outTaskId) throws
@@ -153,6 +153,7 @@ public class SpoutOutputCollectorImpl implements ISpoutOutputCollector {
             final TupleImpl tuple =
                 new TupleImpl(executor.getWorkerTopologyContext(), values, executor.getComponentId(), this.taskId, stream, msgId);
             AddressedTuple adrTuple = new AddressedTuple(t, tuple);
+            executor.getExecutorTransfer().tryTransferSpoutEnclaveLog(adrTuple);
             // should enter enclave here
             enclaveEncryptionEmit(executor, adrTuple);
             //executor.getExecutorTransfer().tryTransfer(adrTuple, executor.getPendingEmits());
