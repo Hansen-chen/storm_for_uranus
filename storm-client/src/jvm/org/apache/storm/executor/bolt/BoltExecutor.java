@@ -13,11 +13,7 @@
 package org.apache.storm.executor.bolt;
 
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.Callable;
 import java.util.function.BooleanSupplier;
 import org.apache.storm.Config;
@@ -232,7 +228,7 @@ public class BoltExecutor extends Executor {
 
             byte[] decryptedData = Crypto.sgx_decrypt(encrptedValues, false);
             List<Object> updateVal = new ArrayList<>();
-            updateVal.add(decryptedData);
+            ((Collection<Object>)updateVal).add(decryptedData);
             tuple.updateVal(updateVal);
 
             boltObject.execute(tuple);
