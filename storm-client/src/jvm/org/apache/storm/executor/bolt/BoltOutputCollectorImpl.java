@@ -89,10 +89,25 @@ public class BoltOutputCollectorImpl implements IOutputCollector {
 
             try {
                 //Need to add crypto.sgx_encrypt
+
+                byte[] rawData;
+                byte[] encryptedData;
+                try {
+                    rawData = serialize(tuple);
+                    encryptedData = Crypto.sgx_encrypt(rawData, false);
+                }
+                catch (Exception ex){
+                    rawData = new byte[1];
+                    encryptedData = new byte[1];
+
+                }
+
+
                 annotated_emit(
                         (String)Tools.deep_copy(streamId),
                         (Collection<Tuple>)Tools.deep_copy(anchors),
                         (List<Object>)Tools.deep_copy(tuple),
+                        (byte[])Tools.deep_copy(encryptedData),
                         task,
                         ackingEnabled,
                         random,
@@ -128,7 +143,7 @@ public class BoltOutputCollectorImpl implements IOutputCollector {
     }
 
     @IntelSGXOcall
-    public static void annotated_emit(String streamId, Collection<Tuple> anchors, List<Object> values, Task task, boolean ackingEnabled, Random random, BoltExecutor executor, int taskId, ExecutorTransfer xsfer, boolean isEventLoggers) {
+    public static void annotated_emit(String streamId, Collection<Tuple> anchors, List<Object> values, byte[] encryptedTuple, Task task, boolean ackingEnabled, Random random, BoltExecutor executor, int taskId, ExecutorTransfer xsfer, boolean isEventLoggers) {
 
         List<Integer> outTasks = task.getOutgoingTasks(streamId, values);
 
@@ -159,14 +174,16 @@ public class BoltOutputCollectorImpl implements IOutputCollector {
             // sgx encrypt inside enclave here
             List<Object> encryptedValues = new ArrayList<>();
 
+
             if (!(streamId.contains("ack") || streamId.contains("metrics")))
             {
                 try{
-                    byte[] rawData = serialize(values);
+                    //byte[] rawData = serialize(values);
 
-                    byte[] encryptedTuple = enclaveEncryption(rawData);
+                    //byte[] encryptedTuple = enclaveEncryption(rawData);
 
                     encryptedValues.add(encryptedTuple);
+
                 }
                 catch (Exception ex){
                     LOG.info("bolt sgx encrypt error: " + ex.toString());
@@ -176,6 +193,8 @@ public class BoltOutputCollectorImpl implements IOutputCollector {
             else {
                 encryptedValues = values;
             }
+
+
 
             TupleImpl tupleExt = new TupleImpl(
                     executor.getWorkerTopologyContext(), encryptedValues, executor.getComponentId(), taskId, streamId, msgId);
