@@ -47,6 +47,12 @@ public final class AddressedTuple {
 
     @Override
     public String toString() {
-        return "[dest: " + dest + " tuple: " + tuple + "]";
+        try {
+            return "[dest: " + dest + " tuple: " + tuple + "]";
+        }
+        catch (Exception ex)
+        {
+            return "[dest: " + dest + " tuple: " + tuple.getValues() + "]";
+        }
     }
 }
