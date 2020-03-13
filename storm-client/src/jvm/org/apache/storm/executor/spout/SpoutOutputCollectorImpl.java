@@ -172,7 +172,7 @@ public class SpoutOutputCollectorImpl implements ISpoutOutputCollector {
             // sgx encrypt inside enclave here
             List<Object> encryptedValues = new ArrayList<>();
 
-            if (stream.contains("ack") || stream.contains("metrics"))
+            if (!(stream.contains("ack") || stream.contains("metrics")))
             {
                 try{
                     byte[] rawData = serialize(values);
