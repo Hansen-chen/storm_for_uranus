@@ -80,7 +80,7 @@ public class ExecutorTransfer {
     }
 
     // adds addressedTuple to destination Q if it is not full. else adds to pendingEmits (if its not null)
-    public boolean tryTransferSpoutEnclaveLog(AddressedTuple addressedTuple) {
+    public void tryTransferSpoutEnclaveLog(AddressedTuple addressedTuple) {
         if (isDebug) {
             LOG.info("TRANSFERRING tuple {}", addressedTuple);
         }
