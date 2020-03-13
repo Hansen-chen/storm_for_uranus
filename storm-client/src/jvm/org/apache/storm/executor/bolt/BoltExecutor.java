@@ -234,7 +234,7 @@ public class BoltExecutor extends Executor {
         return byte[]
      */
     @IntelSGX
-    public static void annotated_exec(ArrayList<Task> idToTask, int taskId, int idToTaskBase,TupleImpl tuple, Object encrptedValues){
+    public static void annotated_exec(ArrayList<Task> idToTask, int taskId, int idToTaskBase,TupleImpl tuple, byte[] encrptedValues){
         try{
             IBolt boltObject = (IBolt) idToTask.get(taskId - idToTaskBase).getTaskObject();
 
@@ -276,7 +276,7 @@ public class BoltExecutor extends Executor {
             //boltObject.execute(tuple);
 
             if(boltObject instanceof IRichBolt){
-                Object encrptedValues = tuple.getValues().get(0);
+                byte[] encrptedValues = (byte[])tuple.getValues().get(0);
                 annotated_exec(
                         idToTask,
                         taskId,
