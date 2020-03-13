@@ -279,20 +279,30 @@ public class BoltExecutor extends Executor {
             //boltObject.execute(tuple);
 
             if(boltObject instanceof IRichBolt && !(streamId.contains("ack") || streamId.contains("metrics"))){
-                byte[] encryptedValues = (byte[])tuple.getValues().get(0);
-                byte[] decryptedData = enclaveDecryption(encryptedValues);
-                List<Object> updateVal = (List<Object>)deserialize(decryptedData);
-                List<Object> oldVal = tuple.getValues();
-                tuple.updateVal(updateVal);
+                try{
+                    byte[] encryptedValues = (byte[])tuple.getValues().get(0);
 
-                annotated_exec(
-                        idToTask,
-                        taskId,
-                        idToTaskBase,
-                        tuple
-                );
+                    if (encryptedValues != null){
+                        byte[] decryptedData = enclaveDecryption(encryptedValues);
+                        List<Object> updateVal = (List<Object>)deserialize(decryptedData);
+                        List<Object> oldVal = tuple.getValues();
+                        tuple.updateVal(updateVal);
 
-                //tuple.updateVal(oldVal);
+                        annotated_exec(
+                                idToTask,
+                                taskId,
+                                idToTaskBase,
+                                tuple
+                        );
+
+                        //tuple.updateVal(oldVal);
+                    }
+                    else {
+                        boltObject.execute(tuple);
+                    }
+                }catch (Exception ex){
+                    boltObject.execute(tuple);
+                }
             }
             else {
                 boltObject.execute(tuple);
