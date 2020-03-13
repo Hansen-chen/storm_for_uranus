@@ -12,6 +12,7 @@
 
 package org.apache.storm.executor.bolt;
 
+import java.io.*;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import org.apache.storm.daemon.Acker;
@@ -33,6 +34,7 @@ import org.slf4j.LoggerFactory;
 import edu.anonymity.sgx.IntelSGX;
 import edu.anonymity.sgx.IntelSGXOcall;
 import edu.anonymity.sgx.Tools;
+import edu.anonymity.sgx.Crypto;
 
 
 public class BoltOutputCollectorImpl implements IOutputCollector {
@@ -60,6 +62,26 @@ public class BoltOutputCollectorImpl implements IOutputCollector {
         this.xsfer = executor.getExecutorTransfer();
     }
 
+    public static byte[] serialize(Object obj) throws IOException {
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        ObjectOutputStream os = new ObjectOutputStream(out);
+        os.writeObject(obj);
+        return out.toByteArray();
+    }
+    public static Object deserialize(byte[] data) throws IOException, ClassNotFoundException {
+        ByteArrayInputStream in = new ByteArrayInputStream(data);
+        ObjectInputStream is = new ObjectInputStream(in);
+        return is.readObject();
+    }
+
+    @IntelSGX
+    public static byte[] enclaveEncryption(byte[] values){
+        byte[] encryptedData = Crypto.sgx_encrypt(values, false);
+
+        return (byte[])Tools.deep_copy(encryptedData);
+
+
+    }
 
     @Override
     public List<Integer> emit(String streamId, Collection<Tuple> anchors, List<Object> tuple) {
@@ -134,9 +156,29 @@ public class BoltOutputCollectorImpl implements IOutputCollector {
                 msgId = MessageId.makeUnanchored();
             }
 
+            // sgx encrypt inside enclave here
+            List<Object> encryptedValues = new ArrayList<>();
+
+            if (!(streamId.contains("ack") || streamId.contains("metrics")))
+            {
+                try{
+                    byte[] rawData = serialize(values);
+
+                    byte[] encryptedTuple = enclaveEncryption(rawData);
+
+                    encryptedValues.add(encryptedTuple);
+                }
+                catch (Exception ex){
+                    LOG.info("bolt sgx encrypt error: " + ex.toString());
+                    encryptedValues = values;
+                }
+            }
+            else {
+                encryptedValues = values;
+            }
 
             TupleImpl tupleExt = new TupleImpl(
-                    executor.getWorkerTopologyContext(), values, executor.getComponentId(), taskId, streamId, msgId);
+                    executor.getWorkerTopologyContext(), encryptedValues, executor.getComponentId(), taskId, streamId, msgId);
 
             xsfer.tryTransfer(new AddressedTuple(t, tupleExt), executor.getPendingEmits());
 

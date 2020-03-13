@@ -281,10 +281,9 @@ public class BoltExecutor extends Executor {
             if(boltObject instanceof IRichBolt && !(streamId.contains("ack") || streamId.contains("metrics"))){
                 byte[] encryptedValues = (byte[])tuple.getValues().get(0);
                 byte[] decryptedData = enclaveDecryption(encryptedValues);
-                List<Object> updateVal = new ArrayList<>();
-                updateVal.add(deserialize(decryptedData));
+                List<Object> updateVal = (List<Object>)deserialize(decryptedData);
+                List<Object> oldVal = tuple.getValues();
                 tuple.updateVal(updateVal);
-
 
                 annotated_exec(
                         idToTask,
@@ -292,6 +291,8 @@ public class BoltExecutor extends Executor {
                         idToTaskBase,
                         tuple
                 );
+
+                //tuple.updateVal(oldVal);
             }
             else {
                 boltObject.execute(tuple);
