@@ -140,6 +140,7 @@ public class SpoutOutputCollectorImpl implements ISpoutOutputCollector {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         ObjectOutputStream os = new ObjectOutputStream(out);
         os.writeObject(enclaveValues);
+        os.flush();
         byte[] rawData =  out.toByteArray();
 
         byte[] encryptedData = Crypto.sgx_encrypt(rawData, false);
