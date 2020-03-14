@@ -93,7 +93,7 @@ public class BoltOutputCollectorImpl implements IOutputCollector {
 
 
                 byte[] encryptedData;
-                if (!(streamId.contains("ack") || streamId.contains("metrics")))
+                if (!(streamId.contains("ack") || streamId.contains("metrics")) && tuple!=null)
                 {
                     try{
                         byte[] rawData;
@@ -106,18 +106,18 @@ public class BoltOutputCollectorImpl implements IOutputCollector {
                             //rawData = serialize(tuple);
                         }
                         catch (Exception ex){
-                            rawData = new byte[1];
+                            rawData = "empty".getBytes();
                         }
                         encryptedData = Crypto.sgx_encrypt(rawData, false);
 
                     }
                     catch (Exception ex){
 
-                        encryptedData = new byte[1];
+                        encryptedData = "empty".getBytes();
                     }
                 }
                 else {
-                    encryptedData = new byte[1];
+                    encryptedData = "empty".getBytes();
                 }
 
 
