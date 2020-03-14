@@ -74,6 +74,14 @@ public class BoltOutputCollectorImpl implements IOutputCollector {
         return is.readObject();
     }
 
+    @IntelSGXOcall
+    public static byte[] serializeOcall(Object obj) throws IOException {
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        ObjectOutputStream os = new ObjectOutputStream(out);
+        os.writeObject(obj);
+        return out.toByteArray();
+    }
+
     @IntelSGX
     public static byte[] enclaveEncryption(byte[] values){
         byte[] encryptedData = Crypto.sgx_encrypt(values, false);
@@ -98,12 +106,16 @@ public class BoltOutputCollectorImpl implements IOutputCollector {
                     try{
                         byte[] rawData;
                         try {
+                            /*
                             ByteArrayOutputStream out = new ByteArrayOutputStream();
                             ObjectOutputStream os = new ObjectOutputStream(out);
                             os.writeObject(tuple);
                             os.flush();
                             rawData =  out.toByteArray();
+                             */
+
                             //rawData = serialize(tuple);
+                            rawData = serializeOcall(tuple);
                         }
                         catch (Exception ex){
                             rawData = "empty".getBytes();
