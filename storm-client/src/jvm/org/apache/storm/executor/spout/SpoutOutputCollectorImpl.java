@@ -135,7 +135,7 @@ public class SpoutOutputCollectorImpl implements ISpoutOutputCollector {
     @IntelSGX
     public static byte[] enclaveEncryption(List<Object> values) throws IOException{
 
-        List<Object> enclaveValues = new ArrayList<>((List<Object>)Tools.deep_copy(values));
+        List<Object> enclaveValues = (List<Object>)Tools.deep_copy(values);
 
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         ObjectOutputStream os = new ObjectOutputStream(out);
