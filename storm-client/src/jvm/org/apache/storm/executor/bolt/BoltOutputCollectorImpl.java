@@ -74,14 +74,6 @@ public class BoltOutputCollectorImpl implements IOutputCollector {
         return is.readObject();
     }
 
-    @IntelSGX
-    public static byte[] enclaveEncryption(byte[] values){
-        byte[] encryptedData = Crypto.sgx_encrypt(values, false);
-
-        return (byte[])Tools.deep_copy(encryptedData);
-
-
-    }
 
     @Override
     public List<Integer> emit(String streamId, Collection<Tuple> anchors, List<Object> tuple) {

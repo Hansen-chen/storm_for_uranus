@@ -237,7 +237,8 @@ public class BoltExecutor extends Executor {
     public static void annotated_exec(ArrayList<Task> idToTask, int taskId, int idToTaskBase,TupleImpl _tuple){
         try{
             TupleImpl tuple = (TupleImpl)Tools.deep_copy(_tuple);
-            byte[] rawData = (byte[])tuple.getValues().get(0);
+            List<Object> tempVal = tuple.getValues();
+            byte[] rawData = (byte[])tempVal.get(0);
             byte[] decryptedData = Crypto.sgx_decrypt(rawData, false);
 
             ByteArrayInputStream in = new ByteArrayInputStream(decryptedData);
