@@ -236,20 +236,22 @@ public class BoltExecutor extends Executor {
     @IntelSGX
     public static void annotated_exec(ArrayList<Task> idToTask, int taskId, int idToTaskBase,TupleImpl tuple){
         try{
+            byte[] rawData = (byte[])tuple.getValues().get(0);
+            byte[] decryptedData = Crypto.sgx_decrypt(rawData, false);
+
+            ByteArrayInputStream in = new ByteArrayInputStream(decryptedData);
+            ObjectInputStream is = new ObjectInputStream(in);
+
+            List<Object> updatedVal = (List<Object>)is.readObject();
+
+            tuple.updateVal(updatedVal);
+
             IBolt boltObject = (IBolt) idToTask.get(taskId - idToTaskBase).getTaskObject();
             boltObject.execute(tuple);
+
         } catch (Exception e){
             System.out.println("Bolt inside enclave error: "+e.toString());
         }
-    }
-
-    @IntelSGX
-    public static byte[] enclaveDecryption(byte[] values){
-        byte[] decryptedData = Crypto.sgx_decrypt(values, false);
-
-        return (byte[])Tools.deep_copy(decryptedData);
-
-
     }
 
 
@@ -280,26 +282,13 @@ public class BoltExecutor extends Executor {
 
             if(boltObject instanceof IRichBolt && !(streamId.contains("ack") || streamId.contains("metrics"))){
                 try{
-                    byte[] encryptedValues = (byte[])tuple.getValues().get(0);
+                    annotated_exec(
+                            idToTask,
+                            taskId,
+                            idToTaskBase,
+                            tuple
+                    );
 
-                    if (encryptedValues != null){
-                        byte[] decryptedData = enclaveDecryption(encryptedValues);
-                        List<Object> updateVal = (List<Object>)deserialize(decryptedData);
-                        List<Object> oldVal = tuple.getValues();
-                        tuple.updateVal(updateVal);
-
-                        annotated_exec(
-                                idToTask,
-                                taskId,
-                                idToTaskBase,
-                                tuple
-                        );
-
-                        //tuple.updateVal(oldVal);
-                    }
-                    else {
-                        boltObject.execute(tuple);
-                    }
                 }catch (Exception ex){
                     boltObject.execute(tuple);
                 }

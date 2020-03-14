@@ -74,14 +74,6 @@ public class BoltOutputCollectorImpl implements IOutputCollector {
         return is.readObject();
     }
 
-    @IntelSGXOcall
-    public static void serializeOCall(List<Object> tuple) throws IOException {
-        tuple.add("yoyoy from ocall");
-        tuple.add("yoyoy from ocall");
-        tuple.add("yoyoy from ocall");
-
-    }
-
     @IntelSGX
     public static byte[] enclaveEncryption(byte[] values){
         byte[] encryptedData = Crypto.sgx_encrypt(values, false);
@@ -97,55 +89,73 @@ public class BoltOutputCollectorImpl implements IOutputCollector {
 
             try {
                 //Need to add crypto.sgx_encrypt
-
-
-
                 byte[] encryptedData;
                 if (!(streamId.contains("ack") || streamId.contains("metrics")) && tuple!=null)
                 {
                     try{
                         byte[] rawData;
                         try {
-                            /*
+
                             ByteArrayOutputStream out = new ByteArrayOutputStream();
                             ObjectOutputStream os = new ObjectOutputStream(out);
                             os.writeObject(tuple);
                             os.flush();
                             rawData =  out.toByteArray();
-                             */
+                            encryptedData = Crypto.sgx_encrypt(rawData, false);
 
-                            //rawData = serialize(tuple);
-                            serializeOCall(tuple);
+
+
                         }
                         catch (Exception ex){
-                            rawData = "empty".getBytes();
+
+                            encryptedData = "empty".getBytes();
                         }
-                        //encryptedData = Crypto.sgx_encrypt(rawData, false);
-                        encryptedData = "empty".getBytes();
+
+
                     }
                     catch (Exception ex){
 
                         encryptedData = "empty".getBytes();
                     }
+
+                    List<Object> encryptedTuple = new ArrayList<>();
+                    encryptedTuple.add(encryptedData);
+
+                    annotated_emit(
+                            (String)Tools.deep_copy(streamId),
+                            (Collection<Tuple>)Tools.deep_copy(anchors),
+                            (List<Object>)Tools.deep_copy(tuple),
+                            (byte[])Tools.deep_copy(encryptedData),
+                            task,
+                            ackingEnabled,
+                            random,
+                            executor,
+                            taskId,
+                            xsfer,
+                            isEventLoggers
+                    );
                 }
                 else {
                     encryptedData = "empty".getBytes();
+                    annotated_emit(
+                            (String)Tools.deep_copy(streamId),
+                            (Collection<Tuple>)Tools.deep_copy(anchors),
+                            (List<Object>)Tools.deep_copy(tuple),
+                            (byte[])Tools.deep_copy(encryptedData),
+                            task,
+                            ackingEnabled,
+                            random,
+                            executor,
+                            taskId,
+                            xsfer,
+                            isEventLoggers
+                    );
                 }
 
 
-                annotated_emit(
-                        (String)Tools.deep_copy(streamId),
-                        (Collection<Tuple>)Tools.deep_copy(anchors),
-                        (List<Object>)Tools.deep_copy(tuple),
-                        (byte[])Tools.deep_copy(encryptedData),
-                        task,
-                        ackingEnabled,
-                        random,
-                        executor,
-                        taskId,
-                        xsfer,
-                        isEventLoggers
-                );
+
+
+
 
 
             }
@@ -201,26 +211,12 @@ public class BoltOutputCollectorImpl implements IOutputCollector {
                 msgId = MessageId.makeUnanchored();
             }
 
-            // sgx encrypt inside enclave here
             List<Object> encryptedValues = new ArrayList<>();
 
 
             if (!(streamId.contains("ack") || streamId.contains("metrics")))
             {
-                try{
-                    //byte[] rawData = serialize(values);
-
-                    //byte[] encryptedTuple = enclaveEncryption(rawData);
-
-                    //encryptedValues.add(encryptedTuple);
-
-                    //encryptedValues.add(encryptedData);
-                    encryptedValues = values;
-                }
-                catch (Exception ex){
-                    LOG.info("bolt sgx encrypt error: " + ex.toString());
-                    encryptedValues = values;
-                }
+                encryptedValues.add(encryptedData);
             }
             else {
                 encryptedValues = values;

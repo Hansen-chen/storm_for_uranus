@@ -133,8 +133,14 @@ public class SpoutOutputCollectorImpl implements ISpoutOutputCollector {
         return byte[]
      */
     @IntelSGX
-    public static byte[] enclaveEncryption(byte[] values){
-        byte[] encryptedData = Crypto.sgx_encrypt(values, false);
+    public static byte[] enclaveEncryption(List<Object> values) throws IOException{
+
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        ObjectOutputStream os = new ObjectOutputStream(out);
+        os.writeObject(values);
+        byte[] rawData =  out.toByteArray();
+
+        byte[] encryptedData = Crypto.sgx_encrypt(rawData, false);
 
         return (byte[])Tools.deep_copy(encryptedData);
 
@@ -175,9 +181,9 @@ public class SpoutOutputCollectorImpl implements ISpoutOutputCollector {
             if (!(stream.contains("ack") || stream.contains("metrics")))
             {
                 try{
-                    byte[] rawData = serialize(values);
+                    //byte[] rawData = serialize(values);
 
-                    byte[] encryptedTuple = enclaveEncryption(rawData);
+                    byte[] encryptedTuple = enclaveEncryption(values);
 
                     encryptedValues.add(encryptedTuple);
                 }
