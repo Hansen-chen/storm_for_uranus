@@ -90,14 +90,30 @@ public class BoltOutputCollectorImpl implements IOutputCollector {
             try {
                 //Need to add crypto.sgx_encrypt
 
-                byte[] rawData;
-                try {
-                    rawData = serialize(tuple);
+
+
+                byte[] encryptedData;
+                if (!(streamId.contains("ack") || streamId.contains("metrics")))
+                {
+                    try{
+                        byte[] rawData;
+                        try {
+                            rawData = serialize(tuple);
+                        }
+                        catch (Exception ex){
+                            rawData = new byte[1];
+                        }
+                        encryptedData = Crypto.sgx_encrypt(rawData, false);
+
+                    }
+                    catch (Exception ex){
+
+                        encryptedData = new byte[1];
+                    }
                 }
-                catch (Exception ex){
-                    rawData = new byte[1];
+                else {
+                    encryptedData = new byte[1];
                 }
-                byte[] encryptedData = Crypto.sgx_encrypt(rawData, false);
 
 
                 annotated_emit(
