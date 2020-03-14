@@ -101,6 +101,7 @@ public class BoltOutputCollectorImpl implements IOutputCollector {
                             ByteArrayOutputStream out = new ByteArrayOutputStream();
                             ObjectOutputStream os = new ObjectOutputStream(out);
                             os.writeObject(tuple);
+                            os.flush();
                             rawData =  out.toByteArray();
                             //rawData = serialize(tuple);
                         }
