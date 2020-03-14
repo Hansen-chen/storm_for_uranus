@@ -186,7 +186,7 @@ public class SpoutOutputCollectorImpl implements ISpoutOutputCollector {
                 try{
                     //byte[] rawData = serialize(values);
 
-                    byte[] encryptedTuple = enclaveEncryption(values);
+                    byte[] encryptedTuple = enclaveEncryption(values).clone();
 
                     encryptedValues.add(encryptedTuple);
                 }
