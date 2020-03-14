@@ -90,6 +90,8 @@ public class BoltOutputCollectorImpl implements IOutputCollector {
             try {
                 //Need to add crypto.sgx_encrypt
 
+
+
                 annotated_emit(
                         (String)Tools.deep_copy(streamId),
                         (Collection<Tuple>)Tools.deep_copy(anchors),
@@ -166,9 +168,10 @@ public class BoltOutputCollectorImpl implements IOutputCollector {
                 try{
                     byte[] rawData = serialize(values);
 
-                    byte[] encryptedTuple = enclaveEncryption(rawData);
+                    //byte[] encryptedTuple = enclaveEncryption(rawData);
 
-                    encryptedValues.add(encryptedTuple);
+                    //encryptedValues.add(encryptedTuple);
+                    encryptedValues.add(rawData);
 
                 }
                 catch (Exception ex){

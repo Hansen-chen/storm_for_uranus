@@ -95,6 +95,7 @@ public class AnchoredWordCount extends ConfigurableTopology {
 
             final String sentence = sentences[random.nextInt(sentences.length)];
 
+
             this.collector.emit(new Values(sentence), sentence);
         }
 
