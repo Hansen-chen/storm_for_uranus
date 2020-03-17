@@ -74,6 +74,16 @@ public class BoltOutputCollectorImpl implements IOutputCollector {
         return is.readObject();
     }
 
+    @IntelSGXOcall
+    public static void dummySerialize(Object obj){
+        try{
+            serialize(obj);
+        }
+        catch (Exception ex){
+
+        }
+    }
+
 
     @Override
     public List<Integer> emit(String streamId, Collection<Tuple> anchors, List<Object> tuple) {
@@ -88,6 +98,7 @@ public class BoltOutputCollectorImpl implements IOutputCollector {
                         byte[] rawData;
                         try {
 
+                            dummySerialize(tuple);
                             ByteArrayOutputStream out = new ByteArrayOutputStream();
                             ObjectOutputStream os = new ObjectOutputStream(out);
                             os.writeObject(tuple);
