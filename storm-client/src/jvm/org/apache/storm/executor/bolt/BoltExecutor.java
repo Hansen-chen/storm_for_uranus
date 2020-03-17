@@ -284,6 +284,18 @@ public class BoltExecutor extends Executor {
 
             if(boltObject instanceof IRichBolt && !(streamId.contains("ack") || streamId.contains("metrics"))){
                 try{
+
+                    List<Object> tempVal = tuple.getValues();
+
+                    byte[] rawData = (byte[])tempVal.get(0);
+
+                    ByteArrayInputStream in = new ByteArrayInputStream(rawData);
+                    ObjectInputStream is = new ObjectInputStream(in);
+
+                    List<Object> updatedVal = (List<Object>)is.readObject();
+
+                    LOG.info("Executing TUPLE {} Value: {}", tuple, updatedVal);
+
                     annotated_exec(
                             idToTask,
                             taskId,
