@@ -295,6 +295,9 @@ public class BoltExecutor extends Executor {
                     List<Object> dummy = new ArrayList<>();
                     byte[] rawData = (byte[])tempVal.get(0);
 
+                    if (isDebug) {
+                        LOG.info("Executing TUPLE {} Raw Value: {}", tuple, rawData);
+                    }
                     try{
                         byte[] decryptedData =annotated_decrypt(rawData);
                         dummy = (List<Object>)deserialize(decryptedData);
@@ -303,9 +306,7 @@ public class BoltExecutor extends Executor {
                         dummy.add("Error Deserialize Outside Enclave");
                     }
 
-                    if (isDebug) {
-                        LOG.info("Executing TUPLE {} Raw Value: {} Try Decrypt Value: {}", tuple, rawData, dummy);
-                    }
+
                     annotated_exec(
                             idToTask,
                             taskId,
