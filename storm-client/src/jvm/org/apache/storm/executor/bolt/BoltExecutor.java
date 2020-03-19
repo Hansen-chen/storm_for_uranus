@@ -234,9 +234,9 @@ public class BoltExecutor extends Executor {
         return byte[]
      */
     @IntelSGX
-    public static void annotated_exec(ArrayList<Task> idToTask, int taskId, int idToTaskBase,TupleImpl tuple){
+    public static void annotated_exec(ArrayList<Task> idToTask, int taskId, int idToTaskBase,TupleImpl _tuple){
         try{
-            //TupleImpl tuple = (TupleImpl)Tools.deep_copy(_tuple);
+            TupleImpl tuple = (TupleImpl)Tools.deep_copy(_tuple);
             List<Object> tempVal = tuple.getValues();
             byte[] rawData = (byte[])tempVal.get(0);
             byte[] decryptedData = Crypto.sgx_decrypt(rawData, false);
