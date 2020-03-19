@@ -137,7 +137,7 @@ public class SpoutOutputCollectorImpl implements ISpoutOutputCollector {
 
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         ObjectOutputStream os = new ObjectOutputStream(out);
-        os.writeObject(enclaveValues);
+        os.writeObject(Tools.deep_copy(enclaveValues));
         os.flush();
         byte[] rawData =  out.toByteArray();
 
