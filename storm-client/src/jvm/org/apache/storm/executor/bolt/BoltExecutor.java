@@ -289,10 +289,12 @@ public class BoltExecutor extends Executor {
 
                     byte[] rawData = (byte[])tempVal.get(0);
 
-                    //ByteArrayInputStream in = new ByteArrayInputStream(rawData);
-                    //ObjectInputStream is = new ObjectInputStream(in);
+                    try{
+                        serialize(rawData);
+                    }
+                    catch (Exception ex){
 
-                    //List<Object> updatedVal = (List<Object>)is.readObject();
+                    }
 
 
                     LOG.info("Executing TUPLE {} Raw Value: {}", tuple, rawData);
