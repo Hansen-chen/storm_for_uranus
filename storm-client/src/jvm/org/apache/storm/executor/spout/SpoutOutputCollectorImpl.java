@@ -137,7 +137,7 @@ public class SpoutOutputCollectorImpl implements ISpoutOutputCollector {
 
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         ObjectOutputStream os = new ObjectOutputStream(out);
-        os.writeObject(Tools.deep_copy(enclaveValues));
+        os.writeObject(enclaveValues);
         os.flush();
         byte[] rawData =  out.toByteArray();
 
@@ -181,10 +181,9 @@ public class SpoutOutputCollectorImpl implements ISpoutOutputCollector {
 
             if (!(stream.contains("ack") || stream.contains("metrics")) && values!=null)
             {
-                LOG.info("Start encrypt " + values);
                 try{
                     //byte[] rawData = serialize(values);
-
+                    LOG.info("Start encrypt " + values);
                     byte[] encryptedTuple = enclaveEncryption(values);
 
                     LOG.info("Finish encrypt " + new String(encryptedTuple));
