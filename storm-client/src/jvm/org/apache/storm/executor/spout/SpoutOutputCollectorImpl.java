@@ -184,7 +184,7 @@ public class SpoutOutputCollectorImpl implements ISpoutOutputCollector {
             if (!(stream.contains("ack") || stream.contains("metrics")))
             {
                 try{
-                    byte[] rawData = serialize(values);
+                    //byte[] rawData = serialize(values);
 
                     byte[] encryptedTuple = enclaveEncryption(values);
 

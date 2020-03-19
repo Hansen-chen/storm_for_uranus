@@ -289,13 +289,13 @@ public class BoltExecutor extends Executor {
 
                     byte[] rawData = (byte[])tempVal.get(0);
 
-                    ByteArrayInputStream in = new ByteArrayInputStream(rawData);
-                    ObjectInputStream is = new ObjectInputStream(in);
+                    //ByteArrayInputStream in = new ByteArrayInputStream(rawData);
+                    //ObjectInputStream is = new ObjectInputStream(in);
 
-                    List<Object> updatedVal = (List<Object>)is.readObject();
+                    //List<Object> updatedVal = (List<Object>)is.readObject();
 
 
-                    LOG.info("Executing TUPLE {} Value: {}", tuple, updatedVal);
+                    LOG.info("Executing TUPLE {} Raw Value: {}", tuple, rawData);
 
                     annotated_exec(
                             idToTask,
