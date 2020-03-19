@@ -233,6 +233,13 @@ public class BoltExecutor extends Executor {
         sgx_encrypt()
         return byte[]
      */
+
+    @IntelSGX
+    public static byte[] annotated_decrypt(byte[] values){
+        byte[] decryptedData = Crypto.sgx_decrypt(values, false);
+        return (byte[])Tools.deep_copy(decryptedData);
+    }
+
     @IntelSGX
     public static void annotated_exec(ArrayList<Task> idToTask, int taskId, int idToTaskBase,TupleImpl _tuple){
         try{
@@ -290,7 +297,8 @@ public class BoltExecutor extends Executor {
                     byte[] rawData = (byte[])tempVal.get(0);
 
                     try{
-                        dummy = (List<Object>)deserialize(rawData);
+                        byte[] decryptedData =annotated_decrypt(rawData);
+                        dummy = (List<Object>)deserialize(decryptedData);
                     }
                     catch (Exception ex){
                         dummy.add("Error Deserialize Outside Enclave");
