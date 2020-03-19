@@ -253,7 +253,7 @@ public class BoltExecutor extends Executor {
 
             List<Object> updatedVal = (List<Object>)is.readObject();
 
-            tuple.updateVal(updatedVal);
+            tuple.updateVal((List<Object>)Tools.deep_copy(updatedVal));
 
             IBolt boltObject = (IBolt) idToTask.get(taskId - idToTaskBase).getTaskObject();
             boltObject.execute(tuple);
