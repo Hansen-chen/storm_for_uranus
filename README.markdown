@@ -52,7 +52,7 @@
 ## Uranus Building
 1. git clone
 2. ./configure
-3. make clean;SGX_HW=1 SGX_MODE=HW make
+3. make clean;SGX_HW=1 SGX_MODE=HW make image
 
 ## Useful Link
 
