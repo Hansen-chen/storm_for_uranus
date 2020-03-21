@@ -114,17 +114,10 @@ public class SpoutOutputCollectorImpl implements ISpoutOutputCollector {
     }
 
     public static byte[] serialize(Object obj) throws IOException {
-        byte[] stream = null;
-        // ObjectOutputStream is used to convert a Java object into OutputStream
-        try (ByteArrayOutputStream baos = new ByteArrayOutputStream();
-             ObjectOutputStream oos = new ObjectOutputStream(baos);) {
-            oos.writeObject(obj);
-            stream = baos.toByteArray();
-        } catch (IOException e) {
-            // Error in serialization
-            e.printStackTrace();
-        }
-        return stream;
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        ObjectOutputStream os = new ObjectOutputStream(out);
+        os.writeObject(obj);
+        return out.toByteArray();
     }
     public static Object deserialize(byte[] data) throws IOException, ClassNotFoundException {
         ByteArrayInputStream in = new ByteArrayInputStream(data);
