@@ -243,6 +243,7 @@ public class BoltExecutor extends Executor {
     @IntelSGX
     public static void annotated_exec(ArrayList<Task> idToTask, int taskId, int idToTaskBase,TupleImpl tuple){
         try{
+            /*
             List<Object> tempVal = tuple.getValues();
             byte[] rawData = (byte[])tempVal.get(0);
             byte[] decryptedData = Crypto.sgx_decrypt(rawData, false);
@@ -254,6 +255,7 @@ public class BoltExecutor extends Executor {
 
             tuple.updateVal((List<Object>)Tools.deep_copy(updatedVal));
 
+             */
             IBolt boltObject = (IBolt) idToTask.get(taskId - idToTaskBase).getTaskObject();
             boltObject.execute(tuple);
 
@@ -305,8 +307,8 @@ public class BoltExecutor extends Executor {
                     catch (Exception ex){
                         dummy.add("Error Deserialize Outside Enclave");
                     }
-
-
+                    //temp added
+                    tuple.updateVal(dummy);
                     annotated_exec(
                             idToTask,
                             taskId,

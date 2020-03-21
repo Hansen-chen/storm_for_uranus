@@ -154,6 +154,16 @@ public class SpoutOutputCollectorImpl implements ISpoutOutputCollector {
 
     }
 
+    @IntelSGX
+    public static byte[] enclaveEncryption_temp(byte[] _enclaveValues) throws IOException{
+
+        byte[] encryptedData = Crypto.sgx_encrypt(_enclaveValues, false);
+
+        return (byte[])Tools.deep_copy(encryptedData);
+
+
+    }
+
     private List<Integer> sendSpoutMsg(String stream, List<Object> values, Object messageId, Integer outTaskId) throws
             InterruptedException {
         emittedCount.increment();
@@ -190,8 +200,8 @@ public class SpoutOutputCollectorImpl implements ISpoutOutputCollector {
                 try{
                     byte[] rawData = serialize(values);
                     LOG.info("Start encrypt " + values);
-                    byte[] encryptedTuple = enclaveEncryption(values);
-
+                    //byte[] encryptedTuple = enclaveEncryption(values);
+                    byte[] encryptedTuple = enclaveEncryption_temp(rawData);
                     LOG.info("Finish encrypt " + encryptedTuple.toString());
                     encryptedValues.add(encryptedTuple);
                 }
