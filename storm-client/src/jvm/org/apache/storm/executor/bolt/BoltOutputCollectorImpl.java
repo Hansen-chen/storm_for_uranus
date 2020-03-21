@@ -95,7 +95,6 @@ public class BoltOutputCollectorImpl implements IOutputCollector {
                 if (!(streamId.contains("ack") || streamId.contains("metrics")) && tuple!=null)
                 {
                     try{
-                        byte[] rawData;
                         try {
 
                             dummySerialize(tuple);
@@ -103,7 +102,7 @@ public class BoltOutputCollectorImpl implements IOutputCollector {
                             ObjectOutputStream os = new ObjectOutputStream(out);
                             os.writeObject(tuple);
                             os.flush();
-                            rawData =  out.toByteArray();
+                            byte[] rawData =  out.toByteArray();
                             encryptedData = Crypto.sgx_encrypt(rawData, false);
 
 
