@@ -159,7 +159,7 @@ public class SpoutOutputCollectorImpl implements ISpoutOutputCollector {
 
         byte[] encryptedData = Crypto.sgx_encrypt(_enclaveValues, false);
 
-        return (byte[])Tools.deep_copy(encryptedData);
+        return encryptedData;
 
 
     }
@@ -201,7 +201,8 @@ public class SpoutOutputCollectorImpl implements ISpoutOutputCollector {
                     byte[] rawData = serialize(values);
                     LOG.info("Start encrypt " + values);
                     //byte[] encryptedTuple = enclaveEncryption(values);
-                    byte[] encryptedTuple = enclaveEncryption_temp(rawData);
+                    //byte[] encryptedTuple = enclaveEncryption_temp(rawData);
+                    byte[] encryptedTuple = rawData;
                     LOG.info("Finish encrypt " + encryptedTuple.toString());
                     encryptedValues.add(encryptedTuple);
                 }

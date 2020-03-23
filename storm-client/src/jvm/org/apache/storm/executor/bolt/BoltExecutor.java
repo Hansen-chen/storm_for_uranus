@@ -237,7 +237,7 @@ public class BoltExecutor extends Executor {
     @IntelSGX
     public static byte[] annotated_decrypt(byte[] values){
         byte[] decryptedData = Crypto.sgx_decrypt(values, false);
-        return (byte[])Tools.deep_copy(decryptedData);
+        return decryptedData;
     }
 
     @IntelSGX
@@ -301,7 +301,8 @@ public class BoltExecutor extends Executor {
                         LOG.info("Executing TUPLE {} Raw Value: {}", tuple, rawData);
                     }
                     try{
-                        byte[] decryptedData =annotated_decrypt(rawData);
+                        //byte[] decryptedData =annotated_decrypt(rawData);
+                        byte[] decryptedData =rawData;
                         dummy = (List<Object>)deserialize(decryptedData);
                     }
                     catch (Exception ex){
@@ -309,6 +310,7 @@ public class BoltExecutor extends Executor {
                     }
                     //temp added
                     tuple.updateVal(dummy);
+                    LOG.info("Enclave executing TUPLE {} Raw Value: {}", tuple, rawData);
                     annotated_exec(
                             idToTask,
                             taskId,
