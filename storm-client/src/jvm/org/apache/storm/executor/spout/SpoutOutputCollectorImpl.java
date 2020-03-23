@@ -155,6 +155,20 @@ public class SpoutOutputCollectorImpl implements ISpoutOutputCollector {
     }
 
     @IntelSGX
+    public static byte[] enclaveSerialization_temp(List<Object> _enclaveValues) throws IOException{
+
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        ObjectOutputStream os = new ObjectOutputStream(out);
+        os.writeObject(_enclaveValues);
+        os.flush();
+        byte[] rawData =  out.toByteArray();
+
+
+        return (byte[])Tools.deep_copy(rawData);
+
+    }
+
+    @IntelSGX
     public static byte[] enclaveEncryption_temp(byte[] _enclaveValues) throws IOException{
 
         byte[] encryptedData = Crypto.sgx_encrypt(_enclaveValues, false);
@@ -198,12 +212,12 @@ public class SpoutOutputCollectorImpl implements ISpoutOutputCollector {
             if (!(stream.contains("ack") || stream.contains("metrics")) && values!=null)
             {
                 try{
-                    byte[] rawData = serialize(values);
-                    LOG.info("Start encrypt " + values);
+                    //byte[] rawData = serialize(values);
+                    LOG.info("Start serialization " + values);
                     //byte[] encryptedTuple = enclaveEncryption(values);
-                    //byte[] encryptedTuple = enclaveEncryption_temp(rawData);
-                    byte[] encryptedTuple = rawData;
-                    LOG.info("Finish encrypt " + encryptedTuple.toString());
+                    byte[] encryptedTuple = enclaveSerialization_temp(values);
+                    //byte[] encryptedTuple = rawData;
+                    LOG.info("Finish serialization " + encryptedTuple.toString());
                     encryptedValues.add(encryptedTuple);
                 }
                 catch (Exception ex){

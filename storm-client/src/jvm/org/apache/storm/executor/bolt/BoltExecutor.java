@@ -240,22 +240,26 @@ public class BoltExecutor extends Executor {
         return decryptedData;
     }
 
+
+
     @IntelSGX
     public static void annotated_exec(ArrayList<Task> idToTask, int taskId, int idToTaskBase,TupleImpl tuple){
         try{
-            /*
+
             List<Object> tempVal = tuple.getValues();
             byte[] rawData = (byte[])tempVal.get(0);
+            /*
             byte[] decryptedData = Crypto.sgx_decrypt(rawData, false);
+            */
 
-            ByteArrayInputStream in = new ByteArrayInputStream(decryptedData);
+            ByteArrayInputStream in = new ByteArrayInputStream(rawData);
             ObjectInputStream is = new ObjectInputStream(in);
 
             List<Object> updatedVal = (List<Object>)is.readObject();
 
             tuple.updateVal((List<Object>)Tools.deep_copy(updatedVal));
 
-             */
+
             IBolt boltObject = (IBolt) idToTask.get(taskId - idToTaskBase).getTaskObject();
             boltObject.execute(tuple);
 
@@ -302,14 +306,14 @@ public class BoltExecutor extends Executor {
                     }
                     try{
                         //byte[] decryptedData =annotated_decrypt(rawData);
-                        byte[] decryptedData =rawData;
-                        dummy = (List<Object>)deserialize(decryptedData);
+                        //byte[] decryptedData =rawData;
+                        //dummy = (List<Object>)deserialize(decryptedData);
                     }
                     catch (Exception ex){
                         dummy.add("Error Deserialize Outside Enclave");
                     }
                     //temp added
-                    tuple.updateVal(dummy);
+                    //tuple.updateVal(dummy);
                     LOG.info("Enclave executing TUPLE {} Raw Value: {}", tuple, rawData);
                     annotated_exec(
                             idToTask,

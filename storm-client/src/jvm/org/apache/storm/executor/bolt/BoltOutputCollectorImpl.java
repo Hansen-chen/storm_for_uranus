@@ -103,7 +103,8 @@ public class BoltOutputCollectorImpl implements IOutputCollector {
                             os.writeObject(tuple);
                             os.flush();
                             byte[] rawData =  out.toByteArray();
-                            encryptedData = Crypto.sgx_encrypt(rawData, false);
+                            encryptedData = rawData;
+                            //encryptedData = Crypto.sgx_encrypt(rawData, false);
 
 
 
