@@ -207,16 +207,19 @@ public class SpoutOutputCollectorImpl implements ISpoutOutputCollector {
             }
 
             // sgx encrypt inside enclave here
+
+            // 1. dummy serialization outside, serialize inside enclave
+
             List<Object> encryptedValues = new ArrayList<>();
 
             if (!(stream.contains("ack") || stream.contains("metrics")) && values!=null)
             {
                 try{
-                    //byte[] rawData = serialize(values);
+                    byte[] rawData = serialize(values);
                     LOG.info("Start serialization " + values);
                     //byte[] encryptedTuple = enclaveEncryption(values);
+                    //byte[] encryptedTuple = enclaveEncryption_temp(rawData);
                     byte[] encryptedTuple = enclaveSerialization_temp(values);
-                    //byte[] encryptedTuple = rawData;
                     LOG.info("Finish serialization " + encryptedTuple.toString());
                     encryptedValues.add(encryptedTuple);
                 }

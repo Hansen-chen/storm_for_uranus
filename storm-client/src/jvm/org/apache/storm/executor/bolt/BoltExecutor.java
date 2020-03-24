@@ -306,8 +306,8 @@ public class BoltExecutor extends Executor {
                     }
                     try{
                         //byte[] decryptedData =annotated_decrypt(rawData);
-                        //byte[] decryptedData =rawData;
-                        //dummy = (List<Object>)deserialize(decryptedData);
+                        byte[] decryptedData =rawData;
+                        dummy = (List<Object>)deserialize(decryptedData);
                     }
                     catch (Exception ex){
                         dummy.add("Error Deserialize Outside Enclave");
