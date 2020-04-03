@@ -318,7 +318,6 @@ public class BoltExecutor extends Executor {
                     }
                     try{
                         //byte[] decryptedData =annotated_decrypt(rawData);
-                        ((Config) this.conf).registerSerialization(Values.class);
 
                         byte[] decryptedData =rawData;
                         dummy = (List<Object>)deserialize(decryptedData);

@@ -142,9 +142,9 @@ public class SpoutOutputCollectorImpl implements ISpoutOutputCollector {
         KryoValuesSerializer ky = new KryoValuesSerializer(topconf);
         byte[] rawData =   ky.serialize(values);
 
-        byte[] encryptedData = Crypto.sgx_encrypt(rawData, false);
+        //byte[] encryptedData = Crypto.sgx_encrypt(rawData, false);
 
-        return encryptedData;
+        return rawData;
 
 
 
@@ -186,7 +186,6 @@ public class SpoutOutputCollectorImpl implements ISpoutOutputCollector {
 
 
             List<Object> encryptedValues = new ArrayList<>();
-            ((Config)this.executor.getConf()).registerSerialization(Values.class);
 
             if (!(stream.contains("ack") || stream.contains("metrics")) && values!=null)
             {
