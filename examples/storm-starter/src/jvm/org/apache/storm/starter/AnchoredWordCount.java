@@ -52,6 +52,7 @@ public class AnchoredWordCount extends ConfigurableTopology {
         conf.put(Config.TOPOLOGY_MAX_SPOUT_PENDING, 50);
         conf.put(Config.TOPOLOGY_MESSAGE_TIMEOUT_SECS, 60);
         conf.put(Config.TOPOLOGY_ACKER_EXECUTORS, 5);
+        conf.registerSerialization(Values.class);
 
         String topologyName = "word-count";
 
