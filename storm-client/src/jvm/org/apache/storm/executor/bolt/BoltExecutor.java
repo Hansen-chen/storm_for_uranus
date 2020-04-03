@@ -325,7 +325,7 @@ public class BoltExecutor extends Executor {
                     }
                     //temp added
                     //tuple.updateVal(dummy);
-                    LOG.info("Enclave executing TUPLE {} Raw Value: {}", tuple, rawData);
+                    LOG.info("Enclave executing TUPLE {} Raw Value: {} Decrypted Value: {}", tuple, rawData, dummy);
                     /*
                     annotated_exec(
                             idToTask,
@@ -344,6 +344,7 @@ public class BoltExecutor extends Executor {
                     );
 
                 }catch (Exception ex){
+
                     boltObject.execute(tuple);
                 }
             }

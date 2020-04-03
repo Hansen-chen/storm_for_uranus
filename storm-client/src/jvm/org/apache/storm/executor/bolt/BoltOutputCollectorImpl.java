@@ -86,19 +86,11 @@ public class BoltOutputCollectorImpl implements IOutputCollector {
                 if (!(streamId.contains("ack") || streamId.contains("metrics")) && tuple!=null)
                 {
                     try{
-                        try {
-
-                            byte[] rawData =  serialize(tuple);
+                            //byte[] rawData =  serialize(tuple);
+                            byte[] rawData =  new byte[1];
                             encryptedData = rawData;
                             //encryptedData = Crypto.sgx_encrypt(rawData, false);
 
-
-
-                        }
-                        catch (Exception ex){
-
-                            encryptedData = "empty".getBytes();
-                        }
 
 
                     }
@@ -106,10 +98,6 @@ public class BoltOutputCollectorImpl implements IOutputCollector {
 
                         encryptedData = "empty".getBytes();
                     }
-
-                    List<Object> encryptedTuple = new ArrayList<>();
-                    encryptedTuple.add(encryptedData);
-
                     annotated_emit(
                             (String)Tools.deep_copy(streamId),
                             (Collection<Tuple>)Tools.deep_copy(anchors),
@@ -121,8 +109,11 @@ public class BoltOutputCollectorImpl implements IOutputCollector {
                             executor,
                             taskId,
                             xsfer,
-                            isEventLoggers
+                            isEventLoggers,
+                            executor.getTopoConf()
                     );
+
+
                 }
                 else {
                     encryptedData = "empty".getBytes();
@@ -137,7 +128,8 @@ public class BoltOutputCollectorImpl implements IOutputCollector {
                             executor,
                             taskId,
                             xsfer,
-                            isEventLoggers
+                            isEventLoggers,
+                            executor.getTopoConf()
                     );
                 }
 
@@ -172,7 +164,9 @@ public class BoltOutputCollectorImpl implements IOutputCollector {
     }
 
     @IntelSGXOcall
-    public static void annotated_emit(String streamId, Collection<Tuple> anchors, List<Object> values, byte[] encryptedData,Task task, boolean ackingEnabled, Random random, BoltExecutor executor, int taskId, ExecutorTransfer xsfer, boolean isEventLoggers) {
+    public static void annotated_emit(String streamId, Collection<Tuple> anchors, List<Object> values, byte[] encryptedData,Task task, boolean ackingEnabled, Random random, BoltExecutor executor, int taskId, ExecutorTransfer xsfer, boolean isEventLoggers,Map<String, Object> topconf ) {
+        KryoValuesSerializer ky = new KryoValuesSerializer(topconf);
+        encryptedData = ky.serialize(values);
         LOG.info("EEmitting TUPLE {} Encrypted value: {}", values, encryptedData);
         List<Integer> outTasks = task.getOutgoingTasks(streamId, values);
 
