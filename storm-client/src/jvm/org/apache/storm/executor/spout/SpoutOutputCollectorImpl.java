@@ -133,9 +133,10 @@ public class SpoutOutputCollectorImpl implements ISpoutOutputCollector {
         sgx_encrypt()
         return byte[]
      */
+    /*
     @IntelSGX
     public static byte[] enclaveEncryption(List<Object> values){
-        /*
+
         KryoValuesSerializer ky = new KryoValuesSerializer(this.executor.getTopoConf());
         byte[] rawData =   ky.serialize(values);
 
@@ -144,9 +145,11 @@ public class SpoutOutputCollectorImpl implements ISpoutOutputCollector {
         return (byte[])Tools.deep_copy(encryptedData);
 
 
-         */
+
 
     }
+
+     */
 
 
     private List<Integer> sendSpoutMsg(String stream, List<Object> values, Object messageId, Integer outTaskId) throws
