@@ -137,16 +137,13 @@ public class SpoutOutputCollectorImpl implements ISpoutOutputCollector {
      */
 
     @IntelSGX
-    public static byte[] enclaveEncryption(List<Object> values, Map<String, Object> topconf ){
+    public static byte[] enclaveEncryption(List<Object> values, KryoValuesSerializer ky){
 
-        KryoValuesSerializer ky = new KryoValuesSerializer(topconf);
         byte[] rawData =   ky.serialize(values);
 
         //byte[] encryptedData = Crypto.sgx_encrypt(rawData, false);
 
         return rawData;
-
-
 
 
     }
@@ -190,8 +187,10 @@ public class SpoutOutputCollectorImpl implements ISpoutOutputCollector {
             if (!(stream.contains("ack") || stream.contains("metrics")) && values!=null)
             {
                 try{
+                    KryoValuesSerializer ky = new KryoValuesSerializer(this.executor.getConf());
                     LOG.info("Start serialization " + values);
-                    byte[] encryptedTuple = enclaveEncryption(values, this.executor.getConf());
+
+                    byte[] encryptedTuple = enclaveEncryption(values, ky);
                     //byte[] encryptedTuple = serialize(values);
                     LOG.info("Finish serialization " + encryptedTuple.toString());
                     encryptedValues.add(encryptedTuple);
