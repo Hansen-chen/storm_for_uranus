@@ -16,6 +16,7 @@ import java.io.*;
 import java.security.CryptoPrimitive;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 
 import com.esotericsoftware.kryo.io.Output;
@@ -133,23 +134,23 @@ public class SpoutOutputCollectorImpl implements ISpoutOutputCollector {
         sgx_encrypt()
         return byte[]
      */
-    /*
-    @IntelSGX
-    public static byte[] enclaveEncryption(List<Object> values){
 
-        KryoValuesSerializer ky = new KryoValuesSerializer(this.executor.getTopoConf());
+    @IntelSGX
+    public static byte[] enclaveEncryption(List<Object> values, Map<String, Object> topconf ){
+
+        KryoValuesSerializer ky = new KryoValuesSerializer(topconf);
         byte[] rawData =   ky.serialize(values);
 
         byte[] encryptedData = Crypto.sgx_encrypt(rawData, false);
 
-        return (byte[])Tools.deep_copy(encryptedData);
+        return encryptedData;
 
 
 
 
     }
 
-     */
+
 
 
     private List<Integer> sendSpoutMsg(String stream, List<Object> values, Object messageId, Integer outTaskId) throws
@@ -189,8 +190,8 @@ public class SpoutOutputCollectorImpl implements ISpoutOutputCollector {
             {
                 try{
                     LOG.info("Start serialization " + values);
-                    //byte[] encryptedTuple = enclaveEncryption(values);
-                    byte[] encryptedTuple = serialize(values);
+                    byte[] encryptedTuple = enclaveEncryption(values, this.executor.getTopoConf());
+                    //byte[] encryptedTuple = serialize(values);
                     LOG.info("Finish serialization " + encryptedTuple.toString());
                     encryptedValues.add(encryptedTuple);
                 }
