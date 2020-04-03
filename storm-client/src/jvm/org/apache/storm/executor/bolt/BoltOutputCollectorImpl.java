@@ -173,7 +173,7 @@ public class BoltOutputCollectorImpl implements IOutputCollector {
 
     @IntelSGXOcall
     public static void annotated_emit(String streamId, Collection<Tuple> anchors, List<Object> values, byte[] encryptedData,Task task, boolean ackingEnabled, Random random, BoltExecutor executor, int taskId, ExecutorTransfer xsfer, boolean isEventLoggers) {
-
+        LOG.info("EEmitting TUPLE {} Encrypted value: {}", values, encryptedData);
         List<Integer> outTasks = task.getOutgoingTasks(streamId, values);
 
         for (int i = 0; i < outTasks.size(); ++i) {
