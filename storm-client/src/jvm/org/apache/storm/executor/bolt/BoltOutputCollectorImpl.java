@@ -21,6 +21,8 @@ import org.apache.storm.executor.Executor;
 import org.apache.storm.executor.ExecutorTransfer;
 import org.apache.storm.hooks.info.BoltAckInfo;
 import org.apache.storm.hooks.info.BoltFailInfo;
+import org.apache.storm.serialization.KryoValuesDeserializer;
+import org.apache.storm.serialization.KryoValuesSerializer;
 import org.apache.storm.task.IOutputCollector;
 import org.apache.storm.tuple.AddressedTuple;
 import org.apache.storm.tuple.MessageId;
@@ -62,27 +64,16 @@ public class BoltOutputCollectorImpl implements IOutputCollector {
         this.xsfer = executor.getExecutorTransfer();
     }
 
-    public static byte[] serialize(Object obj) throws IOException {
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
-        ObjectOutputStream os = new ObjectOutputStream(out);
-        os.writeObject(obj);
-        return out.toByteArray();
+    public byte[] serialize(List<Object> values){
+
+        KryoValuesSerializer ky = new KryoValuesSerializer(this.executor.getTopoConf());
+        return ky.serialize(values);
     }
-    public static Object deserialize(byte[] data) throws IOException, ClassNotFoundException {
-        ByteArrayInputStream in = new ByteArrayInputStream(data);
-        ObjectInputStream is = new ObjectInputStream(in);
-        return is.readObject();
+    public Object deserialize(byte[] data){
+        KryoValuesDeserializer ky = new KryoValuesDeserializer(this.executor.getTopoConf());
+        return ky.deserialize(data);
     }
 
-    @IntelSGXOcall
-    public static void dummySerialize(Object obj){
-        try{
-            serialize(obj);
-        }
-        catch (Exception ex){
-
-        }
-    }
 
 
     @Override
@@ -97,12 +88,7 @@ public class BoltOutputCollectorImpl implements IOutputCollector {
                     try{
                         try {
 
-                            dummySerialize(tuple);
-                            ByteArrayOutputStream out = new ByteArrayOutputStream();
-                            ObjectOutputStream os = new ObjectOutputStream(out);
-                            os.writeObject(tuple);
-                            os.flush();
-                            byte[] rawData =  out.toByteArray();
+                            byte[] rawData =  serialize(tuple);
                             encryptedData = rawData;
                             //encryptedData = Crypto.sgx_encrypt(rawData, false);
 

@@ -39,6 +39,8 @@ import org.apache.storm.policy.IWaitStrategy;
 import org.apache.storm.policy.IWaitStrategy.WaitSituation;
 import org.apache.storm.policy.WaitStrategyPark;
 import org.apache.storm.security.auth.IAutoCredentials;
+import org.apache.storm.serialization.KryoValuesDeserializer;
+import org.apache.storm.serialization.KryoValuesSerializer;
 import org.apache.storm.shade.com.google.common.collect.ImmutableMap;
 import org.apache.storm.stats.BoltExecutorStats;
 import org.apache.storm.stats.ClientStatsUtil;
@@ -215,16 +217,14 @@ public class BoltExecutor extends Executor {
         };
     }
 
-    public static byte[] serialize(Object obj) throws IOException {
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
-        ObjectOutputStream os = new ObjectOutputStream(out);
-        os.writeObject(obj);
-        return out.toByteArray();
+    public byte[] serialize(List<Object> values){
+
+        KryoValuesSerializer ky = new KryoValuesSerializer(topoConf);
+        return ky.serialize(values);
     }
-    public static Object deserialize(byte[] data) throws IOException, ClassNotFoundException {
-        ByteArrayInputStream in = new ByteArrayInputStream(data);
-        ObjectInputStream is = new ObjectInputStream(in);
-        return is.readObject();
+    public Object deserialize(byte[] data){
+        KryoValuesDeserializer ky = new KryoValuesDeserializer(topoConf);
+        return ky.deserialize(data);
     }
     // Add JECall ,need to add crypto.sgx_decrypt
     /*
@@ -234,11 +234,6 @@ public class BoltExecutor extends Executor {
         return byte[]
      */
 
-    @IntelSGX
-    public static byte[] annotated_decrypt(byte[] values){
-        byte[] decryptedData = Crypto.sgx_decrypt(values, false);
-        return decryptedData;
-    }
 
 
 
@@ -258,6 +253,22 @@ public class BoltExecutor extends Executor {
             List<Object> updatedVal = (List<Object>)is.readObject();
 
             tuple.updateVal((List<Object>)Tools.deep_copy(updatedVal));
+
+
+            IBolt boltObject = (IBolt) idToTask.get(taskId - idToTaskBase).getTaskObject();
+            boltObject.execute(tuple);
+
+        } catch (Exception e){
+            System.out.println("Bolt inside enclave error: "+e.toString());
+        }
+    }
+
+    @IntelSGX
+    public static void annotated_exec_temp(ArrayList<Task> idToTask, int taskId, int idToTaskBase,TupleImpl tuple, List<Object> values){
+        try{
+
+
+            tuple.updateVal(values);
 
 
             IBolt boltObject = (IBolt) idToTask.get(taskId - idToTaskBase).getTaskObject();
@@ -315,11 +326,21 @@ public class BoltExecutor extends Executor {
                     //temp added
                     //tuple.updateVal(dummy);
                     LOG.info("Enclave executing TUPLE {} Raw Value: {}", tuple, rawData);
+                    /*
                     annotated_exec(
                             idToTask,
                             taskId,
                             idToTaskBase,
                             tuple
+                    );
+
+                     */
+                    annotated_exec_temp(
+                            idToTask,
+                            taskId,
+                            idToTaskBase,
+                            tuple,
+                            dummy
                     );
 
                 }catch (Exception ex){

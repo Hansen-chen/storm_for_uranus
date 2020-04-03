@@ -17,9 +17,13 @@ import java.security.CryptoPrimitive;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+
+import com.esotericsoftware.kryo.io.Output;
 import org.apache.storm.daemon.Acker;
 import org.apache.storm.daemon.Task;
 import org.apache.storm.executor.TupleInfo;
+import org.apache.storm.serialization.KryoValuesDeserializer;
+import org.apache.storm.serialization.KryoValuesSerializer;
 import org.apache.storm.spout.ISpout;
 import org.apache.storm.spout.ISpoutOutputCollector;
 import org.apache.storm.tuple.AddressedTuple;
@@ -113,70 +117,37 @@ public class SpoutOutputCollectorImpl implements ISpoutOutputCollector {
         executor.getReportError().report(error);
     }
 
-    public static byte[] serialize(Object obj) throws IOException {
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
-        ObjectOutputStream os = new ObjectOutputStream(out);
-        os.writeObject(obj);
-        return out.toByteArray();
+    public byte[] serialize(List<Object> values){
+
+        KryoValuesSerializer ky = new KryoValuesSerializer(this.executor.getTopoConf());
+        return ky.serialize(values);
     }
-    public static Object deserialize(byte[] data) throws IOException, ClassNotFoundException {
-        ByteArrayInputStream in = new ByteArrayInputStream(data);
-        ObjectInputStream is = new ObjectInputStream(in);
-        return is.readObject();
+    public Object deserialize(byte[] data){
+        KryoValuesDeserializer ky = new KryoValuesDeserializer(this.executor.getTopoConf());
+        return ky.deserialize(data);
     }
 
     // Add JECall ,need to add crypto.sgx_decrypt
     /*
-        outputstream/bytearraystream/other stream class => function
         change to byte[]
         sgx_encrypt()
         return byte[]
      */
     @IntelSGX
-    public static byte[] enclaveEncryption(List<Object> _enclaveValues) throws IOException{
-
-        List<Object> enclaveValues = new ArrayList<>();
-
-        for(Object obj : _enclaveValues) {
-            enclaveValues.add(Tools.deep_copy(obj));
-        }
-
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
-        ObjectOutputStream os = new ObjectOutputStream(out);
-        os.writeObject(enclaveValues);
-        os.flush();
-        byte[] rawData =  out.toByteArray();
+    public static byte[] enclaveEncryption(List<Object> values){
+        /*
+        KryoValuesSerializer ky = new KryoValuesSerializer(this.executor.getTopoConf());
+        byte[] rawData =   ky.serialize(values);
 
         byte[] encryptedData = Crypto.sgx_encrypt(rawData, false);
 
         return (byte[])Tools.deep_copy(encryptedData);
 
 
-    }
-
-    @IntelSGX
-    public static byte[] enclaveSerialization_temp(List<Object> _enclaveValues) throws IOException{
-
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
-        ObjectOutputStream os = new ObjectOutputStream(out);
-        os.writeObject(_enclaveValues);
-        os.flush();
-        byte[] rawData =  out.toByteArray();
-
-
-        return (byte[])Tools.deep_copy(rawData);
+         */
 
     }
 
-    @IntelSGX
-    public static byte[] enclaveEncryption_temp(byte[] _enclaveValues) throws IOException{
-
-        byte[] encryptedData = Crypto.sgx_encrypt(_enclaveValues, false);
-
-        return encryptedData;
-
-
-    }
 
     private List<Integer> sendSpoutMsg(String stream, List<Object> values, Object messageId, Integer outTaskId) throws
             InterruptedException {
@@ -208,18 +179,15 @@ public class SpoutOutputCollectorImpl implements ISpoutOutputCollector {
 
             // sgx encrypt inside enclave here
 
-            // 1. dummy serialization outside, serialize inside enclave
 
             List<Object> encryptedValues = new ArrayList<>();
 
             if (!(stream.contains("ack") || stream.contains("metrics")) && values!=null)
             {
                 try{
-                    byte[] rawData = serialize(values);
                     LOG.info("Start serialization " + values);
                     //byte[] encryptedTuple = enclaveEncryption(values);
-                    //byte[] encryptedTuple = enclaveEncryption_temp(rawData);
-                    byte[] encryptedTuple = enclaveSerialization_temp(values);
+                    byte[] encryptedTuple = serialize(values);
                     LOG.info("Finish serialization " + encryptedTuple.toString());
                     encryptedValues.add(encryptedTuple);
                 }
