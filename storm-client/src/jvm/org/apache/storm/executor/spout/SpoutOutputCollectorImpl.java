@@ -143,7 +143,7 @@ public class SpoutOutputCollectorImpl implements ISpoutOutputCollector {
 
         //byte[] encryptedData = Crypto.sgx_encrypt(rawData, false);
 
-        return rawData;
+        return (byte[])Tools.deep_copy(rawData);
 
 
     }
