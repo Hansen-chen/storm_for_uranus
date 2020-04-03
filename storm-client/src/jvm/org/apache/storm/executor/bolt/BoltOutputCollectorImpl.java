@@ -110,7 +110,7 @@ public class BoltOutputCollectorImpl implements IOutputCollector {
                             taskId,
                             xsfer,
                             isEventLoggers,
-                            executor.getTopoConf()
+                            executor.getConf()
                     );
 
 
@@ -129,7 +129,7 @@ public class BoltOutputCollectorImpl implements IOutputCollector {
                             taskId,
                             xsfer,
                             isEventLoggers,
-                            executor.getTopoConf()
+                            executor.getConf()
                     );
                 }
 
@@ -164,8 +164,8 @@ public class BoltOutputCollectorImpl implements IOutputCollector {
     }
 
     @IntelSGXOcall
-    public static void annotated_emit(String streamId, Collection<Tuple> anchors, List<Object> values, byte[] encryptedData,Task task, boolean ackingEnabled, Random random, BoltExecutor executor, int taskId, ExecutorTransfer xsfer, boolean isEventLoggers,Map<String, Object> topconf ) {
-        KryoValuesSerializer ky = new KryoValuesSerializer(topconf);
+    public static void annotated_emit(String streamId, Collection<Tuple> anchors, List<Object> values, byte[] encryptedData,Task task, boolean ackingEnabled, Random random, BoltExecutor executor, int taskId, ExecutorTransfer xsfer, boolean isEventLoggers,Map<String, Object> conf ) {
+        KryoValuesSerializer ky = new KryoValuesSerializer(conf);
         encryptedData = ky.serialize(values);
         LOG.info("EEmitting TUPLE {} Encrypted value: {}", values, encryptedData);
         List<Integer> outTasks = task.getOutgoingTasks(streamId, values);

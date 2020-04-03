@@ -20,6 +20,7 @@ import java.util.Map;
 import java.util.Random;
 
 import com.esotericsoftware.kryo.io.Output;
+import org.apache.storm.Config;
 import org.apache.storm.daemon.Acker;
 import org.apache.storm.daemon.Task;
 import org.apache.storm.executor.TupleInfo;
@@ -185,12 +186,13 @@ public class SpoutOutputCollectorImpl implements ISpoutOutputCollector {
 
 
             List<Object> encryptedValues = new ArrayList<>();
+            ((Config)this.executor.getConf()).registerSerialization(Values.class);
 
             if (!(stream.contains("ack") || stream.contains("metrics")) && values!=null)
             {
                 try{
                     LOG.info("Start serialization " + values);
-                    byte[] encryptedTuple = enclaveEncryption(values, this.executor.getTopoConf());
+                    byte[] encryptedTuple = enclaveEncryption(values, this.executor.getConf());
                     //byte[] encryptedTuple = serialize(values);
                     LOG.info("Finish serialization " + encryptedTuple.toString());
                     encryptedValues.add(encryptedTuple);

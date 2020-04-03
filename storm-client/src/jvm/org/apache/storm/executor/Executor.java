@@ -493,6 +493,10 @@ public abstract class Executor implements Callable, JCQueue.Consumer {
         return topoConf;
     }
 
+    public Map<String, Object> getConf() {
+        return conf;
+    }
+
     public String getStormId() {
         return stormId;
     }

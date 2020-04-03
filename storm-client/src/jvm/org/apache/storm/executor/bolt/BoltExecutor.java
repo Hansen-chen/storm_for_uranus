@@ -50,6 +50,7 @@ import org.apache.storm.task.TopologyContext;
 import org.apache.storm.topology.IRichBolt;
 import org.apache.storm.tuple.AddressedTuple;
 import org.apache.storm.tuple.TupleImpl;
+import org.apache.storm.tuple.Values;
 import org.apache.storm.utils.ConfigUtils;
 import org.apache.storm.utils.JCQueue;
 import org.apache.storm.utils.JCQueue.ExitCondition;
@@ -317,6 +318,8 @@ public class BoltExecutor extends Executor {
                     }
                     try{
                         //byte[] decryptedData =annotated_decrypt(rawData);
+                        ((Config) this.conf).registerSerialization(Values.class);
+
                         byte[] decryptedData =rawData;
                         dummy = (List<Object>)deserialize(decryptedData);
                     }
