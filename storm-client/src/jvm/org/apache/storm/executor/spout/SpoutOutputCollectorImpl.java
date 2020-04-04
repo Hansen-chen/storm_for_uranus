@@ -58,6 +58,7 @@ public class SpoutOutputCollectorImpl implements ISpoutOutputCollector {
     private final RotatingMap<Long, TupleInfo> pending;
     private final long spoutExecutorThdId;
     private TupleInfo globalTupleInfo = new TupleInfo();
+    public KryoValuesSerializer ky;
     // thread safety: assumes Collector.emit*() calls are externally synchronized (if needed).
 
     @SuppressWarnings("unused")
@@ -74,6 +75,7 @@ public class SpoutOutputCollectorImpl implements ISpoutOutputCollector {
         this.isDebug = isDebug;
         this.pending = pending;
         this.spoutExecutorThdId = executor.getThreadId();
+        this.ky = new KryoValuesSerializer(this.executor.getConf());
     }
 
     @Override
@@ -187,11 +189,9 @@ public class SpoutOutputCollectorImpl implements ISpoutOutputCollector {
             if (!(stream.contains("ack") || stream.contains("metrics")) && values!=null)
             {
                 try{
-                    KryoValuesSerializer ky = new KryoValuesSerializer(this.executor.getConf());
-                    LOG.info("Start serialization " + values);
 
+                    LOG.info("Start serialization " + values);
                     byte[] encryptedTuple = enclaveEncryption(values, ky);
-                    //byte[] encryptedTuple = serialize(values);
                     LOG.info("Finish serialization " + encryptedTuple.toString());
                     encryptedValues.add(encryptedTuple);
                 }

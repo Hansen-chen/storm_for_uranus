@@ -76,6 +76,7 @@ public class BoltExecutor extends Executor {
     private final BoltExecutorStats stats;
     private final BuiltinMetrics builtInMetrics;
     private BoltOutputCollectorImpl outputCollector;
+    public KryoValuesDeserializer ky;
 
     public BoltExecutor(WorkerState workerData, List<Long> executorId, Map<String, String> credentials) {
         super(workerData, executorId, credentials, ClientStatsUtil.BOLT);
@@ -92,6 +93,7 @@ public class BoltExecutor extends Executor {
         this.stats = new BoltExecutorStats(ConfigUtils.samplingRate(this.getTopoConf()),
                 ObjectReader.getInt(this.getTopoConf().get(Config.NUM_STAT_BUCKETS)));
         this.builtInMetrics = new BuiltinBoltMetrics(stats);
+        this.ky = new KryoValuesDeserializer(conf);
     }
 
     private static IWaitStrategy makeSystemBoltWaitStrategy() {
@@ -108,6 +110,7 @@ public class BoltExecutor extends Executor {
     }
 
     public void init(ArrayList<Task> idToTask, int idToTaskBase) throws InterruptedException {
+        this.ky = new KryoValuesDeserializer(conf);
         executorTransfer.initLocalRecvQueues();
         workerReady.await();
         while (!stormActive.get()) {
@@ -292,29 +295,16 @@ public class BoltExecutor extends Executor {
             if(boltObject instanceof IRichBolt && !(streamId.contains("ack") || streamId.contains("metrics"))){
                 try{
 
-
                     List<Object> tempVal = tuple.getValues();
-                    List<Object> dummy = new ArrayList<>();
-                    byte[] rawData = (byte[])tempVal.get(0);
 
+                    byte[] rawData = (byte[])tempVal.get(0);
 
 
                     if (isDebug) {
                         LOG.info("Executing TUPLE {} Raw Value: {}", tuple, rawData);
                     }
-                    try{
-                        //byte[] decryptedData =annotated_decrypt(rawData);
 
-                        byte[] decryptedData =rawData;
-                        //dummy = (List<Object>)deserialize(decryptedData);
-                    }
-                    catch (Exception ex){
-                        dummy.add("Error Deserialize Outside Enclave");
-                    }
-                    //temp added
-                    //tuple.updateVal(dummy);
-                    //LOG.info("Enclave executing TUPLE {} Raw Value: {} Decrypted Value: {}", tuple, rawData, dummy);
-                    KryoValuesDeserializer ky = new KryoValuesDeserializer(conf);
+
                     annotated_exec(
                             idToTask,
                             taskId,
@@ -324,16 +314,6 @@ public class BoltExecutor extends Executor {
                     );
 
 
-                    /*
-                    annotated_exec_temp(
-                            idToTask,
-                            taskId,
-                            idToTaskBase,
-                            tuple,
-                            dummy
-                    );
-
-                     */
 
                 }catch (Exception ex){
 
