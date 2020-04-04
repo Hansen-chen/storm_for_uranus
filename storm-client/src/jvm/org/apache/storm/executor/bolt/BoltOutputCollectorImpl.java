@@ -90,8 +90,8 @@ public class BoltOutputCollectorImpl implements IOutputCollector {
                     try{
                             byte[] rawData =  ky.serialize(tuple);
                             //byte[] rawData =  new byte[1];
-                            encryptedData = rawData;
-                            //encryptedData = Crypto.sgx_encrypt(rawData, false);
+                            //encryptedData = rawData;
+                            encryptedData = Crypto.sgx_encrypt(rawData, false);
 
 
 

@@ -143,9 +143,10 @@ public class SpoutOutputCollectorImpl implements ISpoutOutputCollector {
 
         byte[] rawData =   ky.serialize(values);
 
-        //byte[] encryptedData = Crypto.sgx_encrypt(rawData, false);
+        byte[] encryptedData = Crypto.sgx_encrypt(rawData, false);
 
-        return (byte[])Tools.deep_copy(rawData);
+        //return (byte[])Tools.deep_copy(rawData);
+        return (byte[])Tools.deep_copy(encryptedData);
 
 
     }

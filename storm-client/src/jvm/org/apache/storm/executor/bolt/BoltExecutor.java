@@ -247,13 +247,13 @@ public class BoltExecutor extends Executor {
 
             List<Object> tempVal = tuple.getValues();
             byte[] rawData = (byte[])tempVal.get(0);
-            /*
+
             byte[] decryptedData = Crypto.sgx_decrypt(rawData, false);
-            */
 
 
 
-            List<Object> updatedVal = (List<Object>)ky.deserialize(rawData);
+
+            List<Object> updatedVal = (List<Object>)ky.deserialize(decryptedData);
 
             tuple.updateVal((List<Object>)Tools.deep_copy(updatedVal));
 
