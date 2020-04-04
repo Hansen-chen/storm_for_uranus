@@ -191,9 +191,9 @@ public class SpoutOutputCollectorImpl implements ISpoutOutputCollector {
             {
                 try{
 
-                    LOG.info("Start serialization " + values);
+                    //LOG.info("Start serialization " + values);
                     byte[] encryptedTuple = enclaveEncryption(values, ky);
-                    LOG.info("Finish serialization " + encryptedTuple.toString());
+                    //LOG.info("Finish serialization " + encryptedTuple.toString());
                     encryptedValues.add(encryptedTuple);
                 }
                 catch (Exception ex){

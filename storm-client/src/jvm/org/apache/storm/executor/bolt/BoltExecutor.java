@@ -295,13 +295,9 @@ public class BoltExecutor extends Executor {
             if(boltObject instanceof IRichBolt && !(streamId.contains("ack") || streamId.contains("metrics"))){
                 try{
 
-                    List<Object> tempVal = tuple.getValues();
-
-                    byte[] rawData = (byte[])tempVal.get(0);
-
 
                     if (isDebug) {
-                        LOG.info("Executing TUPLE {} Raw Value: {}", tuple, rawData);
+                        LOG.info("Executing TUPLE {}", tuple);
                     }
 
 
