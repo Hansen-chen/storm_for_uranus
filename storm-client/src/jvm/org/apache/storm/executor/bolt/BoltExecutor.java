@@ -220,11 +220,11 @@ public class BoltExecutor extends Executor {
 
     public byte[] serialize(List<Object> values){
 
-        KryoValuesSerializer ky = new KryoValuesSerializer(topoConf);
+        KryoValuesSerializer ky = new KryoValuesSerializer(conf);
         return ky.serialize(values);
     }
     public Object deserialize(byte[] data){
-        KryoValuesDeserializer ky = new KryoValuesDeserializer(topoConf);
+        KryoValuesDeserializer ky = new KryoValuesDeserializer(conf);
         return ky.deserialize(data);
     }
     // Add JECall ,need to add crypto.sgx_decrypt
@@ -239,7 +239,7 @@ public class BoltExecutor extends Executor {
 
 
     @IntelSGX
-    public static void annotated_exec(ArrayList<Task> idToTask, int taskId, int idToTaskBase,TupleImpl tuple){
+    public static void annotated_exec(ArrayList<Task> idToTask, int taskId, int idToTaskBase,TupleImpl tuple, KryoValuesDeserializer ky){
         try{
 
             List<Object> tempVal = tuple.getValues();
@@ -248,12 +248,11 @@ public class BoltExecutor extends Executor {
             byte[] decryptedData = Crypto.sgx_decrypt(rawData, false);
             */
 
-            ByteArrayInputStream in = new ByteArrayInputStream(rawData);
-            ObjectInputStream is = new ObjectInputStream(in);
 
-            List<Object> updatedVal = (List<Object>)is.readObject();
 
-            tuple.updateVal((List<Object>)Tools.deep_copy(updatedVal));
+            List<Object> updatedVal = (List<Object>)ky.deserialize(rawData);
+
+            tuple.updateVal(updatedVal);
 
 
             IBolt boltObject = (IBolt) idToTask.get(taskId - idToTaskBase).getTaskObject();
@@ -309,9 +308,12 @@ public class BoltExecutor extends Executor {
             if(boltObject instanceof IRichBolt && !(streamId.contains("ack") || streamId.contains("metrics"))){
                 try{
 
+
                     List<Object> tempVal = tuple.getValues();
                     List<Object> dummy = new ArrayList<>();
                     byte[] rawData = (byte[])tempVal.get(0);
+
+
 
                     if (isDebug) {
                         LOG.info("Executing TUPLE {} Raw Value: {}", tuple, rawData);
@@ -320,23 +322,25 @@ public class BoltExecutor extends Executor {
                         //byte[] decryptedData =annotated_decrypt(rawData);
 
                         byte[] decryptedData =rawData;
-                        dummy = (List<Object>)deserialize(decryptedData);
+                        //dummy = (List<Object>)deserialize(decryptedData);
                     }
                     catch (Exception ex){
                         dummy.add("Error Deserialize Outside Enclave");
                     }
                     //temp added
                     //tuple.updateVal(dummy);
-                    LOG.info("Enclave executing TUPLE {} Raw Value: {} Decrypted Value: {}", tuple, rawData, dummy);
-                    /*
+                    //LOG.info("Enclave executing TUPLE {} Raw Value: {} Decrypted Value: {}", tuple, rawData, dummy);
+                    KryoValuesDeserializer ky = new KryoValuesDeserializer(conf);
                     annotated_exec(
                             idToTask,
                             taskId,
                             idToTaskBase,
-                            tuple
+                            tuple,
+                            ky
                     );
 
-                     */
+
+                    /*
                     annotated_exec_temp(
                             idToTask,
                             taskId,
@@ -344,6 +348,8 @@ public class BoltExecutor extends Executor {
                             tuple,
                             dummy
                     );
+
+                     */
 
                 }catch (Exception ex){
 
