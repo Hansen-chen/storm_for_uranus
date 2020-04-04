@@ -252,23 +252,7 @@ public class BoltExecutor extends Executor {
 
             List<Object> updatedVal = (List<Object>)ky.deserialize(rawData);
 
-            tuple.updateVal(updatedVal);
-
-
-            IBolt boltObject = (IBolt) idToTask.get(taskId - idToTaskBase).getTaskObject();
-            boltObject.execute(tuple);
-
-        } catch (Exception e){
-            System.out.println("Bolt inside enclave error: "+e.toString());
-        }
-    }
-
-    @IntelSGX
-    public static void annotated_exec_temp(ArrayList<Task> idToTask, int taskId, int idToTaskBase,TupleImpl tuple, List<Object> values){
-        try{
-
-
-            tuple.updateVal(values);
+            tuple.updateVal((List<Object>)Tools.deep_copy(updatedVal));
 
 
             IBolt boltObject = (IBolt) idToTask.get(taskId - idToTaskBase).getTaskObject();
