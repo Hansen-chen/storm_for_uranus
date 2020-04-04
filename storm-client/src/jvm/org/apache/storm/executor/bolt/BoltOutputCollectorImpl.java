@@ -51,6 +51,7 @@ public class BoltOutputCollectorImpl implements IOutputCollector {
     private final ExecutorTransfer xsfer;
     private final boolean isDebug;
     private boolean ackingEnabled;
+    public KryoValuesSerializer ky;
 
     public BoltOutputCollectorImpl(BoltExecutor executor, Task taskData, Random random,
                                    boolean isEventLoggers, boolean ackingEnabled, boolean isDebug) {
@@ -62,6 +63,7 @@ public class BoltOutputCollectorImpl implements IOutputCollector {
         this.ackingEnabled = ackingEnabled;
         this.isDebug = isDebug;
         this.xsfer = executor.getExecutorTransfer();
+        this.ky = new KryoValuesSerializer(this.executor.getConf());
     }
 
     public byte[] serialize(List<Object> values){
@@ -86,7 +88,7 @@ public class BoltOutputCollectorImpl implements IOutputCollector {
                 if (!(streamId.contains("ack") || streamId.contains("metrics")) && tuple!=null)
                 {
                     try{
-                            byte[] rawData =  serialize(tuple);
+                            byte[] rawData =  ky.serialize(tuple);
                             //byte[] rawData =  new byte[1];
                             encryptedData = rawData;
                             //encryptedData = Crypto.sgx_encrypt(rawData, false);
@@ -109,8 +111,7 @@ public class BoltOutputCollectorImpl implements IOutputCollector {
                             executor,
                             taskId,
                             xsfer,
-                            isEventLoggers,
-                            executor.getConf()
+                            isEventLoggers
                     );
 
 
@@ -118,12 +119,6 @@ public class BoltOutputCollectorImpl implements IOutputCollector {
                 else {
                     boltEmit(streamId, anchors, tuple, null);
                 }
-
-
-
-
-
-
 
             }
             catch (UnsatisfiedLinkError ex){
@@ -149,10 +144,10 @@ public class BoltOutputCollectorImpl implements IOutputCollector {
         }
     }
 
+
+
     @IntelSGXOcall
-    public static void annotated_emit(String streamId, Collection<Tuple> anchors, List<Object> values, byte[] encryptedData,Task task, boolean ackingEnabled, Random random, BoltExecutor executor, int taskId, ExecutorTransfer xsfer, boolean isEventLoggers,Map<String, Object> conf ) {
-        //KryoValuesSerializer ky = new KryoValuesSerializer(conf);
-        //encryptedData = ky.serialize(values);
+    public static void annotated_emit(String streamId, Collection<Tuple> anchors, List<Object> values, byte[] encryptedData,Task task, boolean ackingEnabled, Random random, BoltExecutor executor, int taskId, ExecutorTransfer xsfer, boolean isEventLoggers) {
         LOG.info("EEmitting TUPLE {} Encrypted value: {}", values, encryptedData);
         List<Integer> outTasks = task.getOutgoingTasks(streamId, values);
 
