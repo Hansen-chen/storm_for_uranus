@@ -100,7 +100,7 @@ public class BoltOutputCollectorImpl implements IOutputCollector {
 
                         encryptedData = "empty".getBytes();
                     }
-                    annotated_emit(
+                    return annotated_emit(
                             (String)Tools.deep_copy(streamId),
                             (Collection<Tuple>)Tools.deep_copy(anchors),
                             (List<Object>)Tools.deep_copy(tuple),
@@ -117,15 +117,13 @@ public class BoltOutputCollectorImpl implements IOutputCollector {
 
                 }
                 else {
-                    boltEmit(streamId, anchors, tuple, null);
+                    return boltEmit(streamId, anchors, tuple, null);
                 }
 
             }
             catch (UnsatisfiedLinkError ex){
                 return boltEmit(streamId, anchors, tuple, null);
             }
-            List<Integer> outTasks = new ArrayList<Integer>();
-            return (List<Integer>)Tools.deep_copy(outTasks);
 
 
         } catch (InterruptedException e) {
@@ -147,7 +145,7 @@ public class BoltOutputCollectorImpl implements IOutputCollector {
 
 
     @IntelSGXOcall
-    public static void annotated_emit(String streamId, Collection<Tuple> anchors, List<Object> values, byte[] encryptedData,Task task, boolean ackingEnabled, Random random, BoltExecutor executor, int taskId, ExecutorTransfer xsfer, boolean isEventLoggers) {
+    public static List<Integer> annotated_emit(String streamId, Collection<Tuple> anchors, List<Object> values, byte[] encryptedData,Task task, boolean ackingEnabled, Random random, BoltExecutor executor, int taskId, ExecutorTransfer xsfer, boolean isEventLoggers) {
         //LOG.info("EEmitting TUPLE {} Encrypted value: {}", values, encryptedData);
         List<Integer> outTasks = task.getOutgoingTasks(streamId, values);
 
@@ -198,6 +196,7 @@ public class BoltOutputCollectorImpl implements IOutputCollector {
         if (isEventLoggers) {
             task.sendToEventLogger(executor, values, executor.getComponentId(), null, random, executor.getPendingEmits());
         }
+        return outTasks;
 
     }
 
