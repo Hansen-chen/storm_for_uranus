@@ -1,9 +1,17 @@
 # Storm copy used by Hansen
 
-## Machine
+## Supervisor (with Intel SGX)
 ### Address : 202.45.128.173
 ### No. : 14
 ### Gate : gatekeeper.cs.hku.hk
+
+## Zookeeper
+### Address : 202.45.128.174
+### No. : 15
+
+## Nimbus
+### Address : 202.45.128.172
+### No. : 13
 
 ## Build Storm
 
