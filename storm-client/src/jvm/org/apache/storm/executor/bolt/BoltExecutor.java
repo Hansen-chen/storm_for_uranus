@@ -260,6 +260,7 @@ public class BoltExecutor extends Executor {
 
             IBolt boltObject = (IBolt) idToTask.get(taskId - idToTaskBase).getTaskObject();
             boltObject.execute(tuple);
+            //tuple.updateVal((byte [])Tools.deep_copy(rawData));
 
         } catch (Exception e){
             System.out.println("Bolt inside enclave error: "+e.toString());
