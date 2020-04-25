@@ -16,7 +16,7 @@
 ## Build Storm
 
 0. wget binary targz file from (https://maven.apache.org/download.cgi?Preferred=http%3A%2F%2Fapache.01link.hk%2F)
-1. export MAVEN_HOME=/home/hansen/apache-maven-3.6.3 && export PATH=${PATH}:${MAVEN_HOME}/bin && export M2_HOME=/home/hansen/apache-maven-3.6.3 && export PATH=${PATH}:${M2_HOME}/bin
+1. export MAVEN_HOME=/home/hchan/apache-maven-3.6.3 && export PATH=${PATH}:${MAVEN_HOME}/bin && export M2_HOME=/home/hchan/apache-maven-3.6.3 && export PATH=${PATH}:${M2_HOME}/bin
 (mvn location and version got from 'mvn -version')   
 2. (optional)add ali maven mirror to maven folder conf/mirror/setting.xml (https://blog.csdn.net/wudinaniya/article/details/98116734)
 3. (optional) mvn dependency::tree && mvn help:effective-pom
