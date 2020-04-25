@@ -9,7 +9,7 @@
 ### Address : 202.45.128.174
 ### No. : 15
 
-## Nimbus
+## Nimbus (submit topology)
 ### Address : 202.45.128.172
 ### No. : 13
 
