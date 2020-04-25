@@ -22,12 +22,12 @@ java.library.path: "/usr/local/lib:/opt/local/lib:/usr/lib:/usr/lib64"
 
 ### storm.* configs are general configurations
 # the local dir is where jars are kept
-storm.local.dir: "/home/hansen/storm-local-data"
+storm.local.dir: "/home/hchan/storm-local-data"
 storm.log4j2.conf.dir: "log4j2"
 storm.zookeeper.servers:
-    - "localhost"
+    - "202.45.128.174"
 storm.zookeeper.port: 2181
-storm.zookeeper.root: "/home/hansen/storm-zk"
+storm.zookeeper.root: "/home/hchan/storm-zk"
 storm.zookeeper.session.timeout: 20000
 storm.zookeeper.connection.timeout: 15000
 storm.zookeeper.retry.times: 5
@@ -61,7 +61,7 @@ storm.health.check.timeout.ms: 5000
 storm.disable.symlinks: false
 
 ### nimbus.* configs are for the master
-nimbus.seeds : ["localhost"]
+nimbus.seeds : ["202.45.128.172"]
 nimbus.thrift.port: 6627
 nimbus.thrift.threads: 64
 nimbus.thrift.max_buffer_size: 1048576
