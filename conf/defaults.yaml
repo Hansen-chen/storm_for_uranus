@@ -112,6 +112,8 @@ logviewer.filter.params: null
 
 logs.users: null
 
+drpc.servers:
+    - "202.45.128.172"
 drpc.port: 3772
 drpc.worker.threads: 64
 drpc.max_buffer_size: 1048576
