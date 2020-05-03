@@ -47,6 +47,7 @@ import org.apache.storm.stats.ClientStatsUtil;
 import org.apache.storm.task.IBolt;
 import org.apache.storm.task.OutputCollector;
 import org.apache.storm.task.TopologyContext;
+import org.apache.storm.topology.IBasicBolt;
 import org.apache.storm.topology.IRichBolt;
 import org.apache.storm.tuple.AddressedTuple;
 import org.apache.storm.tuple.TupleImpl;
@@ -293,7 +294,7 @@ public class BoltExecutor extends Executor {
             }
             //boltObject.execute(tuple);
 
-            if(boltObject instanceof IRichBolt && !(streamId.contains("ack") || streamId.contains("metrics"))){
+            if((boltObject instanceof IRichBolt || boltObject instanceof IBasicBolt) && !(streamId.contains("ack") || streamId.contains("metrics"))){
                 try{
 
 
