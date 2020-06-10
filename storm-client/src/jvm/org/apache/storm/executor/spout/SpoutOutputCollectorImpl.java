@@ -187,19 +187,12 @@ public class SpoutOutputCollectorImpl implements ISpoutOutputCollector {
 
             List<Object> encryptedValues = new ArrayList<>();
 
-            if (!(stream.contains("ack") || stream.contains("metrics")) && values!=null)
+            if (!(stream.contains("ack") || stream.contains("metrics")))
             {
-                try{
-
-                    //LOG.info("Start serialization " + values);
-                    byte[] encryptedTuple = enclaveEncryption(values, ky);
-                    //LOG.info("Finish serialization " + encryptedTuple.toString());
-                    encryptedValues.add(encryptedTuple);
-                }
-                catch (Exception ex){
-                    LOG.info("Spout sgx encrypt error: " + ex.toString());
-                    encryptedValues = values;
-                }
+                //LOG.info("Start serialization " + values);
+                byte[] encryptedTuple = enclaveEncryption(values, ky);
+                //LOG.info("Finish serialization " + encryptedTuple.toString());
+                encryptedValues.add(encryptedTuple);
             }
             else {
                 encryptedValues = values;

@@ -244,28 +244,22 @@ public class BoltExecutor extends Executor {
 
     @IntelSGX
     public static void annotated_exec(ArrayList<Task> idToTask, int taskId, int idToTaskBase,TupleImpl tuple, KryoValuesDeserializer ky){
-        try{
+        List<Object> tempVal = tuple.getValues();
+        byte[] rawData = (byte[])tempVal.get(0);
 
-            List<Object> tempVal = tuple.getValues();
-            byte[] rawData = (byte[])tempVal.get(0);
-
-            byte[] decryptedData = Crypto.sgx_decrypt(rawData, false);
+        byte[] decryptedData = Crypto.sgx_decrypt(rawData, false);
 
 
 
 
-            List<Object> updatedVal = (List<Object>)ky.deserialize(decryptedData);
+        List<Object> updatedVal = (List<Object>)ky.deserialize(decryptedData);
 
-            tuple.updateVal((List<Object>)Tools.deep_copy(updatedVal));
+        tuple.updateVal((List<Object>)Tools.deep_copy(updatedVal));
 
 
-            IBolt boltObject = (IBolt) idToTask.get(taskId - idToTaskBase).getTaskObject();
-            boltObject.execute(tuple);
-            tuple.updateVal(tempVal);
-
-        } catch (Exception e){
-            System.out.println("Bolt inside enclave error: "+e.toString());
-        }
+        IBolt boltObject = (IBolt) idToTask.get(taskId - idToTaskBase).getTaskObject();
+        boltObject.execute(tuple);
+        tuple.updateVal(tempVal);
     }
 
 
@@ -295,28 +289,18 @@ public class BoltExecutor extends Executor {
             //boltObject.execute(tuple);
 
             if((boltObject instanceof IRichBolt || boltObject instanceof IBasicBolt) && !(streamId.contains("ack") || streamId.contains("metrics"))){
-                try{
-
-
-                    if (isDebug) {
-                        LOG.info("Executing TUPLE {}", tuple);
-                    }
-
-
-                    annotated_exec(
-                            idToTask,
-                            taskId,
-                            idToTaskBase,
-                            tuple,
-                            ky
-                    );
-
-
-
-                }catch (Exception ex){
-
-                    boltObject.execute(tuple);
+                if (isDebug) {
+                    LOG.info("Executing TUPLE {}", tuple);
                 }
+
+
+                annotated_exec(
+                        idToTask,
+                        taskId,
+                        idToTaskBase,
+                        tuple,
+                        ky
+                );
             }
             else {
                 boltObject.execute(tuple);

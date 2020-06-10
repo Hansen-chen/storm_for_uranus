@@ -87,19 +87,11 @@ public class BoltOutputCollectorImpl implements IOutputCollector {
                 byte[] encryptedData;
                 if (!(streamId.contains("ack") || streamId.contains("metrics")) && tuple!=null)
                 {
-                    try{
-                            byte[] rawData =  ky.serialize(tuple);
-                            //byte[] rawData =  new byte[1];
-                            //encryptedData = rawData;
-                            encryptedData = Crypto.sgx_encrypt(rawData, false);
+                    byte[] rawData =  ky.serialize(tuple);
+                    //byte[] rawData =  new byte[1];
+                    //encryptedData = rawData;
+                    encryptedData = Crypto.sgx_encrypt(rawData, false);
 
-
-
-                    }
-                    catch (Exception ex){
-
-                        encryptedData = "empty".getBytes();
-                    }
                     return annotated_emit(
                             (String)Tools.deep_copy(streamId),
                             (Collection<Tuple>)Tools.deep_copy(anchors),
