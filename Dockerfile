@@ -24,3 +24,5 @@ RUN cd /storm/compiled/apache-storm-2.2.0-SNAPSHOT/examples/storm-starter
 
 RUN mvn package -Dcheckstyle.skip
 
+RUN export JAVA_HOME=/uranus/build/linux-x86_64-normal-server-release/images/j2sdk-image && export PATH=$JAVA_HOME/bin:$PATH
+
