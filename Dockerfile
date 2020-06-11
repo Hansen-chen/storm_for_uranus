@@ -1,4 +1,4 @@
-FROM n3wtron/maven3-oracle-jdk8:latest
+FROM maven:3.6.0-jdk-11-slim AS build
 
 FROM uranus:latest
 
