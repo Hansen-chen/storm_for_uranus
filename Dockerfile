@@ -2,7 +2,9 @@ FROM uranus:latest
 
 COPY . .
 
+RUN mkdir /storm/
 
+RUN cd /storm/
 
 RUN git clone https://github.com/Hansen-chen/storm_for_uranus
 
@@ -10,13 +12,9 @@ RUN wget http://ftp.cuhk.edu.hk/pub/packages/apache.org/maven/maven-3/3.6.3/bina
 
 RUN tar -xvf apache-maven-3.6.3-bin.tar.gz
 
-ADD apache-maven-3.6.3 /storm/apache-maven-3.6.3
-
-ADD storm_for_uranus /storm/storm_for_uranus
+RUN export MAVEN_HOME=apache-maven-3.6.3 && export PATH=${PATH}:${MAVEN_HOME}/bin && export M2_HOME=apache-maven-3.6.3 && export PATH=${PATH}:${M2_HOME}/bin
 
 WORKDIR /storm/
-
-RUN export MAVEN_HOME=apache-maven-3.6.3 && export PATH=${PATH}:${MAVEN_HOME}/bin && export M2_HOME=apache-maven-3.6.3 && export PATH=${PATH}:${M2_HOME}/bin
 
 RUN cd storm_for_uranus
 
