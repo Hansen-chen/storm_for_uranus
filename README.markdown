@@ -62,6 +62,9 @@
 2. ./configure
 3. make clean;SGX_HW=1 SGX_MODE=HW make images
 
+## Doecker image building
+1. docker build -t xqhchen/test-uranus-storm .
+
 ## Useful Link
 
 1. https://blog.csdn.net/lizheng520lp/article/details/84862380
