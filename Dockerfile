@@ -12,6 +12,8 @@ RUN tar -xvf apache-maven-3.6.3-bin.tar.gz
 
 RUN export MAVEN_HOME=apache-maven-3.6.3 && export PATH=${PATH}:${MAVEN_HOME}/bin && export M2_HOME=apache-maven-3.6.3 && export PATH=${PATH}:${M2_HOME}/bin
 
+RUN ls -l
+
 RUN cd storm_for_uranus
 
 RUN mvn install:install-file -Dfile=../uranus/build/linux-x86_64-normal-server-release/images/j2sdk-image/jre/lib/rt.jar -DgroupId=edu.anonimity.sgx -DartifactId=rt -Dversion=1.0 -Dpackaging=jar
