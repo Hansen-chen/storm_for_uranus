@@ -1,6 +1,6 @@
 FROM uranus:latest
 
-COPY ./ /storm/
+COPY . .
 
 WORKDIR /storm/
 
@@ -8,7 +8,7 @@ RUN mvn clean package install -DskipTests=true -Dcheckstyle.skip && cd storm-dis
 
 RUN mkdir /storm/storm-local-data
 
-RUN cd cd /storm/compiled/apache-storm-2.2.0-SNAPSHOT/examples/storm-starter
+RUN cd /storm/compiled/apache-storm-2.2.0-SNAPSHOT/examples/storm-starter
 
 RUN mvn package -Dcheckstyle.skip
 
