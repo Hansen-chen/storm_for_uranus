@@ -1,6 +1,6 @@
-FROM uranus:latest
-
 FROM n3wtron/maven3-oracle-jdk8:latest
+
+FROM uranus:latest
 
 COPY ./ /storm/
 
