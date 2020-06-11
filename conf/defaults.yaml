@@ -66,7 +66,7 @@ storm.health.check.timeout.ms: 5000
 storm.disable.symlinks: false
 
 ### nimbus.* configs are for the master
-nimbus.seeds : ["localhost"]
+nimbus.seeds : ["nimbus"]
 nimbus.thrift.port: 6627
 nimbus.thrift.threads: 64
 nimbus.thrift.max_buffer_size: 1048576
