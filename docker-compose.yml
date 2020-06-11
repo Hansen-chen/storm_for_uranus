@@ -1,0 +1,57 @@
+version: '3'
+services:
+  zookeeper:
+    image: zookeeper:latest
+    ports:
+      - "2181:2181"
+  nimbus:
+    depends_on:
+      - zookeeper
+    image: uranus-storm:2.2.0
+    command: >
+      bash -c "/storm/compile/apache-storm-2.2.0-SNAPSHOT/bin nimbus"
+    ports:
+      - "49773:3773"
+      - "49772:3772"
+      - "49627:6627"
+      - "22"
+    links:
+      - zookeeper:zookeeper
+  supervisor:
+    depends_on:
+      - zookeeper
+      - nimbus
+    image: uranus-storm:2.2.0
+    devices:
+      - /dev/isgx:/dev/isgx
+      - /dev/mei0:/dev/mei0
+    command: >
+      bash -c "/storm/compile/apache-storm-2.2.0-SNAPSHOT/bin supervisor"
+    expose:
+      - "6700"
+      - "6701"
+      - "6702"
+      - "6703"
+      - "8000"
+    ports:
+      - "8000"
+      - "22"
+    links:
+      - nimbus:nimbus
+      - zookeeper:zookeeper
+  ui:
+    depends_on:
+      - zookeeper
+      - nimbus
+      - supervisor
+    image: uranus-storm:2.2.0
+    command: >
+      bash -c "/storm/compile/apache-storm-2.2.0-SNAPSHOT/bin ui"
+    expose:
+      - "8080"
+    ports:
+      - "49080:8080"
+      - "22"
+    links:
+      - nimbus:nimbus
+      - zookeeper:zookeeper

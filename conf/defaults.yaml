@@ -22,12 +22,17 @@ java.library.path: "/usr/local/lib:/opt/local/lib:/usr/lib:/usr/lib64"
 
 ### storm.* configs are general configurations
 # the local dir is where jars are kept
-storm.local.dir: "/home/hchan/storm-local-data"
+#storm.local.dir: "/home/hchan/storm-local-data"
+storm.local.dir: "/storm/storm-local-data"
 storm.log4j2.conf.dir: "log4j2"
 storm.zookeeper.servers:
-    - "202.45.128.174"
+    - "zookeeper"
+
+#storm.zookeeper.servers:
+#    - "202.45.128.174"
 storm.zookeeper.port: 2181
-storm.zookeeper.root: "/home/hchan/storm-zk"
+#storm.zookeeper.root: "/home/hchan/storm-zk"
+storm.zookeeper.root: "/storm-zk"
 storm.zookeeper.session.timeout: 20000
 storm.zookeeper.connection.timeout: 15000
 storm.zookeeper.retry.times: 5
