@@ -7,7 +7,7 @@ services:
   nimbus:
     depends_on:
       - zookeeper
-    image: uranus
+    image: test-uranus-storm
     command: >
       bash -c "/storm/compile/apache-storm-2.2.0-SNAPSHOT/bin nimbus"
     ports:
@@ -21,7 +21,7 @@ services:
     depends_on:
       - zookeeper
       - nimbus
-    image: uranus
+    image: test-uranus-storm
     devices:
       - /dev/isgx:/dev/isgx
       - /dev/mei0:/dev/mei0
@@ -44,7 +44,7 @@ services:
       - zookeeper
       - nimbus
       - supervisor
-    image: uranus
+    image: test-uranus-storm
     command: >
       bash -c "/storm/compile/apache-storm-2.2.0-SNAPSHOT/bin ui"
     expose:
