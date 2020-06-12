@@ -8,6 +8,8 @@ RUN wget http://ftp.cuhk.edu.hk/pub/packages/apache.org/maven/maven-3/3.6.3/bina
 
 RUN /storm/apache-maven-3.6.3/bin/mvn install:install-file -Dfile=/uranus/build/linux-x86_64-normal-server-release/images/j2sdk-image/jre/lib/rt.jar -DgroupId=edu.anonimity.sgx -DartifactId=rt -Dversion=1.0 -Dpackaging=jar
 
+RUN /storm/apache-maven-3.6.3/bin/mvn -rf storm-autocreds
+
 RUN /storm/apache-maven-3.6.3/bin/mvn clean package install -DskipTests=true -Dcheckstyle.skip
 
 WORKDIR /storm/storm-dist/binary/
