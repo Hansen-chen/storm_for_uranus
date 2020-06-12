@@ -10,13 +10,13 @@ RUN /storm/apache-maven-3.6.3/bin/mvn install:install-file -Dfile=/uranus/build/
 
 RUN /storm/apache-maven-3.6.3/bin/mvn clean package install -DskipTests=true -Dcheckstyle.skip
 
-WORKDIR /storm/storm-dist/binary
+WORKDIR /storm/storm-dist/binary/
 
 RUN /storm/apache-maven-3.6.3/bin/mvn package -Dgpg.skip=true
 
 RUN mkdir /storm/compiled && cp /storm/storm-dist/binary/final-package/target/apache-storm-2.2.0-SNAPSHOT.tar.gz /storm/compiled && tar zxvf /storm/compiled/apache-storm-2.2.0-SNAPSHOT.tar.gz
 
-WORKDIR /storm/compiled/apache-storm-2.2.0-SNAPSHOT/examples/storm-starter
+WORKDIR /storm/compiled/apache-storm-2.2.0-SNAPSHOT/examples/storm-starter/
 
 RUN /storm/apache-maven-3.6.3/bin/mvn package -Dcheckstyle.skip
 

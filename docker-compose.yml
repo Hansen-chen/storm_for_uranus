@@ -18,6 +18,8 @@ services:
     links:
       - zookeeper:zookeeper
   supervisor:
+    environment:
+      JAVA_HOME: '/uranus/build/linux-x86_64-normal-server-release/images/j2sdk-image'
     depends_on:
       - zookeeper
       - nimbus
