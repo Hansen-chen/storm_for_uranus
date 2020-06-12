@@ -14,7 +14,7 @@ WORKDIR /storm/storm-dist/binary
 
 RUN /storm/apache-maven-3.6.3/bin/mvn package -Dgpg.skip=true
 
-RUN mkdir /storm/compiled && cp /storm/final-package/target/apache-storm-2.2.0-SNAPSHOT.tar.gz /storm/compiled && tar zxvf /storm/compiled/apache-storm-2.2.0-SNAPSHOT.tar.gz
+RUN mkdir /storm/compiled && cp /storm/storm-dist/binary/final-package/target/apache-storm-2.2.0-SNAPSHOT.tar.gz /storm/compiled && tar zxvf /storm/compiled/apache-storm-2.2.0-SNAPSHOT.tar.gz
 
 WORKDIR /storm/compiled/apache-storm-2.2.0-SNAPSHOT/examples/storm-starter
 
