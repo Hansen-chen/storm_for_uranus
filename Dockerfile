@@ -20,10 +20,7 @@ WORKDIR /storm/compiled/
 
 RUN tar zxvf /storm/compiled/apache-storm-2.2.0-SNAPSHOT.tar.gz
 
-WORKDIR /storm/compiled/apache-storm-2.2.0-SNAPSHOT/examples/storm-starter/
-
-RUN /storm/apache-maven-3.6.3/bin/mvn package -Dcheckstyle.skip
+WORKDIR /storm/compiled/apache-storm-2.2.0-SNAPSHOT/
 
 RUN mkdir /storm/storm-local-data
 
-WORKDIR /storm/compiled/apache-storm-2.2.0-SNAPSHOT/
