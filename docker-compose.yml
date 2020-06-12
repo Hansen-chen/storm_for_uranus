@@ -9,7 +9,7 @@ services:
       - zookeeper
     image: test-uranus-storm
     command: >
-      bash -c "/storm/compile/apache-storm-2.2.0-SNAPSHOT/bin nimbus"
+      bash -c "cd /storm/compiled/apache-storm-2.2.0-SNAPSHOT/examples/storm-starter/ && /storm/apache-maven-3.6.3/bin/mvn package -Dcheckstyle.skip && /storm/compile/apache-storm-2.2.0-SNAPSHOT/bin nimbus"
     ports:
       - "49773:3773"
       - "49772:3772"
