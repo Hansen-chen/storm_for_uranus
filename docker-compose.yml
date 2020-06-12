@@ -7,7 +7,7 @@ services:
   nimbus:
     depends_on:
       - zookeeper
-    image: test-uranus-storm
+    image: xqhchen/test-uranus-storm
     command: >
       bash -c "cd /storm/compiled/apache-storm-2.2.0-SNAPSHOT/examples/storm-starter/ && /storm/apache-maven-3.6.3/bin/mvn package -Dcheckstyle.skip && /storm/compile/apache-storm-2.2.0-SNAPSHOT/bin nimbus"
     ports:
@@ -23,7 +23,7 @@ services:
     depends_on:
       - zookeeper
       - nimbus
-    image: test-uranus-storm
+    image: xqhchen/test-uranus-storm
     devices:
       - /dev/isgx:/dev/isgx
       - /dev/mei0:/dev/mei0
@@ -46,7 +46,7 @@ services:
       - zookeeper
       - nimbus
       - supervisor
-    image: test-uranus-storm
+    image: xqhchen/test-uranus-storm
     command: >
       bash -c "/storm/compile/apache-storm-2.2.0-SNAPSHOT/bin ui"
     expose:
