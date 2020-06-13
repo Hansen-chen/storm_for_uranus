@@ -17,7 +17,6 @@ services:
       - "22"
     links:
       - zookeeper:zookeeper
-      - supervisor:supervisor
   supervisor:
     environment:
       JAVA_HOME: '/uranus/build/linux-x86_64-normal-server-release/images/j2sdk-image'
