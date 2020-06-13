@@ -85,9 +85,15 @@ Add more supervisors:
 
 - ```docker-compose scale supervisor=4```
 
-Enter nimbus container to submit/kill topology
+Enter nimbus container to submit/kill topology (change topology with vim)
 
 - ```docker exec -it nimbus_container_name bash```
+
+- ```apt-get install vim```
+
+- ```apt-get update``` if needed
+
+- ```/storm/apache-maven-3.6.3/bin/mvn package -Dcheckstyle.skip``` under storm-starter folder
 
 Check docker container exit error logs
 
