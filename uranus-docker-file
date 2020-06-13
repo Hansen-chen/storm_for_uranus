@@ -1,0 +1,23 @@
+FROM jyjiang/linux-sgx:latest
+
+WORKDIR /
+
+# install dependency for linux-sgx
+RUN apt-get update && \
+    apt-get install build-essential automake autoconf wget python git \
+                    cpio unzip zip openjdk-8-jdk \
+                    libx11-dev libxext-dev libxrender-dev libxtst-dev libxt-dev \
+                    libcups2-dev libfreetype6-dev libfreetype6 \
+                    libasound2-dev cmake -y && \
+    apt-get clean
+
+COPY ./ /uranus/
+
+WORKDIR /uranus
+
+RUN rm Dockerfile; git checkout 57de744ef1fbd6664bb81f802f1af8ca1ed11fd7; ./configure --with-freetype-include=/usr/include/freetype2 --with-freetype-lib=/usr/lib/x86_64-linux-gnu/;make clean;DISABLE_HOTSPOT_OS_VERSION_CHECK=ok SGX_MODE=HW SGX_HW=1 make images
+
+RUN apt-get install maven -y
+
+RUN mvn install:install-file -Dfile=/uranus/build/linux-x86_64-normal-server-release/images/j2sdk-image/jre/lib/rt.jar -DgroupId=edu.anonymity.sgx -DartifactId=sgx -Dversion=0.1 -Dpackaging=jar
+
