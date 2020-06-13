@@ -62,8 +62,43 @@
 2. ./configure
 3. make clean;SGX_HW=1 SGX_MODE=HW make images
 
-## Doecker image building
+## Uranus Docker image building
+1. docker build -t uranus .
+2. with dockerfile "uranus-docker-file"
+
+## Uranus-Storm Docker image building
 1. docker build -t xqhchen/test-uranus-storm .
+
+## Usage
+
+Start a cluster:
+
+- ```docker-compose up -d```
+
+- The ```docker-compose up``` command aggregates the output of each container. When the command exits, all containers are stopped. Running ```docker-compose up -d``` starts the containers in the background and leaves them running.
+
+Destroy a cluster:
+
+- ```docker-compose stop```
+
+Add more supervisors:
+
+- ```docker-compose scale supervisor=4```
+
+Enter nimbus container to submit/kill topology
+
+- ```docker exec -it nimbus_container_name bash```
+
+Check docker container exit error logs
+
+- ```docker logs```
+
+Check and Remove exited docker container/images
+
+- ```docker ps -a```
+- ```us$ docker rm $(docker ps -a -q -f status=exited)```
+- ```docker images```
+- ```docker rmi image_id```
 
 ## Useful Link
 
@@ -71,7 +106,10 @@
 2. https://www.cnblogs.com/davenkin/archive/2012/02/15/install-jar-into-maven-local-repository.html
 3. http://pclevin.blogspot.com/2015/02/maven-dependency-scope.html
 4. http://www.corejavaguru.com/bigdata/storm/word-count-topology
-
+5. https://blog.gtwang.org/linux/screen-command-examples-to-manage-linux-terminals/
+6. https://skychang.github.io/2015/07/30/%E5%BB%BA%E7%AB%8B%E8%87%AA%E5%B7%B1%E7%9A%84-Docker-image/
+7. https://docker-curriculum.com/#docker-compose
+8. https://github.com/ziyunhx/storm-mono-docker/blob/master/README.md
 
 
 
