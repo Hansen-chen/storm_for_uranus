@@ -102,7 +102,7 @@ Check docker container exit error logs
 Check and Remove exited docker container/images
 
 - ```docker ps -a```
-- ```us$ docker rm $(docker ps -a -q -f status=exited)```
+- ```docker rm $(docker ps -a -q -f status=exited)```
 - ```docker images```
 - ```docker rmi image_id```
 
