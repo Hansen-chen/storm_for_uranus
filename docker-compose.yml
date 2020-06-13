@@ -9,7 +9,7 @@ services:
       - zookeeper
     image: xqhchen/test-uranus-storm
     command: >
-      bash -c "/storm/compiled/apache-storm-2.2.0-SNAPSHOT/bin nimbus"
+      bash -c "/storm/compiled/apache-storm-2.2.0-SNAPSHOT/bin/storm nimbus"
     ports:
       - "49773:3773"
       - "49772:3772"
@@ -17,6 +17,7 @@ services:
       - "22"
     links:
       - zookeeper:zookeeper
+      - supervisor:supervisor
   supervisor:
     environment:
       JAVA_HOME: '/uranus/build/linux-x86_64-normal-server-release/images/j2sdk-image'
@@ -28,7 +29,7 @@ services:
       - /dev/isgx:/dev/isgx
       - /dev/mei0:/dev/mei0
     command: >
-      bash -c "/storm/compiled/apache-storm-2.2.0-SNAPSHOT/bin supervisor"
+      bash -c "/storm/compiled/apache-storm-2.2.0-SNAPSHOT/bin/storm supervisor"
     expose:
       - "6700"
       - "6701"
@@ -37,22 +38,6 @@ services:
       - "8000"
     ports:
       - "8000"
-      - "22"
-    links:
-      - nimbus:nimbus
-      - zookeeper:zookeeper
-  ui:
-    depends_on:
-      - zookeeper
-      - nimbus
-      - supervisor
-    image: xqhchen/test-uranus-storm
-    command: >
-      bash -c "/storm/compiled/apache-storm-2.2.0-SNAPSHOT/bin ui"
-    expose:
-      - "8080"
-    ports:
-      - "49080:8080"
       - "22"
     links:
       - nimbus:nimbus
