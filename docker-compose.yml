@@ -4,6 +4,8 @@ services:
     image: zookeeper:latest
     ports:
       - "2181:2181"
+    networks:
+      - uranus-storm-network
   nimbus:
     depends_on:
       - zookeeper
@@ -14,8 +16,8 @@ services:
       - "49773:3773"
       - "49772:3772"
       - "49627:6627"
-    links:
-      - zookeeper:zookeeper
+    networks:
+      - uranus-storm-network
   supervisor:
     environment:
       JAVA_HOME: '/uranus/build/linux-x86_64-normal-server-release/images/j2sdk-image'
@@ -38,7 +40,8 @@ services:
       - "6701"
       - "6702"
       - "6703"
-    links:
-      - nimbus:nimbus
-      - zookeeper:zookeeper
-      - supervisor:supervisor
+    networks:
+      - uranus-storm-network
+networks:
+  uranus-storm-network:
+    name: uranus-storm-network
