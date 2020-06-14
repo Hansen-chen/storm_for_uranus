@@ -91,6 +91,8 @@ Enter nimbus container to submit/kill topology (change topology with vim)
 
 - ```apt-get install vim```
 
+- ```apt-get install iputils-ping```
+
 - ```apt-get update``` if needed
 
 - ```/storm/apache-maven-3.6.3/bin/mvn package -Dcheckstyle.skip``` under storm-starter folder
