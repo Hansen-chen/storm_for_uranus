@@ -11,7 +11,9 @@ services:
     command: >
       bash -c "/storm/compiled/apache-storm-2.2.0-SNAPSHOT/bin/storm nimbus"
     ports:
-      - "6627:6627"
+      - "49773:3773"
+      - "49772:3772"
+      - "49627:6627"
     links:
       - zookeeper:zookeeper
   supervisor:
