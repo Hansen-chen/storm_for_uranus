@@ -27,17 +27,17 @@ services:
       - /dev/isgx:/dev/isgx
       - /dev/mei0:/dev/mei0
     command: >
-      bash -c "/storm/compiled/apache-storm-2.2.0-SNAPSHOT/bin/storm supervisor"
+      bash -c "/opt/intel/sgxpsw/aesm/aesm_service && /storm/compiled/apache-storm-2.2.0-SNAPSHOT/bin/storm supervisor"
     expose:
       - "6700"
       - "6701"
       - "6702"
       - "6703"
     ports:
-      - "6700:6700"
-      - "6701:6701"
-      - "6702:6702"
-      - "6703:6703"
+      - "6700"
+      - "6701"
+      - "6702"
+      - "6703"
     links:
       - nimbus:nimbus
       - zookeeper:zookeeper
