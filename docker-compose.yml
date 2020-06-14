@@ -44,4 +44,3 @@ services:
       - uranus-storm-network
 networks:
   uranus-storm-network:
-    name: uranus-storm-network
