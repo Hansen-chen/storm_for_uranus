@@ -2,8 +2,8 @@ version: '3'
 services:
   zookeeper:
     image: zookeeper:latest
-    ports:
-      - "2181:2181"
+    expose:
+      - "2181"
     networks:
       - uranus-storm-network
   nimbus:
@@ -12,10 +12,8 @@ services:
     image: xqhchen/test-uranus-storm
     command: >
       bash -c "/storm/compiled/apache-storm-2.2.0-SNAPSHOT/bin/storm nimbus"
-    ports:
-      - "49773:3773"
-      - "49772:3772"
-      - "49627:6627"
+    expose:
+      - "6627"
     networks:
       - uranus-storm-network
   supervisor:
@@ -31,11 +29,6 @@ services:
     command: >
       bash -c "/opt/intel/sgxpsw/aesm/aesm_service && /storm/compiled/apache-storm-2.2.0-SNAPSHOT/bin/storm supervisor"
     expose:
-      - "6700"
-      - "6701"
-      - "6702"
-      - "6703"
-    ports:
       - "6700"
       - "6701"
       - "6702"
