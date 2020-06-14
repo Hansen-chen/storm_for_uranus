@@ -41,3 +41,4 @@ services:
     links:
       - nimbus:nimbus
       - zookeeper:zookeeper
+      - supervisor:supervisor
