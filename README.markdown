@@ -1,4 +1,5 @@
 # Storm copy used by Hansen
+![Poster of this Project](https://github.com/Hansen-chen/storm_for_uranus/blob/master/fyp19032_github.jpg)
 
 ## Supervisor (with Intel SGX)
 ### Address : 202.45.128.173
