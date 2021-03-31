@@ -31,7 +31,7 @@
     
     <properties>
         <!-- Required downgrade by activemq-broker 5.15.3 -->
-        <guava.version>16.0.1</guava.version>
+        <guava.version>30.1.1-jre</guava.version>
     </properties>
 
     <repositories>
